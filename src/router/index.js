@@ -11,6 +11,16 @@ const router = createRouter({
       name: 'homepage',
       component: () => import('../views/HomepageView.vue')
     },
+    {
+      path: '/logowanie',
+      name: 'signIn',
+      component: () => import('../views/SignInView.vue')
+    },
+    {
+      path: '/rejestracja',
+      name: 'registraion',
+      component: () => import('../views/RegistrationView.vue')
+    },
     { 
       path: '/:pathMatch(.*)*',
       name: 'pageNotFound',

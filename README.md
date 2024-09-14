@@ -63,3 +63,11 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Run API
+
+### Run API server
+
+```sh
+uvicorn main:app --reload
+```

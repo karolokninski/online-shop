@@ -7,10 +7,15 @@ const router = createRouter({
   },
   routes: [
     {
-        path: '/',
-        name: 'homepage',
-        component: () => import('../views/HomepageView.vue')
-      }
+      path: '/',
+      name: 'homepage',
+      component: () => import('../views/HomepageView.vue')
+    },
+    { 
+      path: '/:pathMatch(.*)*',
+      name: 'pageNotFound',
+      component: () => import('../views/PageNotFoundView.vue')
+    }
   ]
 })
 

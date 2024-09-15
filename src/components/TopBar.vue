@@ -70,20 +70,29 @@
 
 <script setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useSearchStore } from '../stores/search'
   import { Dialog, DialogPanel } from '@headlessui/vue'
   import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
   
+  const searchStore = useSearchStore()
+  const router = useRouter()
   const navigation = [
     { name: 'Product', href: '#' },
     { name: 'Features', href: '#' },
     { name: 'Marketplace', href: '#' },
     { name: 'Company', href: '#' },
   ]
-  
   const mobileMenuOpen = ref(false)
-  const searchQuery = ref('');
+  const searchQuery = ref('')
 
   const handleSearch = () => {
-    console.log(searchQuery.value);
+    if (searchQuery.value.trim()) {
+        // searchStore.performSearch(searchQuery.value);
+        router.push({
+          name: 'products',
+          query: { q: searchQuery.value }
+        });
+      }
   };
 </script>

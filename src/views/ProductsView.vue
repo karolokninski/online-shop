@@ -1,6 +1,6 @@
 <template>
 	<TopBar></TopBar>
-	<div class="bg-black pt-16">
+	<div class="bg-white pt-16">
 		<div v-if="products.length" class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
       <h2 v-if="query" class="text-2xl font-bold tracking-tight text-gray-900">Wyniki dla: "{{ query }}"</h2>
 

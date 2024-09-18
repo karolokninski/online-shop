@@ -8,8 +8,9 @@
             <img class="h-12 w-auto" src="../assets/logo.png" alt="" />
           </RouterLink>
         </div>
-        <div class="flex lg:hidden">
-          <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = true">
+        <div class="flex lg:hidden gap-3">
+          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
+          <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-black" @click="mobileMenuOpen = true">
             <span class="sr-only">Open main menu</span>
             <Bars3Icon class="h-6 w-6" aria-hidden="true" />
           </button>
@@ -17,8 +18,9 @@
         <div class="hidden lg:flex lg:gap-x-12">
           <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
         </div>
-        <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-          <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-black">Log in <span aria-hidden="true">&rarr;</span></RouterLink>
+        <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
+          <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-black">Zaloguj się</RouterLink>
+          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
         </div>
       </div>
       <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
@@ -59,23 +61,27 @@
               <a v-for="item in navigation" :key="item.name" :href="item.href" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ item.name }}</a>
             </div>
             <div class="py-6">
-              <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></RouterLink>
+              <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-gray-900">Zaloguj się</RouterLink>
             </div>
           </div>
         </div>
       </DialogPanel>
     </Dialog>
   </header>
+  <ShoppingCart class="fixed bottom-0 right-0 z-50"></ShoppingCart>
 </template>
 
 <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useSearchStore } from '../stores/search'
+  import { useSearchStore } from '@/stores/search'
+  import { useShoppingCartStore } from '@/stores/shoppingCart'
   import { Dialog, DialogPanel } from '@headlessui/vue'
-  import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+  import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from '@heroicons/vue/24/outline'
+  import ShoppingCart from './ShoppingCart.vue'
   
   const searchStore = useSearchStore()
+  const shoppingCartStore = useShoppingCartStore()
   const router = useRouter()
   const navigation = [
     { name: 'Product', href: '/produkty' },

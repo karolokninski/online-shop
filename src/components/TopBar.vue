@@ -15,7 +15,7 @@
           </button>
         </div>
         <div class="hidden lg:flex lg:gap-x-12">
-          <a v-for="item in navigation" :key="item.name" :href="item.href" class="text-sm font-semibold leading-6 text-black">{{ item.name }}</a>
+          <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
           <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-black">Log in <span aria-hidden="true">&rarr;</span></RouterLink>
@@ -78,7 +78,7 @@
   const searchStore = useSearchStore()
   const router = useRouter()
   const navigation = [
-    { name: 'Product', href: '#' },
+    { name: 'Product', href: '/produkty' },
     { name: 'Features', href: '#' },
     { name: 'Marketplace', href: '#' },
     { name: 'Company', href: '#' },

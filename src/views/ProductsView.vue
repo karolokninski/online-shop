@@ -6,7 +6,7 @@
 
       <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         <div v-for="product in products" :key="product.id" class="group relative">
-					<ProductListItem :product="{ name: product.name, price: product.price, color: product.color, href: product.href, imageSrc: product.imageSrc, imageAlt: product.imageAlt }"></ProductListItem>
+					<ProductListItem :product="{ id: product.id, name: product.name, price: product.price, color: product.color, imageSrc: product.imageSrc, imageAlt: product.imageAlt }"></ProductListItem>
 				</div>
 			</div>
     </div>
@@ -47,7 +47,6 @@
 		{
 			id: 1,
 			name: 'Basic Tee',
-			href: '#',
 			imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
 			imageAlt: "Front of men's Basic Tee in black.",
 			price: '$35',
@@ -56,7 +55,6 @@
 		{
 			id: 2,
 			name: 'Plus Fit Tee',
-			href: '#',
 			imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg',
 			imageAlt: "Front of men's Plus Fit Tee in white.",
 			price: '$45',
@@ -65,7 +63,6 @@
 		{
 			id: 3,
 			name: 'Curved Hem Tee',
-			href: '#',
 			imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-03.jpg',
 			imageAlt: "Front of men's Curved Hem Tee in charcoal grey.",
 			price: '$45',
@@ -74,7 +71,6 @@
 		{
 			id: 4,
 			name: 'Long Sleeve Tee',
-			href: '#',
 			imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-04.jpg',
 			imageAlt: "Front of men's Long Sleeve Tee in charcoal grey.",
 			price: '$55',
@@ -83,7 +79,6 @@
 		{
 			id: 5,
 			name: 'Plus Fit Tee',
-			href: '#',
 			imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg',
 			imageAlt: "Front of men's Plus Fit Tee in white.",
 			price: '$45',

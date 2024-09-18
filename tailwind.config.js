@@ -42,6 +42,9 @@ export default {
       },
       borderRadius: {
         '4xl': '2rem',
+      },
+      gridTemplateRows: {
+        '[auto,auto,1fr]': 'auto auto 1fr',
       }
     }
   },

@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<h1>Produkty</h1>
+		<TopBar></TopBar>
+		<h1 class="mt-64">Produkty</h1>
 		<p v-if="query">Wyniki dla: "{{ query }}"</p>
 
 		<!-- <ul v-if="filteredProducts.length">
@@ -12,6 +13,7 @@
 </template>
   
 <script setup>
+  import TopBar from '@/components/TopBar.vue';
   import { useRoute } from 'vue-router';
   import { computed } from 'vue';
   // import { useProductStore } from '../stores/products';

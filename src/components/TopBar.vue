@@ -3,10 +3,10 @@
     <nav class="flex flex-col" aria-label="Global">
       <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
         <div class="flex lg:flex-1">
-          <a href="#" class="-m-1.5 p-1.5">
-            <span class="sr-only">Your Company</span>
+          <RouterLink to="/" class="-m-1.5 p-1.5">
+            <span class="sr-only">Tech-Bay</span>
             <img class="h-12 w-auto" src="../assets/logo.png" alt="" />
-          </a>
+          </RouterLink>
         </div>
         <div class="flex lg:hidden">
           <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = true">
@@ -27,7 +27,7 @@
             class="peer h-full w-full outline-none text-sm text-black pr-2"
             type="text"
             id="search"
-            v-model="searchQuery"
+            v-model="searchStore.query"
             @keyup.enter="handleSearch"
             placeholder="Szukaj..." /> 
           
@@ -84,14 +84,13 @@
     { name: 'Company', href: '#' },
   ]
   const mobileMenuOpen = ref(false)
-  const searchQuery = ref('')
 
   const handleSearch = () => {
-    if (searchQuery.value.trim()) {
-        // searchStore.performSearch(searchQuery.value);
+    if (searchStore.query.trim()) {
+        // searchStore.performSearch(searchStore.query);
         router.push({
           name: 'products',
-          query: { q: searchQuery.value }
+          query: { q: searchStore.query }
         });
       }
   };

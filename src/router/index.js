@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior() {
     document.getElementById('app').scrollIntoView({ behavior: 'smooth' });
   },
@@ -10,6 +10,16 @@ const router = createRouter({
       path: '/',
       name: 'homepage',
       component: () => import('../views/HomepageView.vue')
+    },
+    {
+      path: '/produkty',
+      name: 'products',
+      component: () => import('../views/ProductsView.vue')
+    },
+    {
+      path: '/produkt/:id',
+      name: 'product',
+      component: () => import('../views/ProductView.vue')
     },
     {
       path: '/logowanie',

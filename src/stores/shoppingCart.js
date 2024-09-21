@@ -37,6 +37,11 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
     },
     removeProduct(id) {
       this.products = this.products.filter(product => product.id !== id)
+    },
+    updateQuantity() {
+      for (const product of this.products) {
+        product.totalPrice = product.price * product.quantity
+      }
     }
   },
   persist: {

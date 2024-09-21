@@ -4,36 +4,36 @@ import { useProductsStore } from '@/stores/products';
 export const useShoppingCartStore = defineStore('shoppingCart', {
   state: () => ({
     open: false,
-    products: [
-      {
-        id: 1,
-        name: 'Throwback Hip Bag',
-        href: '#',
-        color: 'Salmon',
-        price: '90',
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-        imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-        quantity: 1
-      }
-    ]
+    products: []
   }),
   actions: {
     addProduct(id) {
-      const productsStore = useProductsStore();
+      const productsStore = useProductsStore()
       const product = productsStore.products.find(product => product.id == id)
 
       if (product) {
-        const existingProduct = this.products.find(p => p.id === product.id);
+        const existingProduct = this.products.find(p => p.id === product.id)
 
         if (existingProduct) {
-          existingProduct.quantity += 1;
+          existingProduct.quantity += 1
+          existingProduct.totalPrice += product.price
         } else {
           this.products.unshift({
             ...product,
-            quantity: 1
-          });
+            quantity: 1,
+            totalPrice: product.price
+          })
         }
       }
+    },
+    productsSum() {
+      var sum = 0
+
+      for (const product of this.products) {
+        sum = sum + product.totalPrice
+      }
+
+      return sum
     }
   }
 });

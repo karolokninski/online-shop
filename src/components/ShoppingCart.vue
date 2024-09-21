@@ -37,9 +37,12 @@
                                   <h3>
                                     <a :href="product.href">{{ product.name }}</a>
                                   </h3>
-                                  <p class="ml-4">{{ product.price }} PLN</p>
+                                  <p class="ml-4">{{ product.totalPrice }} PLN</p>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
+                                <div class="flex justify-between text-base font-medium text-gray-900">
+                                  <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
+                                  <p v-if="product.quantity > 1" class="ml-4 text-xs text-gray-500">za szt. {{ product.price }} PLN</p>
+                                </div>
                               </div>
                               <div class="flex flex-1 items-end justify-between text-sm">
                                 <p class="text-gray-500">{{ product.quantity }} szt.</p>
@@ -58,7 +61,7 @@
                   <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                     <div class="flex justify-between text-base font-medium text-gray-900">
                       <p>Subtotal</p>
-                      <p>$262.00</p>
+                      <p>{{ shoppingCartStore.productsSum() }} PLN</p>
                     </div>
                     <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                     <div class="mt-6">

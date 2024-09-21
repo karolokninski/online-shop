@@ -13,11 +13,11 @@
                 <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                   <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                     <div class="flex items-start justify-between">
-                      <DialogTitle class="text-lg font-medium text-gray-900">Shopping cart</DialogTitle>
+                      <DialogTitle class="text-lg font-medium text-gray-900">Koszyk</DialogTitle>
                       <div class="ml-3 flex h-7 items-center">
                         <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="shoppingCartStore.open = false">
                           <span class="absolute -inset-0.5" />
-                          <span class="sr-only">Close panel</span>
+                          <span class="sr-only">Zamknij koszyk</span>
                           <XMarkIcon class="h-6 w-6" aria-hidden="true" />
                         </button>
                       </div>
@@ -37,7 +37,7 @@
                                   <h3>
                                     <RouterLink :to="`/produkt/${product.id}`">{{ product.name }}</RouterLink>
                                   </h3>
-                                  <p class="ml-4">{{ product.totalPrice }} PLN</p>
+                                  <p class="ml-4">{{ product.totalPrice}} PLN</p>
                                 </div>
                                 <div class="flex justify-between text-base font-medium text-gray-900">
                                   <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
@@ -45,7 +45,16 @@
                                 </div>
                               </div>
                               <div class="flex flex-1 items-end justify-between text-sm">
-                                <p class="text-gray-500">{{ product.quantity }} szt.</p>
+                                <div class="flex flex-row">
+                                <select v-if="product.quantity < 5 && product.quantity >= 1" v-model="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 pr-7 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                                  <option>1</option>
+                                  <option>2</option>
+                                  <option>3</option>
+                                  <option>4</option>
+                                  <option value="5">5+</option>
+                                </select>
+                                <input v-else type="number" v-model.lazy="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 w-16 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                              </div>
 
                                 <div class="flex">
                                   <button type="button" @click="shoppingCartStore.removeProduct(product.id)" class="font-medium text-indigo-600 hover:text-indigo-500">Usuń</button>
@@ -63,15 +72,15 @@
                       <p>Do zapłaty</p>
                       <p>{{ shoppingCartStore.productsSum() }} PLN</p>
                     </div>
-                    <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                    <p class="mt-0.5 text-sm text-gray-500">Wysyłka i podatki obliczane przy kasie.</p>
                     <div class="mt-6">
-                      <a href="#" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
+                      <a href="#" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Wybierz dostawę</a>
                     </div>
                     <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                       <p>
-                        or{{ ' ' }}
+                        lub{{ ' ' }}
                         <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500" @click="shoppingCartStore.open = false">
-                          Continue Shopping
+                          Kontynuuj zakupy
                           <span aria-hidden="true"> &rarr;</span>
                         </button>
                       </p>
@@ -93,4 +102,17 @@
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   
   const shoppingCartStore = useShoppingCartStore()
+
+  const handleQuantityChange = (id) => {
+    const product = shoppingCartStore.products.find(product => product.id == id)
+    
+    if (product.quantity < 1) {
+      product.quantity = 1
+    } else if (product.quantity > 99) {
+      console.log("Brak w magazynie.")
+      // dodac pop-out
+    }
+
+    shoppingCartStore.updateQuantity()
+  }
 </script>

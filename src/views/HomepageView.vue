@@ -13,12 +13,19 @@
 
         </div>
       </div>
-      <div class="text-center">
-        <h3 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl"> Czyszczenie magazynów</h3>
-        <!-- Tu wrzucimy select where wyprzedaż = true -->
-      </div>
+      
       
     </div>
+    
+
+
+
+ 
+
+
+<Sale></Sale>
+
+<News></News>
   </div>
   <Footer></Footer>
 </template>
@@ -26,6 +33,8 @@
 <script setup>
   import TopBar from '@/components/TopBar.vue';
   import Footer from '@/components/Footer.vue';
+  import News from '@/components/newsletterisklepy.vue';
+  import Sale from '@/components/sale.vue';
 </script>
 <style>
 .tlo{

@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -10,7 +12,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-DATABASE_URL = "postgresql+asyncpg://shop:L1YTp744VtCXOrekzFMoQCI1VnhQPOy8@dpg-crni32m8ii6s73es13i0-a.frankfurt-postgres.render.com/shop_cn08"
+load_dotenv()
+
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+DATABASE_URL = f"postgresql://shop:{POSTGRES_PASSWORD}@dpg-crnistt6l47c73ah51og-a.frankfurt-postgres.render.com/shop_57s3"
+
 Base = declarative_base()
 
 engine = create_async_engine(DATABASE_URL, echo=True)

@@ -13,7 +13,7 @@
                 <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                   <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                     <div class="flex items-start justify-between">
-                      <DialogTitle class="text-lg font-medium text-gray-900">Shopping cart</DialogTitle>
+                      <DialogTitle class="text-lg font-medium text-gray-900">Koszyk</DialogTitle>
                       <div class="ml-3 flex h-7 items-center">
                         <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="shoppingCartStore.open = false">
                           <span class="absolute -inset-0.5" />
@@ -42,10 +42,10 @@
                                 <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
                               </div>
                               <div class="flex flex-1 items-end justify-between text-sm">
-                                <p class="text-gray-500">Qty {{ product.quantity }}</p>
+                                <p class="text-gray-500">Ilość {{ product.quantity }}</p>
 
                                 <div class="flex">
-                                  <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                  <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500">Usuń</button>
                                 </div>
                               </div>
                             </div>
@@ -57,7 +57,7 @@
 
                   <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                     <div class="flex justify-between text-base font-medium text-gray-900">
-                      <p>Subtotal</p>
+                      <p>Razem</p>
                       <p>$262.00</p>
                     </div>
                     <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
@@ -68,7 +68,7 @@
                       <p>
                         or{{ ' ' }}
                         <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500" @click="shoppingCartStore.open = false">
-                          Continue Shopping
+                          Kontynuuj zakupy
                           <span aria-hidden="true"> &rarr;</span>
                         </button>
                       </p>

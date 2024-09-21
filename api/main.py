@@ -15,7 +15,8 @@ from typing import List, Optional
 load_dotenv()
 
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-DATABASE_URL = f"postgresql://shop:{POSTGRES_PASSWORD}@dpg-crnistt6l47c73ah51og-a.frankfurt-postgres.render.com/shop_57s3"
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
+DATABASE_URL = f"postgresql://shop:{POSTGRES_PASSWORD}@dpg-crnistt6l47c73ah51og-a.frankfurt-postgres.render.com:{POSTGRES_PORT}/shop_57s3"
 
 Base = declarative_base()
 

@@ -46,14 +46,18 @@
                               </div>
                               <div class="flex flex-1 items-end justify-between text-sm">
                                 <div class="flex flex-row">
-                                  <select v-if="product.quantity < 5 && product.quantity >= 1" v-model="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 pr-7 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option value="5">5+</option>
-                                  </select>
-                                  <input v-else type="number" v-model.lazy="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 w-16 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                                <select v-if="product.quantity < 5 && product.quantity >= 1" v-model="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 pr-7 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                                  <option>1</option>
+                                  <option>2</option>
+                                  <option>3</option>
+                                  <option>4</option>
+                                  <option value="5">5+</option>
+                                </select>
+                                <input v-else type="number" v-model.lazy="product.quantity" @change="handleQuantityChange(product.id)" class="rounded-md border-0 bg-transparent py-1 w-16 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                              </div>
+
+                                <div class="flex">
+                                  <button type="button" @click="shoppingCartStore.removeProduct(product.id)" class="font-medium text-indigo-600 hover:text-indigo-500">Usuń</button>
                                 </div>
                               </div>
                             </div>
@@ -61,10 +65,12 @@
                         </ul>
                       </div>
                     </div>
+                  </div>
 
                   <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                     <div class="flex justify-between text-base font-medium text-gray-900">
-
+                      <p>Do zapłaty</p>
+                      <p>{{ shoppingCartStore.productsSum() }} PLN</p>
                     </div>
                     <p class="mt-0.5 text-sm text-gray-500">Wysyłka i podatki obliczane przy kasie.</p>
                     <div class="mt-6">
@@ -80,7 +86,6 @@
                       </p>
                     </div>
                   </div>
-                </div>
                 </div>
               </DialogPanel>
             </TransitionChild>

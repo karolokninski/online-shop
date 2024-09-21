@@ -2,7 +2,7 @@
   <div class="bg-white">
     <TopBar></TopBar>
     
-    <div class="relative isolate px-6 pt-14 lg:px-8" style="background-image: url('@\assets\tlo.jpg'); background-size: cover; background-position: center;">
+    <div class="tlo relative isolate px-6 pt-14 lg:px-8">
       <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
         <div class="hidden sm:mb-8 sm:flex sm:justify-center">
           
@@ -20,8 +20,17 @@
       
     </div>
   </div>
+  <Footer></Footer>
 </template>
   
 <script setup>
   import TopBar from '@/components/TopBar.vue';
+  import Footer from '@/components/Footer.vue';
 </script>
+<style>
+.tlo{
+background-image: url('@/assets/tlo.jpg');
+ background-size: cover;
+background-position: center;
+}
+</style>

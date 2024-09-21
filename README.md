@@ -69,5 +69,9 @@ npm run lint
 ### Run API server
 
 ```sh
+pip install -r requirements.txt
+```
+
+```sh
 uvicorn main:app --reload
 ```

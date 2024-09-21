@@ -10,7 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-DATABASE_URL = "mysql+aiomysql://username:password@localhost/products_db"
+DATABASE_URL = "postgresql+asyncpg://shop:L1YTp744VtCXOrekzFMoQCI1VnhQPOy8@dpg-crni32m8ii6s73es13i0-a.frankfurt-postgres.render.com/shop_cn08"
 Base = declarative_base()
 
 engine = create_async_engine(DATABASE_URL, echo=True)

@@ -34,6 +34,9 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
       }
 
       return sum
+    },
+    removeProduct(id) {
+      this.products = this.products.filter(product => product.id !== id)
     }
   }
 });

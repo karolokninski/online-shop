@@ -1,5 +1,5 @@
 <template>
-  <header class="absolute bg-white inset-x-0 top-0 z-50">
+  <header class="absolute bg-white inset-x-0 top-0 z-50" style="margin-bottom: 1rem;">
     <nav class="flex flex-col" aria-label="Global">
       <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
         <div class="flex lg:flex-1">

@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -42,6 +42,10 @@ class UserCreate(BaseModel):
     email: str
     password: str
 
+class EmailPasswordForm(BaseModel):
+    email: str
+    password: str
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -55,6 +59,11 @@ class ProductResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class OAuth2EmailPasswordRequestForm:
+    def __init__(self, email: str = Form(), password: str = Form()):
+        self.email = email
+        self.password = password
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -96,10 +105,10 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     return {"username": db_user.username, "email": db_user.email}
 
 @app.post("/token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
-    query = await db.execute("SELECT * FROM users WHERE email = :email", {"email": form_data.email})
+async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": form_data.email})
     user = query.fetchone()
-    
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
@@ -122,7 +131,7 @@ async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depend
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     product = result.fetchone()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -130,13 +139,13 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
 
 @app.put("/products/{product_id}", response_model=ProductResponse)
 async def update_product(product_id: int, product: ProductCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     db_product = result.fetchone()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     
     await db.execute(
-        "UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id", 
+        text("UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id"), 
         {"name": product.name, "description": product.description, "price": product.price, "id": product_id}
     )
     await db.commit()
@@ -145,11 +154,11 @@ async def update_product(product_id: int, product: ProductCreate, db: AsyncSessi
 
 @app.delete("/products/{product_id}")
 async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     db_product = result.fetchone()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    await db.execute("DELETE FROM products WHERE id = :id", {"id": product_id})
+    await db.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
     await db.commit()
     return {"message": "Product deleted successfully"}

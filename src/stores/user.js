@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-// import jwtDecode from 'jwt-decode'
-import router from '@/router'
+import * as jose from 'jose'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -12,23 +11,25 @@ export const useUserStore = defineStore('user', {
     isAuthenticated: false
   }),
   actions: {
-    async login(username, password) {
+    async login(email, password) {
       try {
-        console.log(API_URL + '/token', username, password)
-        const response = await axios.post(API_URL + '/token', {
-          username: username,
-          password: password
+        const formData = new FormData()
+        formData.append('email', email)
+        formData.append('password', password)
+        
+        const response = await axios({
+          method: 'post',
+          url: API_URL + '/token',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
 
         this.token = response.data.access_token
         this.isAuthenticated = true
-        // const decodedToken = jwtDecode(this.token)
-        this.user = username
-        // router.push({ name: 'homepage' })
-
-        console.log('Login successful') 
-        console.log(response.data) 
-
+        const decodedToken = jose.decodeJwt(this.token)
+        this.user = decodedToken.username
       } catch (error) {
         console.error('Login failed:', error)
       }

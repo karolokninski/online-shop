@@ -120,7 +120,7 @@ async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Dep
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    access_token = create_access_token(data={"sub": user.username})
+    access_token = create_access_token(data={"username": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/products/", response_model=ProductResponse)

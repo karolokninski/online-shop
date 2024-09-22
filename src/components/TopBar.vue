@@ -5,7 +5,7 @@
         <div class="flex lg:flex-1">
           <RouterLink to="/" class="-m-1.5 p-1.5">
             <span class="sr-only">Tech-Bay</span>
-            <img class="h-12 w-auto" src="../assets/logo.png" alt="" />
+            <img class="h-12 w-auto" src="@/assets/logo.png" alt="" />
           </RouterLink>
         </div>
         <div class="flex lg:hidden gap-3">

@@ -14,7 +14,7 @@
   type="button" 
   class="bg-black text-white px-8 py-3 rounded-md hover:bg-gray-800 transition-colors"
 >
-<RouterLink to="/naszesklepy" class="-m-1.5 p-1.5"> <b>Nasze sklepy</b></RouterLink>
+<RouterLink to="/nasze-sklep" class="-m-1.5 p-1.5"> <b>Nasze sklepy</b></RouterLink>
 </button>
 </div>
       </div>

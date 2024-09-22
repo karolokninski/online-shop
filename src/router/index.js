@@ -12,6 +12,11 @@ const router = createRouter({
       component: () => import('../views/HomepageView.vue')
     },
     {
+     path: '/nasze-sklep',
+     name: 'ourShops',
+     component: () => import('../views/OurShopsView.vue')
+    },
+    {
       path: '/produkty',
       name: 'products',
       component: () => import('../views/ProductsView.vue')
@@ -31,10 +36,10 @@ const router = createRouter({
       name: 'registraion',
       component: () => import('../views/RegistrationView.vue')
     },
-     {
-      path: '/naszesklepy',
-      name: 'ourshops',
-      component: () => import('../views/OurShopsView.vue')
+    {
+      path: '/przypomnienie-hasla',
+      name: 'passwordReset',
+      component: () => import('../views/PasswordResetView.vue')
     },
     { 
       path: '/:pathMatch(.*)*',

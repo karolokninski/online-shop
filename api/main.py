@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
@@ -43,6 +43,10 @@ class UserCreate(BaseModel):
     email: str
     password: str
 
+class EmailPasswordForm(BaseModel):
+    email: str
+    password: str
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -56,6 +60,11 @@ class ProductResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class OAuth2EmailPasswordRequestForm:
+    def __init__(self, email: str = Form(), password: str = Form()):
+        self.email = email
+        self.password = password
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -104,14 +113,14 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     return {"username": db_user.username, "email": db_user.email}
 
 @app.post("/token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
-    query = await db.execute(text("SELECT * FROM users WHERE username = :username"), {"username": form_data.username})
+async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": form_data.email})
     user = query.fetchone()
-    
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    access_token = create_access_token(data={"sub": user.username})
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+
+    access_token = create_access_token(data={"username": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/products/", response_model=ProductResponse)

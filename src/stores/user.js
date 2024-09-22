@@ -3,6 +3,8 @@ import axios from 'axios'
 // import jwtDecode from 'jwt-decode'
 import router from '@/router'
 
+const API_URL = import.meta.env.API_URL
+
 export const useSearchStore = defineStore('search', {
   state: () => ({
     user: null,
@@ -13,7 +15,7 @@ export const useSearchStore = defineStore('search', {
     async login(username, password) {
 
       try {
-        const response = await axios.post('/token', {
+        const response = await axios.post(API_URL + '/token', {
           username: username,
           password: password,
         })

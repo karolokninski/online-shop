@@ -54,13 +54,12 @@
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 
+const userStore = useUserStore();
 const email = ref('');
 const password = ref('');
-const userStore = useUserStore();
 
 const handleLogin = () => {
   userStore.login(email.value, password.value);
 }
-
 </script>
   

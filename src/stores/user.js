@@ -27,11 +27,34 @@ export const useUserStore = defineStore('user', {
         })
 
         this.token = response.data.access_token
-        this.isAuthenticated = true
         const decodedToken = jose.decodeJwt(this.token)
+        this.isAuthenticated = true
         this.user = decodedToken.username
       } catch (error) {
         console.error('Login failed:', error)
+      }
+    },
+    async register(username, email, password) {
+      try {
+        const requestData = {
+          username: username,
+          email: email,
+          password: password
+        }
+
+        const response = await axios({
+          method: 'post',
+          url: API_URL + '/register',
+          data: requestData
+        })
+
+        // this.token = response.data.access_token
+        // const decodedToken = jose.decodeJwt(this.token)
+        this.isAuthenticated = true
+        this.user = username
+        console.log(response.data)
+      } catch (error) {
+        console.error('Registration failed:', error)
       }
     }
   }

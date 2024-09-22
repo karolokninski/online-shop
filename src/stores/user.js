@@ -3,9 +3,9 @@ import axios from 'axios'
 // import jwtDecode from 'jwt-decode'
 import router from '@/router'
 
-const API_URL = import.meta.env.API_URL
+const API_URL = import.meta.env.VITE_API_URL
 
-export const useSearchStore = defineStore('search', {
+export const useUserStore = defineStore('user', {
   state: () => ({
     user: null,
     token: null,
@@ -13,18 +13,21 @@ export const useSearchStore = defineStore('search', {
   }),
   actions: {
     async login(username, password) {
-
       try {
+        console.log(API_URL + '/token', username, password)
         const response = await axios.post(API_URL + '/token', {
           username: username,
-          password: password,
+          password: password
         })
 
         this.token = response.data.access_token
         this.isAuthenticated = true
         // const decodedToken = jwtDecode(this.token)
         this.user = username
-        router.push({ name: 'dashboard' })
+        // router.push({ name: 'homepage' })
+
+        console.log('Login successful') 
+        console.log(response.data) 
 
       } catch (error) {
         console.error('Login failed:', error)

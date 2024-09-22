@@ -97,11 +97,11 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
-    query = await db.execute("SELECT * FROM users WHERE username = :username", {"username": form_data.username})
+    query = await db.execute("SELECT * FROM users WHERE email = :email", {"email": form_data.email})
     user = query.fetchone()
     
     if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}

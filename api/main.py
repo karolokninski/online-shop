@@ -97,7 +97,7 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
-    query = await db.execute("SELECT * FROM users WHERE username = :username", {"username": form_data.username})
+    query = await db.execute(text("SELECT * FROM users WHERE username = :username"), {"username": form_data.username})
     user = query.fetchone()
     
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -122,7 +122,7 @@ async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depend
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     product = result.fetchone()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -130,13 +130,13 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
 
 @app.put("/products/{product_id}", response_model=ProductResponse)
 async def update_product(product_id: int, product: ProductCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     db_product = result.fetchone()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     
     await db.execute(
-        "UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id", 
+        text("UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id"), 
         {"name": product.name, "description": product.description, "price": product.price, "id": product_id}
     )
     await db.commit()
@@ -145,11 +145,11 @@ async def update_product(product_id: int, product: ProductCreate, db: AsyncSessi
 
 @app.delete("/products/{product_id}")
 async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute("SELECT * FROM products WHERE id = :id", {"id": product_id})
+    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
     db_product = result.fetchone()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    await db.execute("DELETE FROM products WHERE id = :id", {"id": product_id})
+    await db.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
     await db.commit()
     return {"message": "Product deleted successfully"}

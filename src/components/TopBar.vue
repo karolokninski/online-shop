@@ -19,7 +19,8 @@
           <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
-          <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-black">Zaloguj się</RouterLink>
+          <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black">Zaloguj się</RouterLink>
+          <div v-else class="text-sm font-semibold leading-6 text-black">{{ userStore.username }}</div>
           <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
         </div>
       </div>
@@ -76,12 +77,14 @@
   import { useRouter } from 'vue-router'
   import { useSearchStore } from '@/stores/search'
   import { useShoppingCartStore } from '@/stores/shoppingCart'
+  import { useUserStore } from '@/stores/user'
   import { Dialog, DialogPanel } from '@headlessui/vue'
   import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from '@heroicons/vue/24/outline'
   import ShoppingCart from './ShoppingCart.vue'
   
   const searchStore = useSearchStore()
   const shoppingCartStore = useShoppingCartStore()
+  const userStore = useUserStore()
   const router = useRouter()
   const navigation = [
     { name: 'Product', href: '/produkty' },

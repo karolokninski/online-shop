@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: null,
+    username: null,
     token: null,
     isAuthenticated: false
   }),
@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', {
         this.token = response.data.access_token
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.user = decodedToken.username
+        this.username = decodedToken.username
       } catch (error) {
         console.error('Login failed:', error)
       }
@@ -51,11 +51,20 @@ export const useUserStore = defineStore('user', {
         // this.token = response.data.access_token
         // const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.user = username
+        this.username = username
         console.log(response.data)
       } catch (error) {
         console.error('Registration failed:', error)
       }
     }
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'user',
+        storage: localStorage
+      },
+    ],
   }
 });

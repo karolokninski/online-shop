@@ -20,8 +20,8 @@
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
           <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black">Zaloguj się</RouterLink>
-          <div v-else class="text-sm font-semibold leading-6 text-black">{{ userStore.username }}</div>
-          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
+          <UserMenu v-else class="text-sm font-semibold leading-none text-black"></UserMenu>
+          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold my-auto text-black w-6 h-6" />
         </div>
       </div>
       <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
@@ -81,6 +81,7 @@
   import { Dialog, DialogPanel } from '@headlessui/vue'
   import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from '@heroicons/vue/24/outline'
   import ShoppingCart from './ShoppingCart.vue'
+  import UserMenu from './topBar/UserMenu.vue'
   
   const searchStore = useSearchStore()
   const shoppingCartStore = useShoppingCartStore()

@@ -56,6 +56,16 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('Registration failed:', error)
       }
+    },
+    logout() {
+      try {
+        this.token = null;
+        this.username = null;
+        this.isAuthenticated = false;
+        localStorage.removeItem('user');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
     }
   },
   persist: {

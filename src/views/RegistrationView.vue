@@ -56,13 +56,15 @@
 <script setup>
   import { ref } from 'vue';
   import { useUserStore } from '@/stores/user';
+  import { useRouter } from 'vue-router';
 
+  const router = useRouter();
   const userStore = useUserStore();
   const username = ref('');
   const email = ref('');
   const password = ref('');
 
   const handleRegistration = () => {
-    userStore.register(username.value, email.value, password.value);
+    userStore.register(username.value, email.value, password.value, router);
   }
 </script>

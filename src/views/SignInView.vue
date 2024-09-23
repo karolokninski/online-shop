@@ -53,13 +53,15 @@
 <script setup>
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const userStore = useUserStore();
 const email = ref('');
 const password = ref('');
 
 const handleLogin = () => {
-  userStore.login(email.value, password.value);
+  userStore.login(email.value, password.value, router);
 }
 </script>
   

@@ -28,10 +28,10 @@
             </div>
           </div>
           <div class="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-            <div @click="userStore.logout" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100 text-center">
-              <component :is="ArrowLeftStartOnRectangleIcon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
+            <button @click="userStore.logout" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100 text-center">
+              <component :is="ArrowLeftStartOnRectangleIcon" class="h-5 w-5 flex-none text-black" aria-hidden="true" />
               Wyloguj się
-            </div>
+            </button>
             <!-- <RouterLink v-for="item in callsToAction" :key="item.name" :to="item.href" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100">
               <component :is="item.icon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
               {{ item.name }}
@@ -45,7 +45,7 @@
 
 <script setup>
   import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-  import { PlayCircleIcon } from '@heroicons/vue/20/solid'
+  // import { PlayCircleIcon } from '@heroicons/vue/20/solid'
   import {
     CursorArrowRaysIcon,
     FingerPrintIcon,
@@ -63,10 +63,10 @@
     { name: 'Lorem ipsum', description: "Lorem ipsum", href: '#', icon: FingerPrintIcon },
     { name: 'Lorem ipsum', description: 'Lorem ipsum', href: '#', icon: SquaresPlusIcon },
   ]
-  const callsToAction = [
-    { name: 'Lorem ipsum', href: '#', icon: PlayCircleIcon },
-    { name: 'Wyloguj się', href: '#', icon: ArrowLeftStartOnRectangleIcon },
-  ]
+  // const callsToAction = [
+  //   { name: 'Lorem ipsum', href: '#', icon: PlayCircleIcon },
+  //   { name: 'Wyloguj się', href: '#', icon: ArrowLeftStartOnRectangleIcon },
+  // ]
 </script>
 
 <style setup>

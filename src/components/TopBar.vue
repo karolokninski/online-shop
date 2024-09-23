@@ -20,7 +20,6 @@
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
           <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black flex flex-row">
-            Zaloguj się
             <UserIcon class="h-8 w-6" aria-hidden="true" />
           </RouterLink>
           <UserMenu v-else class="text-sm font-semibold leading-none text-black"></UserMenu>

@@ -2,7 +2,7 @@
   <Popover class="relative">
     <PopoverButton class="remove-border inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
       <div class="flex flex-row p-1 gap-1">
-        <div class="flex flex-col my-auto">
+        <div class="flex flex-col text-right">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
           <span class="text-sm font-semibold leading-none text-black">{{ userStore.username }}</span>
         </div>
@@ -27,11 +27,15 @@
               </div>
             </div>
           </div>
-          <div class="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-            <RouterLink v-for="item in callsToAction" :key="item.name" :to="item.href" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100">
+          <div class="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
+            <button @click="userStore.logout" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100 text-center">
+              <component :is="ArrowLeftStartOnRectangleIcon" class="h-5 w-5 flex-none text-black" aria-hidden="true" />
+              Wyloguj się
+            </button>
+            <!-- <RouterLink v-for="item in callsToAction" :key="item.name" :to="item.href" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100">
               <component :is="item.icon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
               {{ item.name }}
-            </RouterLink>
+            </RouterLink> -->
           </div>
         </div>
       </PopoverPanel>
@@ -41,7 +45,7 @@
 
 <script setup>
   import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-  import { PlayCircleIcon } from '@heroicons/vue/20/solid'
+  // import { PlayCircleIcon } from '@heroicons/vue/20/solid'
   import {
     CursorArrowRaysIcon,
     FingerPrintIcon,
@@ -59,10 +63,10 @@
     { name: 'Lorem ipsum', description: "Lorem ipsum", href: '#', icon: FingerPrintIcon },
     { name: 'Lorem ipsum', description: 'Lorem ipsum', href: '#', icon: SquaresPlusIcon },
   ]
-  const callsToAction = [
-    { name: 'Lorem ipsum', href: '#', icon: PlayCircleIcon },
-    { name: 'Wyloguj się', href: '#', icon: ArrowLeftStartOnRectangleIcon },
-  ]
+  // const callsToAction = [
+  //   { name: 'Lorem ipsum', href: '#', icon: PlayCircleIcon },
+  //   { name: 'Wyloguj się', href: '#', icon: ArrowLeftStartOnRectangleIcon },
+  // ]
 </script>
 
 <style setup>

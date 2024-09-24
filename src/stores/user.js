@@ -11,7 +11,7 @@ export const useUserStore = defineStore('user', {
     isAuthenticated: false
   }),
   actions: {
-    async login(email, password) {
+    async login(email, password, router) {
       try {
         const formData = new FormData()
         formData.append('email', email)
@@ -30,11 +30,12 @@ export const useUserStore = defineStore('user', {
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.username = decodedToken.username
+        router.push('/')
       } catch (error) {
         console.error('Login failed:', error)
       }
     },
-    async register(username, email, password) {
+    async register(username, email, password, router) {
       try {
         const requestData = {
           username: username,
@@ -48,13 +49,23 @@ export const useUserStore = defineStore('user', {
           data: requestData
         })
 
-        // this.token = response.data.access_token
+        this.token = response.data.access_token
         // const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.username = username
-        console.log(response.data)
+        router.push('/')
       } catch (error) {
         console.error('Registration failed:', error)
+      }
+    },
+    logout() {
+      try {
+        this.token = null;
+        this.username = null;
+        this.isAuthenticated = false;
+        localStorage.removeItem('user');
+      } catch (error) {
+        console.error('Logout failed:', error);
       }
     }
   },

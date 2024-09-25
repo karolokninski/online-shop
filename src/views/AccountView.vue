@@ -12,70 +12,69 @@
         </div>
       </nav>
     </header>
-    <div class="mx-32 mt-16 p-4 border rounded">
-      <div class="px-4 sm:px-0">
-        <h3 class="text-base font-semibold leading-7 text-gray-900">Applicant Information</h3>
-        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
+    <main class="flex flex-row mt-16 divide-x">
+      <!-- max-sm:hidden -->
+      <div v-show="$route.name==='account' || width > 480" class="flex-none p-4">
+        <div class="flex flex-col p-4 text-left">
+          <span class="text-xs font-light leading-none text-black">Cześć,</span>
+          <span class="text-lg font-semibold leading-none text-black">{{ userStore.username }}</span>
+        </div>
+        <div v-for="item in menuItems" :key="item.name" class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+          <RouterLink :to="item.href" class="flex">
+            <div class="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+              <component :is="item.icon" class="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
+            </div>
+            <div class="flex font-semibold text-gray-900 my-auto px-2">
+                {{ item.name }}
+            </div>
+          </RouterLink>
+        </div>
       </div>
-      <div class="mt-6 border-t border-gray-100">
-        <dl class="divide-y divide-gray-100">
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Full name</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Margot Foster</dd>
+      <div v-show="$route.name!=='account' || width > 480" class="p-4">
+        <RouterLink to="/konto" v-show="$route.name!=='account'">
+          <button class="hidden max-sm:flex text-black bg-gray-300 rounded-lg px-4 py-2 mb-4">
+            <component :is="ChevronLeftIcon" class="h-5 w-5 my-auto mr-1" aria-hidden="true" />
+            Wróć
+          </button>
+        </RouterLink>
+        <RouterView class="flex-1"></RouterView>
+        <div v-show="$route.name==='account'" class="text-black flex flex-col gap-8">
+          <div class="flex flex-col gap-2">
+            <h2 class="text-2xl">Zamówienia</h2>
+            <h3 class="text-lg">Nie masz żadnych zamówień</h3>
+            <p>Gdy zrealizujesz pierwsze zamówienie, pojawi się ono tutaj.</p>
           </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Application for</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Backend Developer</dd>
+
+          <div class="flex flex-col gap-2">
+            <h2 class="text-2xl">Listy zakupowe</h2>
+            <h3 class="text-lg">Nie masz żadnych zapisanych list</h3>
+            <p>Masz na oku ciekawe produkty? Dodaj je do listy!</p>
           </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Email address</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">margotfoster@example.com</dd>
-          </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Salary expectation</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">$120,000</dd>
-          </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">About</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.</dd>
-          </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Attachments</dt>
-            <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-              <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200">
-                <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                  <div class="flex w-0 flex-1 items-center">
-                    <PaperClipIcon class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                    <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                      <span class="truncate font-medium">resume_back_end_developer.pdf</span>
-                      <span class="flex-shrink-0 text-gray-400">2.4mb</span>
-                    </div>
-                  </div>
-                  <div class="ml-4 flex-shrink-0">
-                    <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
-                  </div>
-                </li>
-                <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                  <div class="flex w-0 flex-1 items-center">
-                    <PaperClipIcon class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                    <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                      <span class="truncate font-medium">coverletter_back_end_developer.pdf</span>
-                      <span class="flex-shrink-0 text-gray-400">4.5mb</span>
-                    </div>
-                  </div>
-                  <div class="ml-4 flex-shrink-0">
-                    <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Download</a>
-                  </div>
-                </li>
-              </ul>
-            </dd>
-          </div>
-        </dl>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
-  import { PaperClipIcon } from '@heroicons/vue/20/solid'
+  import { RouterLink, RouterView } from 'vue-router'
+  import { useRoute } from 'vue-router'
+  import { useWindowSize } from '@vueuse/core'
+  import {
+    ChevronLeftIcon,
+    UserIcon,
+    ClipboardDocumentCheckIcon,
+    HeartIcon
+  } from '@heroicons/vue/24/outline'
+  import { useUserStore } from '@/stores/user'
+
+  const { width } = useWindowSize()
+  const route = useRoute()
+  const userStore = useUserStore()
+
+  const menuItems = [
+    { name: 'Twoje konto', description: 'Ustawienia Twojego konta', href: '/konto/ustawienia', icon: UserIcon },
+    { name: 'Zamówienia', description: 'Zrealizowane zamówienia', href: '/konto/zamowienia', icon: ClipboardDocumentCheckIcon },
+    { name: 'Ulubione', description: "Ulubione produkty", href: '/konto/ulubione', icon: HeartIcon }
+  ]
 </script>

@@ -14,7 +14,7 @@
       <PopoverPanel class="absolute z-10 mt-5 flex w-screen max-w-max -translate-x-3/4 px-4">
         <div class="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
           <div class="p-4">
-            <div v-for="item in solutions" :key="item.name" class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+            <div v-for="item in menuItems" :key="item.name" class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
               <div class="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
                 <component :is="item.icon" class="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
               </div>
@@ -32,10 +32,6 @@
               <component :is="ArrowLeftStartOnRectangleIcon" class="h-5 w-5 flex-none text-black" aria-hidden="true" />
               Wyloguj się
             </button>
-            <!-- <RouterLink v-for="item in callsToAction" :key="item.name" :to="item.href" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100">
-              <component :is="item.icon" class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
-              {{ item.name }}
-            </RouterLink> -->
           </div>
         </div>
       </PopoverPanel>
@@ -45,28 +41,21 @@
 
 <script setup>
   import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-  // import { PlayCircleIcon } from '@heroicons/vue/20/solid'
   import {
-    CursorArrowRaysIcon,
-    FingerPrintIcon,
-    SquaresPlusIcon,
     UserIcon,
+    ClipboardDocumentCheckIcon,
+    HeartIcon,
     ArrowLeftStartOnRectangleIcon
   } from '@heroicons/vue/24/outline'
   import { useUserStore } from '@/stores/user'
 
   const userStore = useUserStore()
 
-  const solutions = [
-    { name: 'Twoje konto', description: 'Zmień ustawienia swojego konta', href: '/konto', icon: UserIcon },
-    { name: 'Lorem ipsum', description: 'Lorem ipsum', href: '#', icon: CursorArrowRaysIcon },
-    { name: 'Lorem ipsum', description: "Lorem ipsum", href: '#', icon: FingerPrintIcon },
-    { name: 'Lorem ipsum', description: 'Lorem ipsum', href: '#', icon: SquaresPlusIcon },
+  const menuItems = [
+    { name: 'Twoje konto', description: 'Ustawienia Twojego konta', href: '/konto/ustawienia', icon: UserIcon },
+    { name: 'Zamówienia', description: 'Zrealizowane zamówienia', href: '/konto/zamowienia', icon: ClipboardDocumentCheckIcon },
+    { name: 'Ulubione', description: "Ulubione produkty", href: '/konto/ulubione', icon: HeartIcon },
   ]
-  // const callsToAction = [
-  //   { name: 'Lorem ipsum', href: '#', icon: PlayCircleIcon },
-  //   { name: 'Wyloguj się', href: '#', icon: ArrowLeftStartOnRectangleIcon },
-  // ]
 </script>
 
 <style setup>

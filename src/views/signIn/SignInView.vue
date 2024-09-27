@@ -19,16 +19,20 @@
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" method="POST" onsubmit="return false">
-            <div class="h-1">
-              <div v-if="errorMessage" class="flex flex-row gap-1">
-                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
-                <p class="text-red-500 text-xs italic my-auto">{{ errorMessage }}</p>
-              </div>
+          <div v-if="errorMessage" class="h-1">
+            <div class="flex flex-row gap-1">
+              <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              <p class="text-red-500 text-xs my-auto font-semibold">{{ errorMessage }}</p>
             </div>
+          </div>
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adres e-mail</label>
             <div class="mt-1">
-              <input v-model="email" id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input v-model="email" id="email" name="email" type="email" @input="validateEmail" :class="emailClass" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidEmail" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres email</p>
+              </div>
             </div>
           </div>
           <div>
@@ -39,9 +43,13 @@
               </div>
             </div>
             <div class="mt-1">
-              <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input v-model="password" id="password" name="password" type="password" @input="validatePassword" :class="passwordClass" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidPassword" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Hasło musi mieć minimum 8 znaków</p>
+              </div>
             </div>
-          </div>
+          </div>   
           <div>
             <button type="submit" @click="handleLogin" class="flex w-full h-9 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -63,7 +71,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useUserStore } from '@/stores/user'
   import { useRouter } from 'vue-router'
   import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
@@ -74,18 +82,45 @@
   const email = ref('')
   const password = ref('')
   const errorMessage = ref('')
+  const isValidEmail = ref(true)
+  const isValidPassword = ref(true)
+
+  const emailClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidEmail.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidEmail.value
+    }
+  })
+  const passwordClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidPassword.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidPassword.value
+    }
+  })
+
+  function validateEmail() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    isValidEmail.value = emailRegex.test(email.value)
+  }
+
+  function validatePassword() {
+    const passwordRegex = /^[A-Za-z\d@$!%*?&]{8,}$/
+    isValidPassword.value = passwordRegex.test(password.value)
+  }
+
   const handleLogin = async () => {
-    isLoading.value = true
+    if (isValidEmail.value && isValidPassword.value) {
+      isLoading.value = true
 
-    try {
-      var result = await userStore.login(email.value, password.value, router)
-    
-      if (result.status != 200) {
-        errorMessage.value = result.response.data.detail
+      try {
+        var result = await userStore.login(email.value, password.value, router)
+      
+        if (result.status != 200 && result.response.data.detail) {
+          errorMessage.value = result.response.data.detail
+        }
+      } finally {
+        isLoading.value = false
       }
-
-    } finally {
-      isLoading.value = false
     }
   }
 </script>

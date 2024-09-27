@@ -19,16 +19,30 @@
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" method="POST" onsubmit="return false">
+          <div v-if="errorMessage" class="h-1">
+            <div class="flex flex-row gap-1">
+              <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              <p class="text-red-500 text-xs my-auto font-semibold">{{ errorMessage }}</p>
+            </div>
+          </div>
           <div>
             <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Imię</label>
             <div class="mt-1">
-              <input v-model="username" id="name" name="name" type="text" autocomplete="name" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input v-model="name" id="name" name="name" type="text" @input="validateName" :class="nameClass" autocomplete="name" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidName" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Imię nie może być puste</p>
+              </div>
             </div>
           </div>
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adres e-mail</label>
             <div class="mt-1">
-              <input v-model="email" id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input v-model="email" id="email" name="email" type="email" @input="validateEmail" :class="emailClass" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidEmail" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres email</p>
+              </div>
             </div>
           </div>
           <div>
@@ -36,7 +50,11 @@
               <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Hasło</label>
             </div>
             <div class="mt-1">
-              <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              <input v-model="password" id="password" name="password" type="password" @input="validatePassword" :class="passwordClass" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidPassword" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Hasło musi mieć minimum 8 znaków</p>
+              </div>
             </div>
           </div>
           <div>
@@ -60,25 +78,69 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useUserStore } from '@/stores/user'
   import { useRouter } from 'vue-router'
+  import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
 
   const router = useRouter()
   const userStore = useUserStore()
   const isLoading = ref(false)
-  const username = ref('')
+  const name = ref('')
   const email = ref('')
   const password = ref('')
+  const errorMessage = ref('')
+  const isValidName = ref(true)
+  const isValidEmail = ref(true)
+  const isValidPassword = ref(true)
+
+  const nameClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidName.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidName.value
+    }
+  })
+  const emailClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidEmail.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidEmail.value
+    }
+  })
+  const passwordClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidPassword.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidPassword.value
+    }
+  })
+
+  function validateName() {
+    const nameRegex = /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{1,}$/
+    isValidName.value = nameRegex.test(name.value)
+  }
+
+  function validateEmail() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    isValidEmail.value = emailRegex.test(email.value)
+  }
+
+  function validatePassword() {
+    const passwordRegex = /^[A-Za-z\d@$!%*?&]{8,}$/
+    isValidPassword.value = passwordRegex.test(password.value)
+  }
 
   const handleRegistration = async () => {
-    isLoading.value = true
+    if (isValidEmail.value && isValidPassword.value) {
+      isLoading.value = true
 
-    try {
-      await 
-      userStore.register(username.value, email.value, password.value, router)
-    } finally {
-      isLoading.value = false
+      try {
+        let result = await userStore.register(name.value, email.value, password.value, router)
+
+        if (result.status != 200 && result.response.data.detail) {
+          errorMessage.value = result.response.data.detail
+        }
+      } finally {
+        isLoading.value = false
+      }
     }
   }
 </script>

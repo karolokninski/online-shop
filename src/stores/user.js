@@ -57,6 +57,7 @@ export const useUserStore = defineStore('user', {
         router.push('/')
       } catch (error) {
         console.error('Registration failed:', error)
+        return error
       }
     },
     async passwordReset(email, router) {

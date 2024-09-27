@@ -103,8 +103,14 @@ async def get_db():
     async with SessionLocal() as session:
         yield session
 
-@app.post("/register/")
+@app.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("SELECT * FROM users WHERE username = :username OR email = :email"), {"username": user.username, "email": user.email})
+    existing_user = query.fetchone()
+
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Konto o podanym adresie e-mail już istnieje.")
+
     hashed_password = get_password_hash(user.password)
     db_user = User(username=user.username, email=user.email, hashed_password=hashed_password)
     db.add(db_user)

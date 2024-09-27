@@ -18,7 +18,13 @@
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Zaloguj się</h2>
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form class="space-y-6" action="#" method="POST" onsubmit="return false">
+        <form class="space-y-6" method="POST" onsubmit="return false">
+            <div class="h-1">
+              <div v-if="errorMessage" class="flex flex-row gap-1">
+                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs italic my-auto">{{ errorMessage }}</p>
+              </div>
+            </div>
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adres e-mail</label>
             <div class="mt-1">
@@ -38,7 +44,7 @@
           </div>
           <div>
             <button type="submit" @click="handleLogin" class="flex w-full h-9 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              <svg v-if="isLoading" class="animate-spin my-auto -ml-1 mr-3 h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -57,24 +63,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+  import { ref } from 'vue'
+  import { useUserStore } from '@/stores/user'
+  import { useRouter } from 'vue-router'
+  import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
 
-const router = useRouter()
-const isLoading = ref(false)
-const userStore = useUserStore()
-const email = ref('')
-const password = ref('')
+  const router = useRouter()
+  const isLoading = ref(false)
+  const userStore = useUserStore()
+  const email = ref('')
+  const password = ref('')
+  const errorMessage = ref('')
+  const handleLogin = async () => {
+    isLoading.value = true
 
-const handleLogin = async () => {
-  isLoading.value = true
+    try {
+      var result = await userStore.login(email.value, password.value, router)
+    
+      if (result.status != 200) {
+        errorMessage.value = result.response.data.detail
+      }
 
-  try {
-    await userStore.login(email.value, password.value, router)
-  } finally {
-    isLoading.value = false
+    } finally {
+      isLoading.value = false
+    }
   }
-}
 </script>
   

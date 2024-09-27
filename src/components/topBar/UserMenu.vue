@@ -1,12 +1,12 @@
 <template>
   <Popover class="relative">
     <PopoverButton class="remove-border inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-      <div class="flex flex-row p-1 gap-1">
+      <div class="flex flex-row gap-1">
         <div class="flex flex-col text-right">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
           <span class="text-sm font-semibold leading-none text-black">{{ userStore.username }}</span>
         </div>
-        <UserIcon class="h-8 w-6" aria-hidden="true" />
+        <UserIcon class="h-8 w-6 pb-1" aria-hidden="true" />
       </div>
     </PopoverButton>
 

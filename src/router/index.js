@@ -29,22 +29,39 @@ const router = createRouter({
     {
       path: '/logowanie',
       name: 'signIn',
-      component: () => import('../views/SignInView.vue')
+      component: () => import('../views/signIn/SignInView.vue')
     },
     {
       path: '/rejestracja',
       name: 'registraion',
-      component: () => import('../views/RegistrationView.vue')
+      component: () => import('../views/signIn/RegistrationView.vue')
     },
     {
       path: '/przypomnienie-hasla',
       name: 'passwordReset',
-      component: () => import('../views/PasswordResetView.vue')
+      component: () => import('../views/signIn/PasswordResetView.vue')
     },
     {
       path: '/konto',
       name: 'account',
-      component: () => import('../views/AccountView.vue')
+      component: () => import('../views/AccountView.vue'),
+      children: [
+        {
+          path: 'ustawienia',
+          name: 'accountSettings',
+          component: () => import('../components/account/AccountSettings.vue'),
+        },
+        {
+          path: 'zamowienia',
+          name: 'orderHistory',
+          component: () => import('../components/account/OrderHistory.vue'),
+        },
+        {
+          path: 'ulubione',
+          name: 'favouriteProducts',
+          component: () => import('../components/account/FavouriteProducts.vue'),
+        }
+      ]
     },
     { 
       path: '/:pathMatch(.*)*',

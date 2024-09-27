@@ -118,7 +118,7 @@ async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Dep
     user = query.fetchone()
 
     if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail lub hasło.")
 
     access_token = create_access_token(data={"username": user.username})
     return {"access_token": access_token, "token_type": "bearer"}

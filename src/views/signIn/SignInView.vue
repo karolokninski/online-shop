@@ -19,6 +19,12 @@
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" method="POST" onsubmit="return false">
+            <div class="h-1">
+              <div v-if="errorMessage" class="flex flex-row gap-1">
+                <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs italic my-auto">{{ errorMessage }}</p>
+              </div>
+            </div>
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adres e-mail</label>
             <div class="mt-1">
@@ -60,18 +66,24 @@
   import { ref } from 'vue'
   import { useUserStore } from '@/stores/user'
   import { useRouter } from 'vue-router'
+  import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
 
   const router = useRouter()
   const isLoading = ref(false)
   const userStore = useUserStore()
   const email = ref('')
   const password = ref('')
-
+  const errorMessage = ref('')
   const handleLogin = async () => {
     isLoading.value = true
 
     try {
-      await userStore.login(email.value, password.value, router)
+      var result = await userStore.login(email.value, password.value, router)
+    
+      if (result.status != 200) {
+        errorMessage.value = result.response.data.detail
+      }
+
     } finally {
       isLoading.value = false
     }

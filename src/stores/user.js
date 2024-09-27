@@ -33,6 +33,7 @@ export const useUserStore = defineStore('user', {
         router.push('/')
       } catch (error) {
         console.error('Login failed:', error)
+        return error
       }
     },
     async register(username, email, password, router) {

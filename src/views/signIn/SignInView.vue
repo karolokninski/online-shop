@@ -18,7 +18,7 @@
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Zaloguj się</h2>
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form class="space-y-6" action="#" method="POST" onsubmit="return false">
+        <form class="space-y-6" method="POST" onsubmit="return false">
           <div>
             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Adres e-mail</label>
             <div class="mt-1">
@@ -57,24 +57,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+  import { ref } from 'vue'
+  import { useUserStore } from '@/stores/user'
+  import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const isLoading = ref(false)
-const userStore = useUserStore()
-const email = ref('')
-const password = ref('')
+  const router = useRouter()
+  const isLoading = ref(false)
+  const userStore = useUserStore()
+  const email = ref('')
+  const password = ref('')
 
-const handleLogin = async () => {
-  isLoading.value = true
+  const handleLogin = async () => {
+    isLoading.value = true
 
-  try {
-    await userStore.login(email.value, password.value, router)
-  } finally {
-    isLoading.value = false
+    try {
+      await userStore.login(email.value, password.value, router)
+    } finally {
+      isLoading.value = false
+    }
   }
-}
 </script>
   

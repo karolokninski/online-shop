@@ -18,7 +18,7 @@
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Załóż konto</h2>
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form class="space-y-6" action="#" method="POST" onsubmit="return false">
+        <form class="space-y-6" method="POST" onsubmit="return false">
           <div>
             <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Imię</label>
             <div class="mt-1">

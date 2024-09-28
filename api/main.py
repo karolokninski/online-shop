@@ -12,6 +12,9 @@ from sqlalchemy import Column, Integer, String, Float, text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timedelta
 from typing import List, Optional
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 load_dotenv()
 
@@ -89,6 +92,36 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def send_email(request_data):
+    recipient_email = request_data["email"]
+    subject = "Reset hasła"
+    body_html = """\
+        <html>
+        <body>
+            <p>
+                Witaj!
+            </p>
+        </body>
+        </html>
+    """
+
+    msg = MIMEMultipart()
+    msg["From"] = os.getenv("EMAIL_USER")
+    msg["To"] = recipient_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body_html, "html"))
+
+    try:
+        server = smtplib.SMTP_SSL(
+            os.getenv("EMAIL_SMTP_SERVER"), os.getenv("EMAIL_SMTP_PORT")
+        )
+        server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PWD"))
+        server.sendmail(os.getenv("EMAIL_USER"), recipient_email, msg.as_string())
+        server.quit()
+
+    except Exception as error:
+        print(error)
 
 app = FastAPI()
 app.add_middleware(

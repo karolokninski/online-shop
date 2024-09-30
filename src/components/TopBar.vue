@@ -1,11 +1,11 @@
 <template>
-  <header class="absolute bg-white inset-x-0 top-0 z-50" style="margin-bottom: 1rem;">
+  <header class="absolute bg-white inset-x-0 top-0 z-50 mt-2" style="margin-bottom: 1rem;">
     <nav class="flex flex-col" aria-label="Global">
       <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
-        <div class="flex lg:flex-1">
-          <RouterLink to="/" class="-m-1.5 p-1.5">
-            <span class="sr-only">Tech-Bay</span>
-            <img class="h-12 w-auto" src="@/assets/logo.png" alt="" />
+        <div class="flex lg:flex-1 h-12">
+          <RouterLink to="/" class="ml-1 pt-0 pb-0 px-1 flex flex-row border-b-2 border-black">
+            <img class="h-12 w-auto" src="@/assets/logo.svg" alt="logo Geeked.tech" />
+            <span class="text-black text-lg font-semibold mb-1 mt-auto">Geeked</span>
           </RouterLink>
         </div>
         <div class="flex lg:hidden gap-3">
@@ -47,12 +47,14 @@
       </div>
     </nav>
     <Dialog class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
-      <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+      <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex items-center justify-between">
-          <RouterLink to="/" class="-m-1.5 p-1.5">
-            <span class="sr-only">Tech-Bay</span>
-            <img class="h-12 w-auto" src="@/assets/logo.png" alt="" />
-          </RouterLink>
+          <div class="flex lg:flex-1 h-12">
+            <RouterLink to="/" class="ml-1 pt-0 pb-0 px-1 flex flex-row border-b-2 border-black">
+              <img class="h-12 w-auto" src="@/assets/logo.svg" alt="logo Geeked.tech" />
+              <span class="text-black text-lg font-semibold mb-1 mt-auto">Geeked</span>
+            </RouterLink>
+          </div>
           <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = false">
             <span class="sr-only">Zamknij menu</span>
             <XMarkIcon class="h-6 w-6" aria-hidden="true" />

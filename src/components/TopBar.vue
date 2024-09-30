@@ -11,7 +11,7 @@
         <div class="flex lg:hidden gap-3">
           <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
           <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-black" @click="mobileMenuOpen = true">
-            <span class="sr-only">Open main menu</span>
+            <span class="sr-only">Otwórz koszyk</span>
             <Bars3Icon class="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
@@ -47,24 +47,52 @@
       </div>
     </nav>
     <Dialog class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
-      <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-black px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+      <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex items-center justify-between">
-          <a href="#" class="-m-1.5 p-1.5">
-            <span class="sr-only">Your Company</span>
-            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" />
-          </a>
+          <RouterLink to="/" class="-m-1.5 p-1.5">
+            <span class="sr-only">Tech-Bay</span>
+            <img class="h-12 w-auto" src="@/assets/logo.png" alt="" />
+          </RouterLink>
           <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = false">
-            <span class="sr-only">Close menu</span>
+            <span class="sr-only">Zamknij menu</span>
             <XMarkIcon class="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div class="mt-6 flow-root">
-          <div class="-my-6 divide-y divide-gray-500/10">
-            <div class="space-y-2 py-6">
+        <div class="flex-1 mt-6 h-auto">
+          <div class="flex-1 -my-6 h-auto divide-y-2 divide-gray-500">
+            <div class="py-6">
               <a v-for="item in navigation" :key="item.name" :href="item.href" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ item.name }}</a>
             </div>
-            <div class="py-6">
+            <div v-if="!userStore.isAuthenticated" class="py-6">
               <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-gray-900">Zaloguj się</RouterLink>
+            </div>
+            <div v-else class="flex-auto text-sm leading-6">
+              <div class="flex flex-row py-4 gap-1">
+                <div class="flex flex-col text-left">
+                  <span class=" font-light leading-none text-black">Cześć,</span>
+                  <span class="text-xl font-semibold leading-none text-black">{{ userStore.username }}</span>
+                </div>
+              </div>
+              <div class="py-2">
+                <div v-for="item in menuItems" :key="item.name" class="group relative flex gap-x-6 rounded-lg py-2 hover:bg-gray-50">
+                  <div class="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                    <component :is="item.icon" class="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <RouterLink :to="item.href" class="font-semibold text-gray-900">
+                      {{ item.name }}
+                      <span class="absolute inset-0" />
+                    </RouterLink>
+                    <p class="mt-1 text-gray-600">{{ item.description }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
+                <button @click="userStore.logout" class="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100 text-center">
+                  <component :is="ArrowLeftStartOnRectangleIcon" class="h-5 w-5 flex-none text-black" aria-hidden="true" />
+                  Wyloguj się
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -81,7 +109,7 @@
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   import { useUserStore } from '@/stores/user'
   import { Dialog, DialogPanel } from '@headlessui/vue'
-  import { Bars3Icon, XMarkIcon, ShoppingCartIcon, UserIcon } from '@heroicons/vue/24/outline'
+  import { Bars3Icon, XMarkIcon, ShoppingCartIcon, UserIcon, ClipboardDocumentCheckIcon, HeartIcon, ArrowLeftStartOnRectangleIcon } from '@heroicons/vue/24/outline'
   import ShoppingCart from './ShoppingCart.vue'
   import UserMenu from './topBar/UserMenu.vue'
   
@@ -90,10 +118,13 @@
   const userStore = useUserStore()
   const router = useRouter()
   const navigation = [
-    { name: 'Product', href: '/produkty' },
-    { name: 'Features', href: '#' },
-    { name: 'Marketplace', href: '#' },
-    { name: 'Company', href: '#' },
+    { name: 'Produkty', href: '/produkty' },
+    { name: 'Nasze sklepy', href: '/sklepy' },
+  ]
+  const menuItems = [
+    { name: 'Twoje konto', description: 'Ustawienia Twojego konta', href: '/konto/ustawienia', icon: UserIcon },
+    { name: 'Zamówienia', description: 'Zrealizowane zamówienia', href: '/konto/zamowienia', icon: ClipboardDocumentCheckIcon },
+    { name: 'Ulubione', description: "Ulubione produkty", href: '/konto/ulubione', icon: HeartIcon },
   ]
   const mobileMenuOpen = ref(false)
 

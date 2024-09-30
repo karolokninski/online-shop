@@ -2,7 +2,7 @@
   <div class="bg-gray text-lightslategray py-10">
     <div class="container mx-auto flex justify-between items-center">
       <div>
-        <img src="../assets/logo.png" alt="Logo" class="h-12" />
+        <img src="../assets/logo.svg" alt="Logo" class="h-12" />
       </div>
       <div class="space-x-8">
         <a href="#about" class="text-lightslategray hover:text-white"><b>O nas</b></a>

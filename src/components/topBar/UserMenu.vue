@@ -4,7 +4,7 @@
       <div class="flex flex-row gap-1">
         <div class="flex flex-col text-right">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
-          <span class="text-sm font-semibold leading-none text-black">{{ userStore.username }}</span>
+          <span class="text-sm font-semibold leading-none text-black">{{ userStore.name }}</span>
         </div>
         <UserIcon class="h-8 w-6 pb-1" aria-hidden="true" />
       </div>

@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    username: null,
+    name: null,
     token: null,
     isAuthenticated: false
   }),
@@ -29,17 +29,17 @@ export const useUserStore = defineStore('user', {
         this.token = response.data.access_token
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.username = decodedToken.username
+        this.name = decodedToken.name
         router.push('/')
       } catch (error) {
         console.error('Login failed:', error)
         return error
       }
     },
-    async register(username, email, password, router) {
+    async register(name, email, password, router) {
       try {
         const requestData = {
-          username: username,
+          name: name,
           email: email,
           password: password
         }
@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', {
         this.token = response.data.access_token
         // const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.username = username
+        this.name = name
         router.push('/')
       } catch (error) {
         console.error('Registration failed:', error)
@@ -75,7 +75,7 @@ export const useUserStore = defineStore('user', {
         // this.token = response.data.access_token
         // const decodedToken = jose.decodeJwt(this.token)
         // this.isAuthenticated = true
-        // this.username = username
+        // this.name = name
         // router.push('/')
       } catch (error) {
         console.error('Password reset failed:', error)
@@ -84,7 +84,7 @@ export const useUserStore = defineStore('user', {
     logout() {
       try {
         this.token = null;
-        this.username = null;
+        this.name = null;
         this.isAuthenticated = false;
         localStorage.removeItem('user');
       } catch (error) {

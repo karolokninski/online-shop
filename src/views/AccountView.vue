@@ -17,7 +17,7 @@
       <div v-show="$route.name==='account' || width > 480" class="flex-none p-4">
         <div class="flex flex-col p-4 text-left">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
-          <span class="text-lg font-semibold leading-none text-black">{{ userStore.username }}</span>
+          <span class="text-lg font-semibold leading-none text-black">{{ userStore.name }}</span>
         </div>
         <div v-for="item in menuItems" :key="item.name" class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
           <RouterLink :to="item.href" class="flex">

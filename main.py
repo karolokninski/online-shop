@@ -37,7 +37,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, clas
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True, nullable=False)
+    name = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(100), nullable=False)
 
@@ -49,7 +49,7 @@ class Product(Base):
     price = Column(Float, nullable=False)
 
 class UserCreate(BaseModel):
-    username: str
+    name: str
     email: str
     password: str
 
@@ -154,18 +154,18 @@ async def get_db():
 
 @app.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    query = await db.execute(text("SELECT * FROM users WHERE username = :username OR email = :email"), {"username": user.username, "email": user.email})
+    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": user.email})
     existing_user = query.fetchone()
 
     if existing_user:
         raise HTTPException(status_code=400, detail="Konto o podanym adresie e-mail już istnieje.")
 
     hashed_password = get_password_hash(user.password)
-    db_user = User(username=user.username, email=user.email, hashed_password=hashed_password)
+    db_user = User(name=user.name, email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return {"username": db_user.username, "email": db_user.email}
+    return {"name": db_user.name, "email": db_user.email}
 
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
@@ -175,7 +175,7 @@ async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Dep
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail lub hasło.")
 
-    access_token = create_access_token(data={"username": user.username})
+    access_token = create_access_token(data={"name": user.name})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -185,12 +185,12 @@ async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = 
     user = query.fetchone()
 
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
     password_reset_token = "123"
     send_email(email=user.email, token=password_reset_token)
 
-    return {"message": "Email do zmiany hasła został wysłany"}
+    return {"message": "E-mail do zmiany hasła został wysłany"}
 
 @app.post("/products/", response_model=ProductResponse)
 async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):

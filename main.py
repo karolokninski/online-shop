@@ -179,7 +179,3 @@ async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
     await db.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
     await db.commit()
     return {"message": "Product deleted successfully"}
-
-@app.get("/test")
-def read_test():
-    return "Hello world"

@@ -72,7 +72,7 @@
               <div class="flex flex-row py-4 gap-1">
                 <div class="flex flex-col text-left">
                   <span class=" font-light leading-none text-black">Cześć,</span>
-                  <span class="text-xl font-semibold leading-none text-black">{{ userStore.username }}</span>
+                  <span class="text-xl font-semibold leading-none text-black">{{ userStore.name }}</span>
                 </div>
               </div>
               <div class="py-2">

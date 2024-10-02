@@ -12,6 +12,9 @@ from sqlalchemy import Column, Integer, String, Float, text
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timedelta
 from typing import List, Optional
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 load_dotenv()
 
@@ -20,6 +23,10 @@ POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
 POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
+EMAIL_SMTP_SERVER = os.getenv("EMAIL_SMTP_SERVER")
+EMAIL_SMTP_PORT = os.getenv("EMAIL_SMTP_PORT")
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
 
 Base = declarative_base()
@@ -64,6 +71,12 @@ class ProductResponse(BaseModel):
     class Config:
         orm_mode = True
 
+class PasswordResetRequest(BaseModel):
+    email: str
+
+class PasswordResetResponse(BaseModel):
+    message: str
+
 class OAuth2EmailPasswordRequestForm:
     def __init__(self, email: str = Form(), password: str = Form()):
         self.email = email
@@ -92,6 +105,39 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def send_email(email, token):
+    recipient_email = email
+    subject = "Reset hasła"
+    body_html = """\
+        <html>
+        <body>
+            <h2>
+                Witaj!
+            </h2>
+            <p>
+                Token do zmiany hasła: """ + token + """
+            </p>
+        </body>
+        </html>
+    """
+
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL_USER
+    msg["To"] = recipient_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body_html, "html"))
+
+    try:
+        server = smtplib.SMTP_SSL(
+            EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT
+        )
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_USER, recipient_email, msg.as_string())
+        server.quit()
+
+    except Exception as error:
+        print(error)
 
 app = FastAPI()
 app.add_middleware(
@@ -131,6 +177,20 @@ async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Dep
 
     access_token = create_access_token(data={"username": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.post("/password-reset", response_model=PasswordResetResponse)
+async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": request_data.email})
+    user = query.fetchone()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    password_reset_token = "123"
+    send_email(email=user.email, token=password_reset_token)
+
+    return {"message": "Email do zmiany hasła został wysłany"}
 
 @app.post("/products/", response_model=ProductResponse)
 async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):

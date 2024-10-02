@@ -15,9 +15,12 @@ from typing import List, Optional
 
 load_dotenv()
 
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
-DATABASE_URL = f"postgresql+asyncpg://shop:{POSTGRES_PASSWORD}@dpg-crnistt6l47c73ah51og-a.frankfurt-postgres.render.com:{POSTGRES_PORT}/shop_57s3"
+DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
 
 Base = declarative_base()
 

@@ -129,9 +129,10 @@ def send_email(email, token):
     msg.attach(MIMEText(body_html, "html"))
 
     try:
-        server = smtplib.SMTP_SSL(
+        server = smtplib.SMTP(
             EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT
         )
+        server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_USER, recipient_email, msg.as_string())
         server.quit()

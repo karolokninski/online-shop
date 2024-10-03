@@ -15,6 +15,8 @@ from typing import List, Optional
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import random
+import string
 
 load_dotenv()
 
@@ -106,17 +108,22 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def generate_token():
+    characters = string.ascii_uppercase + string.digits  # A-Z, 0-9
+    token = ''.join(random.choice(characters) for _ in range(6))
+    return token
+
 def send_email(email, token):
     recipient_email = email
     subject = "Reset hasła"
     body_html = """\
         <html>
         <body>
-            <h2>
+            <h3>
                 Witaj!
-            </h2>
+            </h3>
             <p>
-                Token do zmiany hasła: """ + token + """
+                Kod weryfikacyjny do zmiany hasła to: """ + token + """
             </p>
         </body>
         </html>
@@ -188,7 +195,7 @@ async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = 
     if not user:
         raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
-    password_reset_token = "123"
+    password_reset_token = generate_token()
     send_email(email=user.email, token=password_reset_token)
 
     return {"message": "E-mail do zmiany hasła został wysłany"}

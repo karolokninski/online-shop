@@ -60,7 +60,7 @@ export const useUserStore = defineStore('user', {
         return error
       }
     },
-    async passwordReset(email, router) {
+    async passwordReset(email) {
       try {
         const requestData = {
           email: email
@@ -68,17 +68,32 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: API_URL + '/passwordReset',
+          url: API_URL + '/password-reset',
           data: requestData
         })
 
-        // this.token = response.data.access_token
-        // const decodedToken = jose.decodeJwt(this.token)
-        // this.isAuthenticated = true
-        // this.name = name
-        // router.push('/')
+        return response
       } catch (error) {
         console.error('Password reset failed:', error)
+        return error
+      }
+    },
+    async verifyPasswordResetCode(code, router) {
+      try {
+        const requestData = {
+          code: code
+        }
+
+        // const response = await axios({
+        //   method: 'post',
+        //   url: API_URL + '/password-reset',
+        //   data: requestData
+        // })
+
+        // return response
+      } catch (error) {
+        console.error('Password reset code verification failed:', error)
+        return error
       }
     },
     logout() {

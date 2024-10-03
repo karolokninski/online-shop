@@ -12,7 +12,7 @@
         </div>
       </nav>
     </header>
-    <div class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div v-if="!submitCodeView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Przypomnienie hasła</h2>
       </div>
@@ -30,7 +30,7 @@
               <input v-model="email" id="email" name="email" type="email" @input="validateEmail" :disabled="isLoading" :class="emailClass" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
               <div v-if="!isValidEmail" class="flex flex-row mt-1 gap-1">
                 <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
-                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres email</p>
+                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres e-mail</p>
               </div>
             </div>
           </div>
@@ -41,6 +41,45 @@
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               <span v-else class="text-sm font-semibold leading-6 text-white">Odzyskaj hasło</span>
+            </button>
+          </div>
+        </form>
+        <p class="mt-10 text-center text-sm text-gray-500">
+          Pamiętasz hasło?
+          {{ ' ' }}
+          <RouterLink to="/logowanie" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Zaloguj się</RouterLink>
+        </p>
+      </div>
+    </div>
+    <div v-else class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Wprowadź kod weryfikacyjny</h2>
+      </div>
+      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form class="space-y-6" method="POST" onsubmit="return false">
+          <div v-if="errorMessage" class="h-1">
+            <div class="flex flex-row gap-1">
+              <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+              <p class="text-red-500 text-xs my-auto font-semibold">{{ errorMessage }}</p>
+            </div>
+          </div>
+          <div>
+            <label for="code" class="block text-sm font-medium leading-6 text-gray-900">Kod weryfikacyjny</label>
+            <div class="mt-1">
+              <input v-model="code" id="code" name="code" type="text" @input="validateCode" :disabled="isLoading" :class="codeClass" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
+              <div v-if="!isValidCode" class="flex flex-row mt-1 gap-1">
+                <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
+                <p class="text-red-500 text-xs my-auto">Kod weryfikacyjny musi się składać z 6 znaków</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="submit" @click="handleSubmitCode" class="flex w-full h-9 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-else class="text-sm font-semibold leading-6 text-white">Weryfikuj</span>
             </button>
           </div>
         </form>
@@ -62,12 +101,22 @@
 
   const router = useRouter()
   const isLoading = ref(false)
+  const submitCodeView = ref(true)
   const userStore = useUserStore()
   const email = ref('')
+  const code = ref('')
   const errorMessage = ref('')
   const isValidEmail = ref(true)
+  const isValidCode = ref(true)
 
   const emailClass = computed(() => {
+    return {
+      'ring-red-500 focus:ring-red-600': !isValidEmail.value,
+      'ring-gray-300 focus:ring-indigo-600': isValidEmail.value
+    }
+  })
+
+  const codeClass = computed(() => {
     return {
       'ring-red-500 focus:ring-red-600': !isValidEmail.value,
       'ring-gray-300 focus:ring-indigo-600': isValidEmail.value
@@ -79,14 +128,37 @@
     isValidEmail.value = emailRegex.test(email.value)
   }
 
+  function validateCode() {
+    const codeRegex = /^[A-Za-z\d@$!%*?&]{6}$/
+    isValidCode.value = codeRegex.test(code.value)
+  }
+
   const handlePasswordReset = async () => {
     if (isValidEmail.value) {
       isLoading.value = true
 
       try {
-        var result = await userStore.passwordReset(email.value, router)
+        var result = await userStore.passwordReset(email.value)
         if (result.status != 200 && result.response.data.detail) {
           errorMessage.value = result.response.data.detail
+        } else if (result.status == 200) {
+          submitCodeView.value = true
+        }
+      } finally {
+        isLoading.value = false
+      }
+    }
+  }
+  const handleSubmitCode = async () => {
+    if (isValidCode.value) {
+      isLoading.value = true
+
+      try {
+        var result = await userStore.verifyPasswordResetCode(code.value, router)
+        if (result.status != 200 && result.response.data.detail) {
+          errorMessage.value = result.response.data.detail
+        } else if (result.status == 200) {
+          submitCodeView.value = true
         }
       } finally {
         isLoading.value = false

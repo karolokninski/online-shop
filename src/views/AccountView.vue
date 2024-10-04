@@ -56,6 +56,17 @@
   </div>
 </template>
 
+<script>
+  import { useUserStore } from '@/stores/user'
+  export default {
+    beforeRouteEnter(to, from) {
+      if (!useUserStore().isAuthenticated) {
+        return { name: 'signIn' }
+      }
+    },
+  }
+</script>
+
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
   import { useRoute } from 'vue-router'

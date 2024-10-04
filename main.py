@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException, Form
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI, Depends, HTTPException, Form, Request
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -20,6 +21,7 @@ import string
 
 load_dotenv()
 
+API_KEY = os.getenv("API_KEY")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
 POSTGRES_USER = os.getenv("POSTGRES_USER")
@@ -158,6 +160,10 @@ def send_email(email, token):
     except Exception as error:
         print(error)
 
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -167,9 +173,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def get_db():
-    async with SessionLocal() as session:
-        yield session
+api_key_auth = HTTPBearer()
+
+@app.middleware("http")
+@app.middleware("https")
+async def verify_api_key(request: Request, call_next):
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        return JSONResponse({"error": "API key is required"}, status_code=401)
+    elif not authorization.startswith("Bearer "):
+        return JSONResponse({"error": "Invalid API key format"}, status_code=401)
+    api_key = authorization[7:]  # Remove the "Bearer " prefix
+    if api_key != API_KEY:
+        return JSONResponse({"error": "Invalid API key"}, status_code=401)
+    return await call_next(request)
+
 
 @app.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):

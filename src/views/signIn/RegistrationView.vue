@@ -123,7 +123,7 @@
   }
 
   function validatePassword() {
-    const passwordRegex = /^[A-Za-z\d@$!%*?&]{8,}$/
+    const passwordRegex = /^[A-Za-z\d@$!%*?.&]{8,}$/
     isValidPassword.value = passwordRegex.test(password.value)
   }
 

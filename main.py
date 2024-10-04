@@ -86,6 +86,10 @@ class PasswordResetValidationRequest(BaseModel):
 class PasswordResetValidationResponse(BaseModel):
     message: str
 
+class ChangePasswordRequest(BaseModel):
+    email: str
+    password: str
+
 class OAuth2EmailPasswordRequestForm:
     def __init__(self, email: str = Form(), password: str = Form()):
         self.email = email
@@ -193,6 +197,20 @@ async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: Async
     access_token = create_access_token(data={"name": user.name})
     return {"access_token": access_token, "token_type": "bearer"}
 
+@app.post("/change-password")
+async def change_password(request_data: ChangePasswordRequest, db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": request_data.email})
+    user = query.fetchone()
+
+    if not user:
+        raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail.")
+
+    new_hashed_password = get_password_hash(request_data.password)
+    await db.execute(text("UPDATE users SET hashed_password = :new_hashed_password WHERE email = :email"), 
+                     {"new_hashed_password": new_hashed_password, "email": request_data.email})
+    await db.commit()
+
+    return {"message": "Hasło zostało zmienione."}
 
 @app.post("/password-reset", response_model=PasswordResetResponse)
 async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = Depends(get_db)):

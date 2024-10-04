@@ -78,19 +78,21 @@ export const useUserStore = defineStore('user', {
         return error
       }
     },
-    async verifyPasswordResetCode(code, router) {
+    async verifyPasswordResetCode(code, email, router) {
       try {
         const requestData = {
-          code: code
+          token: code,
+          email: email
         }
 
-        // const response = await axios({
-        //   method: 'post',
-        //   url: API_URL + '/password-reset',
-        //   data: requestData
-        // })
+        const response = await axios({
+          method: 'post',
+          url: API_URL + '/validate-password-reset',
+          data: requestData
+        })
 
-        // return response
+        router.push('/')
+        return response
       } catch (error) {
         console.error('Password reset code verification failed:', error)
         return error

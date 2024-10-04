@@ -57,10 +57,10 @@
       </div>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" method="POST" onsubmit="return false">
-          <div v-if="errorMessage" class="h-1">
+          <div v-if="validationErrorMessage" class="h-1">
             <div class="flex flex-row gap-1">
               <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
-              <p class="text-red-500 text-xs my-auto font-semibold">{{ errorMessage }}</p>
+              <p class="text-red-500 text-xs my-auto font-semibold">{{ validationErrorMessage }}</p>
             </div>
           </div>
           <div>
@@ -101,11 +101,12 @@
 
   const router = useRouter()
   const isLoading = ref(false)
-  const submitCodeView = ref(true)
+  const submitCodeView = ref(false)
   const userStore = useUserStore()
   const email = ref('')
   const code = ref('')
   const errorMessage = ref('')
+  const validationErrorMessage = ref('')
   const isValidEmail = ref(true)
   const isValidCode = ref(true)
 
@@ -154,11 +155,12 @@
       isLoading.value = true
 
       try {
-        var result = await userStore.verifyPasswordResetCode(code.value, router)
+        var result = await userStore.verifyPasswordResetCode(code.value, email.value, router)
+
         if (result.status != 200 && result.response.data.detail) {
-          errorMessage.value = result.response.data.detail
+          validationErrorMessage.value = result.response.data.detail
         } else if (result.status == 200) {
-          submitCodeView.value = true
+          submitCodeView.value = false
         }
       } finally {
         isLoading.value = false

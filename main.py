@@ -79,6 +79,13 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetResponse(BaseModel):
     message: str
 
+class PasswordResetValidationRequest(BaseModel):
+    email: str
+    token: str
+
+class PasswordResetValidationResponse(BaseModel):
+    message: str
+
 class OAuth2EmailPasswordRequestForm:
     def __init__(self, email: str = Form(), password: str = Form()):
         self.email = email
@@ -196,9 +203,35 @@ async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = 
         raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
     password_reset_token = generate_token()
+
+    token_expiration = datetime.utcnow() + timedelta(hours=1) 
+
+    await db.execute(text("""
+        UPDATE users 
+        SET password_reset_token = :token, token_expiration = :expiration 
+        WHERE email = :email
+    """), {"token": password_reset_token, "expiration": token_expiration, "email": request_data.email})
+    await db.commit()
+
     send_email(email=user.email, token=password_reset_token)
 
-    return {"message": "E-mail do zmiany hasła został wysłany"}
+    return {"message": "E-mail do zmiany hasła został wysłany."}
+
+@app.post("/validate-password-reset", response_model=PasswordResetValidationResponse)
+async def validate_password_reset(request_data: PasswordResetValidationRequest, db: AsyncSession = Depends(get_db)):
+    query = await db.execute(text("""SELECT password_reset_token, token_expiration FROM users WHERE email = :email"""), {"email": request_data.email})
+    user = query.fetchone()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
+
+    if user.password_reset_token != request_data.token:
+        raise HTTPException(status_code=400, detail="Nieprawdiłowy kod weryfikacyjny.")
+
+    if user.token_expiration < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Kod weryfikacyjny wygasł.")
+
+    return {"message": "Prawidłowo zweryfikowano kod."}
 
 @app.post("/products/", response_model=ProductResponse)
 async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):

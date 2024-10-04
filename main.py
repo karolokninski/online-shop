@@ -182,8 +182,8 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.refresh(db_user)
     return {"name": db_user.name, "email": db_user.email}
 
-@app.post("/token")
-async def login_for_access_token(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+@app.post("/login")
+async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": form_data.email})
     user = query.fetchone()
 

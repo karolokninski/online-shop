@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import * as jose from 'jose'
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_KEY = import.meta.env.VITE_API_KEY
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -19,9 +19,10 @@ export const useUserStore = defineStore('user', {
         
         const response = await axios({
           method: 'post',
-          url: API_URL + '/token',
+          url: '/api/login',
           data: formData,
           headers: {
+            Authorization: 'Bearer ' + API_KEY,
             'Content-Type': 'multipart/form-data'
           }
         })
@@ -46,8 +47,11 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: API_URL + '/register',
-          data: requestData
+          url: '/api/register',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
         })
 
         this.token = response.data.access_token
@@ -68,8 +72,11 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: API_URL + '/password-reset',
-          data: requestData
+          url: '/api/password-reset',
+          data: requestData,
+          headers: {
+            'Authorization': 'Bearer ' + API_KEY
+          }
         })
 
         return response
@@ -78,21 +85,47 @@ export const useUserStore = defineStore('user', {
         return error
       }
     },
-    async verifyPasswordResetCode(code, router) {
+    async verifyPasswordResetCode(code, email) {
       try {
         const requestData = {
-          code: code
+          token: code,
+          email: email
         }
 
-        // const response = await axios({
-        //   method: 'post',
-        //   url: API_URL + '/password-reset',
-        //   data: requestData
-        // })
+        const response = await axios({
+          method: 'post',
+          url: '/api/validate-password-reset',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
+        })
 
-        // return response
+        return response
       } catch (error) {
         console.error('Password reset code verification failed:', error)
+        return error
+      }
+    },
+    async changePassword(email, password) {
+      try {
+        const requestData = {
+          email: email,
+          password: password
+        }
+
+        const response = await axios({
+          method: 'post',
+          url: '/api/change-password',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
+        })
+
+        return response
+      } catch (error) {
+        console.error('Password change failed:', error)
         return error
       }
     },

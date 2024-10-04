@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white flex min-h-full flex-1 flex-col mt-2">
-    <header class="absolute bg-white inset-x-0 top-0 z-50" style="margin-bottom: 1rem;">
+    <header class="absolute bg-white inset-x-0 top-0 z-50 px-2 pt-5">
       <nav class="flex flex-col" aria-label="Global">
         <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
           <div class="flex lg:flex-1">
@@ -55,6 +55,17 @@
     </main>
   </div>
 </template>
+
+<script>
+  import { useUserStore } from '@/stores/user'
+  export default {
+    beforeRouteEnter(to, from) {
+      if (!useUserStore().isAuthenticated) {
+        return { name: 'signIn' }
+      }
+    },
+  }
+</script>
 
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'

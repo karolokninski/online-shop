@@ -12,7 +12,7 @@
         </div>
       </nav>
     </header>
-    <div v-if="!submitCodeView && !changePasswordView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div v-if="!submitCodeView && !changePasswordView && !successView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Przypomnienie hasła</h2>
       </div>
@@ -51,7 +51,7 @@
         </p>
       </div>
     </div>
-    <div v-if="submitCodeView && !changePasswordView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div v-if="submitCodeView && !changePasswordView && !successView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Wprowadź kod weryfikacyjny</h2>
       </div>
@@ -90,7 +90,7 @@
         </p>
       </div>
     </div>
-    <div v-if="!submitCodeView && changePasswordView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div v-if="!submitCodeView && changePasswordView && !successView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Zmień hasło</h2>
       </div>
@@ -134,6 +134,18 @@
         </form>
       </div>
     </div>
+    <div v-if="!submitCodeView && !changePasswordView && successView" class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Hasło zostało zmienione</h2>
+      </div>
+      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <p class="text-black font-semibold leading-6 text-center">Możesz już zalogować się do swojego konta przy pomocy nowego hasła.</p>
+      </div>
+      <p class="mt-10 text-center text-sm text-gray-500">
+          {{ ' ' }}
+          <RouterLink to="/logowanie" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Zaloguj się</RouterLink>
+        </p>
+    </div>
   </div>
 </template>
 
@@ -147,6 +159,7 @@
   const isLoading = ref(false)
   const submitCodeView = ref(false)
   const changePasswordView = ref(false)
+  const successView = ref(false)
   const userStore = useUserStore()
   const email = ref('')
   const code = ref('')
@@ -253,6 +266,7 @@
           changePasswordErrorMessage.value = result.response.data.detail
         } else if (result.status == 200) {
           changePasswordView.value = false
+          successView.value = true
         }
       } finally {
         isLoading.value = false

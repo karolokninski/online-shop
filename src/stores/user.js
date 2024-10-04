@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', {
         
         const response = await axios({
           method: 'post',
-          url: '/api/token',
+          url: '/api/login',
           data: formData,
           headers: {
             Authorization: 'Bearer ' + API_KEY,
@@ -100,7 +100,7 @@ export const useUserStore = defineStore('user', {
             Authorization: 'Bearer ' + API_KEY
           }
         })
-        
+
         return response
       } catch (error) {
         console.error('Password reset code verification failed:', error)

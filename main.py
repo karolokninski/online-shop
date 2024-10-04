@@ -171,6 +171,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Length", "Content-Type", "Authorization"],
 )
 
 api_key_auth = HTTPBearer()

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import * as jose from 'jose'
 
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_URL = import.meta.env.VITE_API_URL
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -19,12 +19,8 @@ export const useUserStore = defineStore('user', {
         
         const response = await axios({
           method: 'post',
-          url: '/api/login',
-          data: formData,
-          headers: {
-            Authorization: 'Bearer ' + API_KEY,
-            'Content-Type': 'multipart/form-data'
-          }
+          url: API_URL + '/login',
+          data: formData
         })
 
         this.token = response.data.access_token
@@ -47,11 +43,8 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: '/api/register',
-          data: requestData,
-          headers: {
-            Authorization: 'Bearer ' + API_KEY
-          }
+          url: API_URL + '/register',
+          data: requestData
         })
 
         this.token = response.data.access_token
@@ -72,11 +65,8 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: '/api/password-reset',
-          data: requestData,
-          headers: {
-            'Authorization': 'Bearer ' + API_KEY
-          }
+          url: API_URL + '/password-reset',
+          data: requestData
         })
 
         return response
@@ -94,11 +84,8 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: '/api/validate-password-reset',
-          data: requestData,
-          headers: {
-            Authorization: 'Bearer ' + API_KEY
-          }
+          url: API_URL + '/validate-password-reset',
+          data: requestData
         })
 
         return response
@@ -116,11 +103,8 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: '/api/change-password',
-          data: requestData,
-          headers: {
-            Authorization: 'Bearer ' + API_KEY
-          }
+          url: API_URL + '/change-password',
+          data: requestData
         })
 
         return response

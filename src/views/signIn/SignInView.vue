@@ -30,7 +30,7 @@
               <input v-model="email" id="email" name="email" type="email" @input="validateEmail" :disabled="isLoading" :class="emailClass" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6" />
               <div v-if="!isValidEmail" class="flex flex-row mt-1 gap-1">
                 <ExclamationCircleIcon class="h-5 w-6 text-red-500" aria-hidden="true" />
-                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres email</p>
+                <p class="text-red-500 text-xs my-auto">Nieprawidłowy adres e-mail</p>
               </div>
             </div>
           </div>
@@ -103,7 +103,7 @@
   }
 
   function validatePassword() {
-    const passwordRegex = /^[A-Za-z\d@$!%*?&]{8,}$/
+    const passwordRegex = /^[A-Za-z\d@$!%*?.&]{8,}$/
     isValidPassword.value = passwordRegex.test(password.value)
   }
 

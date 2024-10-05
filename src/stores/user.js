@@ -2,11 +2,11 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import * as jose from 'jose'
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_KEY = import.meta.env.VITE_API_KEY
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    username: null,
+    name: null,
     token: null,
     isAuthenticated: false
   }),
@@ -19,9 +19,10 @@ export const useUserStore = defineStore('user', {
         
         const response = await axios({
           method: 'post',
-          url: API_URL + '/token',
+          url: '/api/login',
           data: formData,
           headers: {
+            Authorization: 'Bearer ' + API_KEY,
             'Content-Type': 'multipart/form-data'
           }
         })
@@ -29,38 +30,41 @@ export const useUserStore = defineStore('user', {
         this.token = response.data.access_token
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.username = decodedToken.username
+        this.name = decodedToken.name
         router.push('/')
       } catch (error) {
-        console.error('Login failed:', error)
+        console.error('Login failed:', error.message)
         return error
       }
     },
-    async register(username, email, password, router) {
+    async register(name, email, password, router) {
       try {
         const requestData = {
-          username: username,
+          name: name,
           email: email,
           password: password
         }
 
         const response = await axios({
           method: 'post',
-          url: API_URL + '/register',
-          data: requestData
+          url: '/api/register',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
         })
 
         this.token = response.data.access_token
         // const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
-        this.username = username
+        this.name = name
         router.push('/')
       } catch (error) {
-        console.error('Registration failed:', error)
+        console.error('Registration failed:', error.message)
         return error
       }
     },
-    async passwordReset(email, router) {
+    async passwordReset(email) {
       try {
         const requestData = {
           email: email
@@ -68,27 +72,71 @@ export const useUserStore = defineStore('user', {
 
         const response = await axios({
           method: 'post',
-          url: API_URL + '/passwordReset',
-          data: requestData
+          url: '/api/password-reset',
+          data: requestData,
+          headers: {
+            'Authorization': 'Bearer ' + API_KEY
+          }
         })
 
-        // this.token = response.data.access_token
-        // const decodedToken = jose.decodeJwt(this.token)
-        // this.isAuthenticated = true
-        // this.username = username
-        // router.push('/')
+        return response
       } catch (error) {
-        console.error('Password reset failed:', error)
+        console.error('Password reset failed:', error.message)
+        return error
+      }
+    },
+    async verifyPasswordResetCode(code, email) {
+      try {
+        const requestData = {
+          token: code,
+          email: email
+        }
+
+        const response = await axios({
+          method: 'post',
+          url: '/api/validate-password-reset',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
+        })
+
+        return response
+      } catch (error) {
+        console.error('Password reset code verification failed:', error.message)
+        return error
+      }
+    },
+    async changePassword(email, password) {
+      try {
+        const requestData = {
+          email: email,
+          password: password
+        }
+
+        const response = await axios({
+          method: 'post',
+          url: '/api/change-password',
+          data: requestData,
+          headers: {
+            Authorization: 'Bearer ' + API_KEY
+          }
+        })
+
+        return response
+      } catch (error) {
+        console.error('Password change failed:', error.message)
+        return error
       }
     },
     logout() {
       try {
-        this.token = null;
-        this.username = null;
-        this.isAuthenticated = false;
-        localStorage.removeItem('user');
+        this.token = null
+        this.name = null
+        this.isAuthenticated = false
+        localStorage.removeItem('user')
       } catch (error) {
-        console.error('Logout failed:', error);
+        console.error('Logout failed:', error.message)
       }
     }
   },

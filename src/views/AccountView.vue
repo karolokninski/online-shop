@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white flex min-h-full flex-1 flex-col mt-2">
-    <header class="absolute bg-white inset-x-0 top-0 z-50" style="margin-bottom: 1rem;">
+    <header class="absolute bg-white inset-x-0 top-0 z-50 px-2 pt-5">
       <nav class="flex flex-col" aria-label="Global">
         <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
           <div class="flex lg:flex-1">
@@ -17,7 +17,7 @@
       <div v-show="$route.name==='account' || width > 480" class="flex-none p-4">
         <div class="flex flex-col p-4 text-left">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
-          <span class="text-lg font-semibold leading-none text-black">{{ userStore.username }}</span>
+          <span class="text-lg font-semibold leading-none text-black">{{ userStore.name }}</span>
         </div>
         <div v-for="item in menuItems" :key="item.name" class="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
           <RouterLink :to="item.href" class="flex">
@@ -55,6 +55,17 @@
     </main>
   </div>
 </template>
+
+<script>
+  import { useUserStore } from '@/stores/user'
+  export default {
+    beforeRouteEnter(to, from) {
+      if (!useUserStore().isAuthenticated) {
+        return { name: 'signIn' }
+      }
+    },
+  }
+</script>
 
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'

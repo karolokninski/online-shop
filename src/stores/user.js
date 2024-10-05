@@ -33,7 +33,7 @@ export const useUserStore = defineStore('user', {
         this.name = decodedToken.name
         router.push('/')
       } catch (error) {
-        console.error('Login failed:', error)
+        console.error('Login failed:', error.message)
         return error
       }
     },
@@ -60,7 +60,7 @@ export const useUserStore = defineStore('user', {
         this.name = name
         router.push('/')
       } catch (error) {
-        console.error('Registration failed:', error)
+        console.error('Registration failed:', error.message)
         return error
       }
     },
@@ -81,7 +81,7 @@ export const useUserStore = defineStore('user', {
 
         return response
       } catch (error) {
-        console.error('Password reset failed:', error)
+        console.error('Password reset failed:', error.message)
         return error
       }
     },
@@ -103,7 +103,7 @@ export const useUserStore = defineStore('user', {
 
         return response
       } catch (error) {
-        console.error('Password reset code verification failed:', error)
+        console.error('Password reset code verification failed:', error.message)
         return error
       }
     },
@@ -125,18 +125,18 @@ export const useUserStore = defineStore('user', {
 
         return response
       } catch (error) {
-        console.error('Password change failed:', error)
+        console.error('Password change failed:', error.message)
         return error
       }
     },
     logout() {
       try {
-        this.token = null;
-        this.name = null;
-        this.isAuthenticated = false;
-        localStorage.removeItem('user');
+        this.token = null
+        this.name = null
+        this.isAuthenticated = false
+        localStorage.removeItem('user')
       } catch (error) {
-        console.error('Logout failed:', error);
+        console.error('Logout failed:', error.message)
       }
     }
   },

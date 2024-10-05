@@ -6,7 +6,6 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd());
-  const API_URL = `${env.VITE_API_URL}`;
 
   return defineConfig({
     plugins: [
@@ -14,13 +13,6 @@ export default ({ mode }) => {
     ],
     server: {
       host: '0.0.0.0',
-      proxy: {
-        '/api': {
-          target: API_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      },
       watch: {
         usePolling: true
       }

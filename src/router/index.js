@@ -66,14 +66,7 @@ const router = createRouter({
     { 
       path: '/:pathMatch(.*)*',
       name: 'pageNotFound',
-      component: () => import('../views/PageNotFoundView.vue'),
-      beforeEnter: (to, from, next) => { // redirect /api to API server
-        if (to.path.startsWith('/api')) {
-          window.location.href = to.fullPath
-        } else {
-          next()
-        }
-      }
+      component: () => import('../views/PageNotFoundView.vue')
     }
   ]
 })

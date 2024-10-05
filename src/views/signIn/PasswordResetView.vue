@@ -222,7 +222,7 @@
   }
 
   const handlePasswordReset = async () => {
-    if (isValidEmail.value) {
+    if (email.value && isValidEmail.value) {
       isLoading.value = true
 
       try {
@@ -238,7 +238,7 @@
     }
   }
   const handleSubmitCode = async () => {
-    if (isValidCode.value) {
+    if (code.value && isValidCode.value) {
       isLoading.value = true
 
       try {
@@ -257,7 +257,7 @@
   }
 
   const handleChangePassword = async () => {
-    if (isValidPassword.value && isValidRepeatedPassword.value) {
+    if (email.value && password.value && isValidPassword.value && isValidRepeatedPassword.value) {
       isLoading.value = true
 
       try {

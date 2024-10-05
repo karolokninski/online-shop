@@ -21,7 +21,7 @@ import string
 
 load_dotenv()
 
-API_KEY = os.getenv("API_KEY")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS").split(",")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
 POSTGRES_USER = os.getenv("POSTGRES_USER")
@@ -167,28 +167,12 @@ async def get_db():
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Length", "Content-Type", "Authorization"],
 )
-
-api_key_auth = HTTPBearer()
-
-@app.middleware("http")
-@app.middleware("https")
-async def verify_api_key(request: Request, call_next):
-    authorization = request.headers.get("Authorization")
-    if not authorization:
-        return JSONResponse({"error": "API key is required"}, status_code=401)
-    elif not authorization.startswith("Bearer "):
-        return JSONResponse({"error": "Invalid API key format"}, status_code=401)
-    api_key = authorization[7:]  # Remove the "Bearer " prefix
-    if api_key != API_KEY:
-        return JSONResponse({"error": "Invalid API key"}, status_code=401)
-    return await call_next(request)
-
 
 @app.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
@@ -260,7 +244,7 @@ async def validate_password_reset(request_data: PasswordResetValidationRequest, 
     user = query.fetchone()
 
     if not user:
-        raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
+        raise HTTPException(status_code=400, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
     if user.password_reset_token != request_data.token:
         raise HTTPException(status_code=400, detail="Nieprawdiłowy kod weryfikacyjny.")

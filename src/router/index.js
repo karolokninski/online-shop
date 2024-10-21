@@ -64,6 +64,48 @@ const router = createRouter({
       ]
     },
     { 
+      path: '/admin',
+      name: 'adminPanel',
+      component: () => import('../views/AdminPanelView.vue'),
+      children: [
+        {
+          path: 'produkty',
+          name: 'productManagement',
+          component: () => import('../components/adminPanel/ProductManagement.vue'),
+        },
+        {
+          path: 'kategorie',
+          name: 'productCategories',
+          component: () => import('../components/adminPanel/ProductCategories.vue'),
+        },
+        {
+          path: 'parametry',
+          name: 'productParameters',
+          component: () => import('../components/adminPanel/ProductParameters.vue'),
+        },
+        {
+          path: 'uzytkownicy',
+          name: 'userManagement',
+          component: () => import('../components/adminPanel/UserManagement.vue'),
+        },
+        {
+          path: 'zamowienia',
+          name: 'orderManagement',
+          component: () => import('../components/adminPanel/OrderManagement.vue'),
+        },
+        {
+          path: 'dostawa-i-platnosc',
+          name: 'deliveryAndPayment',
+          component: () => import('../components/adminPanel/DeliveryAndPayment.vue'),
+        },
+        {
+          path: 'podstrony',
+          name: 'subpageManagement',
+          component: () => import('../components/adminPanel/SubpageManagement.vue'),
+        },
+      ]
+    },
+    { 
       path: '/:pathMatch(.*)*',
       name: 'pageNotFound',
       component: () => import('../views/PageNotFoundView.vue')

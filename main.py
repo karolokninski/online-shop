@@ -97,6 +97,18 @@ class OAuth2EmailPasswordRequestForm:
         self.email = email
         self.password = password
 
+class SubpageCreate(BaseModel):
+    title: str
+    path: str
+    content: str
+    is_active: bool
+
+class SubpageUpdate(BaseModel):
+    title: str | None = None
+    path: str | None = None
+    content: str | None = None
+    is_active: bool | None = None
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = "mysecretkey"
@@ -301,3 +313,62 @@ async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
     await db.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
     await db.commit()
     return {"message": "Product deleted successfully"}
+
+@app.post("/subpages/")
+async def create_subpage(subpage: SubpageCreate, db: AsyncSession = Depends(get_db)):
+    await db.execute(
+        text("""
+            INSERT INTO subpages (title, path, content, is_active) 
+            VALUES (:title, :path, :content, :is_active)
+        """),
+        {
+            "title": subpage.title,
+            "path": subpage.path,
+            "content": subpage.content,
+            "is_active": subpage.is_active
+        }
+    )
+    await db.commit()
+    return {"message": "Pomyślnie dodano podstronę."}
+
+@app.put("/subpages/{subpage_id}")
+async def update_subpage(subpage_id: int, subpage: SubpageUpdate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(text("SELECT * FROM subpages WHERE id = :id"), {"id": subpage_id})
+    db_subpage = result.fetchone()
+    if db_subpage is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono podstrony.")
+
+    update_fields = {key: value for key, value in subpage.dict(exclude_unset=True).items()}
+
+    if update_fields:
+        set_clause = ", ".join(f"{key} = :{key}" for key in update_fields.keys())
+        update_fields["id"] = subpage_id
+        await db.execute(text(f"UPDATE subpages SET {set_clause} WHERE id = :id"), update_fields)
+        await db.commit()
+
+    return {"message": "Pomyślnie zaktualizowano podstronę."}
+
+@app.delete("/subpages/{subpage_id}")
+async def delete_subpage(subpage_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(text("SELECT * FROM subpages WHERE id = :id"), {"id": subpage_id})
+    db_subpage = result.fetchone()
+    if db_subpage is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono podstrony.")
+
+    await db.execute(text("DELETE FROM subpages WHERE id = :id"), {"id": subpage_id})
+    await db.commit()
+    return {"message": "Pomyślnie usunięto podstronę."}
+
+@app.get("/subpages/")
+async def get_subpages(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(text("SELECT * FROM subpages"))
+    subpages = result.mappings().all()
+    return subpages
+
+@app.get("/subpages/{subpage_id}")
+async def get_subpage(subpage_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(text("SELECT * FROM subpages WHERE id = :id"), {"id": subpage_id})
+    subpage = result.mappings().first()
+    if subpage is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono podstrony.")
+    return subpage

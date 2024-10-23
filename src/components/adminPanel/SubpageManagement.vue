@@ -9,7 +9,7 @@
             Nazwa
           </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Ścieżka
+            Ścieżka URL
           </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Aktywna
@@ -75,7 +75,7 @@
                       
                       <form method="POST" onsubmit="return false">
                         <div class="border-b border-gray-900/10 pb-8">
-                          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                          <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
                             <div class="sm:col-span-2">
                               <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
                               <div class="mt-2">
@@ -105,7 +105,7 @@
                             <div class="col-span-full">
                               <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Treść</label>
                               <div class="mt-2">
-                                <textarea v-model="content" id="about" name="about" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                <textarea v-model="content" id="about" name="about" rows="6" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                               </div>
                             </div>
 
@@ -151,12 +151,18 @@
   const is_active = ref(false)
 
   const handleAddButton = () => {
-    addProduct(title.value, content.value, path.value, is_active.value)
+    addProduct(title.value, content.value, "/info/" + path.value, is_active.value)
+
+    title.value = ''
+    path.value = ''
+    content.value = ''
+    is_active.value = false
+
     addSubpageOpen.value = false
     fetchSubpages
   }
   const handleEditButton = (id) => {
-    const product = this.products.find(p => p.id === id)
+    const product = products.value.find(p => p.id === id)
     if (product) {
       editProduct(id, product.title, product.content, product.path, !product.is_active)
     }
@@ -176,7 +182,14 @@
         title: title,
         content: content,
         path: path,
-        is_active: is_active,
+        is_active: is_active
+      })
+      
+      products.value.push({
+        title: title,
+        content: content,
+        path: path,
+        is_active: is_active
       })
     } catch (error) {
       console.error('Error adding subpage:', error)
@@ -198,9 +211,9 @@
     }
   }
   const deleteProduct = async (id) => {
+    products.value = products.value.filter(p => p.id !== id)
     try {
       await axios.delete(API_URL + `/subpages/${id}`)
-      products.value = products.value.filter(p => p.id !== id)
     } catch (error) {
       console.error('Error deleting subpage:', error)
     }

@@ -15,8 +15,9 @@
             <Bars3Icon class="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div class="hidden lg:flex lg:gap-x-12">
-          <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
+        <div class="hidden lg:flex text lg:gap-x-12">
+          <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="my-auto text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
+          <SubpageMenu class="text-sm font-semibold leading-none text-black"></SubpageMenu>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
           <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black flex flex-row">
@@ -114,6 +115,7 @@
   import { Bars3Icon, XMarkIcon, ShoppingCartIcon, UserIcon, ClipboardDocumentCheckIcon, HeartIcon, ArrowLeftStartOnRectangleIcon } from '@heroicons/vue/24/outline'
   import ShoppingCart from './ShoppingCart.vue'
   import UserMenu from './topBar/UserMenu.vue'
+  import SubpageMenu from './topBar/SubpageMenu.vue'
   
   const searchStore = useSearchStore()
   const shoppingCartStore = useShoppingCartStore()

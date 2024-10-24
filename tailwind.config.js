@@ -1,7 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 
+import colors from 'tailwindcss/colors'
 import aspectRatio from '@tailwindcss/aspect-ratio'
 import forms from '@tailwindcss/forms'
+
 
 export default {
   content: [
@@ -17,6 +19,7 @@ export default {
         xl: '1440px',
       },
       colors: {
+        ...colors,
         primary: {
           DEFAULT: '#1170ED',
           500: '#0E70ED',

@@ -37,8 +37,8 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span :class="product.stock > 0
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                 " class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                 {{ product.stock > 0 ? "In Stock" : "Out of Stock" }}
               </span>
@@ -79,66 +79,75 @@
                 <div class="sm:flex sm:items-start">
                   <div
                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <DocumentPlusIcon class="h-6 w-6 text-green" aria-hidden="true" />
+                    <PlusCircleIcon class="h-6 w-6 text-green" aria-hidden="true" />
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Dodaj nową podstronę
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Dodaj produkt
                     </DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">Upewnij się, że wszystkie pola są wypełnione poprawnie, aby dodać
-                        nową podstronę do swojej witryny.</p>
+                      <p class="text-sm text-gray-500">
+                        Upewnij się, że wszystkie pola są wypełnione.
+                      </p>
 
                       <form method="POST" onsubmit="return false">
                         <div class="border-b border-gray-900/10 pb-8">
                           <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-                            <div class="sm:col-span-2">
-                              <label for="first-name"
-                                class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
+                            <div class="sm:col-span-3">
+                              <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
                               <div class="mt-2">
-                                <input v-model="title" type="text" name="first-name" id="first-name"
+                                <input v-model="title" type="text" name="name" id="name" autocomplete="given-name"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              </div>
+                            </div>
+                            <div class="sm:col-span-3">
+                              <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Cena</label>
+                              <div class="mt-2">
+                                <input v-model="title" type="text" name="price" id="price" autocomplete="given-name"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              </div>
+                            </div>
+                            <div class="sm:col-span-3">
+                              <label for="quantity" class="block text-sm font-medium leading-6 text-gray-900">Ilość w
+                                magazynie</label>
+                              <div class="mt-2">
+                                <input v-model="title" type="number" name="quantity" id="quantity"
                                   autocomplete="given-name"
                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                               </div>
                             </div>
 
-                            <div class="sm:col-span-4">
-                              <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Ścieżka
-                                URL</label>
-                              <div class="mt-2 flex">
-                                <span class="mt-2 mr-1 text-black text-sm font-bold">geeked.tech/info/</span>
-                                <input v-model="path" type="text" name="last-name" id="last-name"
-                                  autocomplete="family-name"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                            </div>
-
-                            <!-- <div class="sm:col-span-3">
-                              <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
+                            <div class="sm:col-span-3">
+                              <label for="country"
+                                class="block text-sm font-medium leading-6 text-gray-900">Kategoria</label>
                               <div class="mt-2">
-                                <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                  <option>United States</option>
-                                  <option>Canada</option>
-                                  <option>Mexico</option>
+                                <select id="category" name="category" autocomplete="category-name"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                  <option>Obudowy</option>
+                                  <option>Procesory</option>
+                                  <option>Karty graficzne</option>
                                 </select>
                               </div>
-                            </div> -->
-
-                            <div class="col-span-full">
-                              <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Treść</label>
-                              <div class="mt-2">
-                                <textarea v-model="content" id="about" name="about" rows="6"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
                             </div>
 
                             <div class="col-span-full">
-                              <label class="inline-flex items-center cursor-pointer">
-                                <span class="mr-3 text-sm font-medium text-black">Aktywna</span>
-                                <input v-model="is_active" type="checkbox" value="" class="sr-only peer">
-                                <div
-                                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                              <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Opis
+                                produktu</label>
+                              <div class="mt-2">
+                                <textarea v-model="about" id="about" name="about" rows="6"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              </div>
+                            </div>
+                            <div class="col-span-full">
+                              <label for="images" class="block text-sm font-medium leading-6 text-gray-900">Dodaj zdjęcia</label>
+                              <div class="mt-2">
+                                <input @change="handleFileUpload" type="file" name="images" id="images" accept="image/*" multiple
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              </div>
+                              <div class="mt-4 grid grid-cols-3 gap-4">
+                                <div v-for="image in previewImages" :key="image" class="w-full">
+                                  <img :src="image" class="w-full h-auto rounded-md object-cover" alt="Preview" />
                                 </div>
-                              </label>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -150,10 +159,14 @@
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button"
                   class="inline-flex w-full justify-center rounded-md bg-primary-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 sm:ml-3 sm:w-auto"
-                  @click="handleAddButton">Dodaj</button>
+                  @click="handleAddButton">
+                  Dodaj
+                </button>
                 <button type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                  @click="addProductOpen = false" ref="cancelButtonRef">Cancel</button>
+                  @click="addProductOpen = false" ref="cancelButtonRef">
+                  Anuluj
+                </button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -163,13 +176,16 @@
   </TransitionRoot>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { DocumentPlusIcon } from '@heroicons/vue/24/outline'
+import { ref } from "vue";
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
+import { PlusCircleIcon } from "@heroicons/vue/24/outline";
 
-const API_URL = import.meta.env.VITE_API_URL
-const addProductOpen = ref(false)
+const addProductOpen = ref(false);
+const title = ref("");
+const price = ref("");
+const quantity = ref(0);
+const category = ref("");
+const about = ref("");
 const products = ref([
   {
     id: 1,
@@ -185,7 +201,20 @@ const products = ref([
     stock: 0,
     image: "https://via.placeholder.com/150",
   },
+]);
 
-])
+const images = ref([]);
+const previewImages = ref([]);
 
+const handleFileUpload = (event) => {
+  const files = event.target.files;
+  images.value = Array.from(files);
+  previewImages.value = images.value.map((file) => URL.createObjectURL(file));
+};
+
+const handleAddButton = () => {
+  // Logika dodawania produktu do API lub innych operacji
+  console.log("Dodaj produkt", { title: title.value, price: price.value, quantity: quantity.value, images: images.value });
+  addProductOpen.value = false;
+};
 </script>

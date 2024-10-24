@@ -207,13 +207,12 @@ const images = ref([]);
 const previewImages = ref([]);
 
 const handleFileUpload = (event) => {
-  const files = event.target.files;
-  images.value = Array.from(files);
-  previewImages.value = images.value.map((file) => URL.createObjectURL(file));
+  const files = Array.from(event.target.files);
+  images.value.push(...files); 
+  previewImages.value.push(...files.map((file) => URL.createObjectURL(file))); 
 };
 
 const handleAddButton = () => {
-  // Logika dodawania produktu do API lub innych operacji
   console.log("Dodaj produkt", { title: title.value, price: price.value, quantity: quantity.value, images: images.value });
   addProductOpen.value = false;
 };

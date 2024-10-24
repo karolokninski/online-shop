@@ -110,41 +110,40 @@ const routes = [
   }
 ]
 
-const fetchSubpagesRoutes = async () => {
-  try {
-    const response = await axios.get(API_URL + '/subpages')
-    const subpages = response.data
-
-    subpages.forEach(subpage => {
-      routes.push({
-        path: subpage.path,
-        name: subpage.path,
-        component: () => import('../views/SubpageView.vue'),
-        meta: {
-          id: subpage.id,
-          title: subpage.title
-        }
-      })
-    })
-  } catch (error) {
-    console.error('Error fetching subpages:', error)
-  }
-}
-
-// Call the function to fetch subpage routes
-await fetchSubpagesRoutes()
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior() {
     document.getElementById('app').scrollIntoView({ behavior: 'smooth' });
   },
   routes
-})
+});
+
+const fetchSubpagesRoutes = () => {
+  return axios.get(`${API_URL}/subpages`)
+    .then(response => {
+      const subpages = response.data;
+      subpages.forEach(subpage => {
+        router.addRoute({
+          path: subpage.path,
+          name: subpage.path,
+          component: () => import('../views/SubpageView.vue'),
+          meta: {
+            id: subpage.id,
+            title: subpage.title
+          }
+        });
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching subpages:', error);
+    });
+};
+
+fetchSubpagesRoutes();
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || 'Geeked.tech'
-  next()
-})
+  document.title = to.meta.title || 'Geeked.tech';
+  next();
+});
 
-export default router
+export default router;

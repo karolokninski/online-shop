@@ -171,7 +171,6 @@ const handleEditButton = (id) => {
   console.log('Edytuj podstronę o id:', id);
 };
 
-// Fetch subpages when component mounts
 onMounted(async () => {
   try {
     const response = await axios.get(`${API_URL}/subpages`);
@@ -181,7 +180,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-/* Optional: add any additional styles here */
-</style>

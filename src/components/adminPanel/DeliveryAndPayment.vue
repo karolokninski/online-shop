@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-around gap-8 mt-8">
-
+    <!-- Dostawcy -->
     <div class="text-black">
       <h2 class="text-2xl font-bold mb-4">Dostawcy</h2>
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
@@ -22,10 +22,17 @@
           </tr>
         </tbody>
       </table>
-      <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addProviderOpen = true">Dodaj dostawcę</button>
+      <div class="mt-4">
+        <div class="flex space-x-2">
+          <input v-model="categoryName" type="text" placeholder="Nazwa dostawcy"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addProviderOpen = true">Dodaj dostawcę</button>
+        </div>
+      </div>
+  
     </div>
 
-
+    <!-- Formy Płatności -->
     <div class="text-black">
       <h2 class="text-2xl font-bold mb-4">Formy Płatności</h2>
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
@@ -47,10 +54,17 @@
           </tr>
         </tbody>
       </table>
-      <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addPaymentMethodOpen = true">Dodaj formę płatności</button>
+      <div class="mt-4">
+        <div class="flex space-x-2">
+          <input v-model="categoryName" type="text" placeholder="Nazwa formy płatności"
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addPaymentMethodOpen = true">Dodaj formę płatności</button>
+        </div>
+      </div>
+      
     </div>
 
-
+    <!-- Zamówienia -->
     <div class="text-black">
       <h2 class="text-2xl font-bold mb-4">Zamówienia</h2>
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
@@ -74,52 +88,22 @@
           </tr>
         </tbody>
       </table>
+      
     </div>
   </div>
 
-
-  <TransitionRoot as="template" :show="addProviderOpen">
-    <Dialog class="relative z-10" @close="addProviderOpen = false">
-
-    </Dialog>
-  </TransitionRoot>
-
-  <TransitionRoot as="template" :show="addPaymentMethodOpen">
-    <Dialog class="relative z-10" @close="addPaymentMethodOpen = false">
-
-    </Dialog>
-  </TransitionRoot>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { Dialog, TransitionRoot } from "@headlessui/vue";
 
 
+// Data and state variables
 const addProviderOpen = ref(false);
-const providers = ref([
-  { id: 1, name: "InPost" },
-  { id: 2, name: "DHL" },
-]);
-
-
 const addPaymentMethodOpen = ref(false);
-const paymentMethods = ref([
-  { id: 1, name: "Przelewy24" },
-  { id: 2, name: "PayU" },
-]);
+const providers = ref([{ id: 1, name: "InPost" }, { id: 2, name: "DHL" }]);
+const paymentMethods = ref([{ id: 1, name: "Przelewy24" }, { id: 2, name: "PayU" }]);
+const orders = ref([{ id: 1, paymentMethodId: 1, providerId: 2 }, { id: 2, paymentMethodId: 2, providerId: 1 }]);
 
-const orders = ref([
-  { id: 1, paymentMethodId: 1, providerId: 2 },
-  { id: 2, paymentMethodId: 2, providerId: 1 },
-]);
 
-const editProvider = (id) => { /* Kod edycji dostawcy */ };
-const deleteProvider = (id) => { /* Kod usuwania dostawcy */ };
-
-const editPaymentMethod = (id) => { /* Kod edycji formy płatności */ };
-const deletePaymentMethod = (id) => { /* Kod usuwania formy płatności */ };
-
-const editOrder = (id) => { /* Kod edycji zamówienia */ };
-const deleteOrder = (id) => { /* Kod usuwania zamówienia */ };
 </script>

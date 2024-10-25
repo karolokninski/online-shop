@@ -64,32 +64,7 @@
       
     </div>
 
-    <!-- Zamówienia -->
-    <div class="text-black">
-      <h2 class="text-2xl font-bold mb-4">Zamówienia</h2>
-      <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
-        <thead class="bg-indigo-600 text-white">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase">ID Zamówienia</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase">ID Formy Płatności</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase">ID Dostawcy</th>
-            <th class="px-6 py-3 text-right text-xs font-medium uppercase">Akcje</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="order in orders" :key="order.id" class="hover:bg-gray-100 transition">
-            <td class="px-6 py-4">{{ order.id }}</td>
-            <td class="px-6 py-4">{{ order.paymentMethodId }}</td>
-            <td class="px-6 py-4">{{ order.providerId }}</td>
-            <td class="px-6 py-4 text-right">
-              <button @click="editOrder(order.id)" class="text-indigo-600 mr-2">Edytuj</button>
-              <button @click="deleteOrder(order.id)" class="text-red-600">Usuń</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      
-    </div>
+  
   </div>
 
 </template>
@@ -103,7 +78,7 @@ const addProviderOpen = ref(false);
 const addPaymentMethodOpen = ref(false);
 const providers = ref([{ id: 1, name: "InPost" }, { id: 2, name: "DHL" }]);
 const paymentMethods = ref([{ id: 1, name: "Przelewy24" }, { id: 2, name: "PayU" }]);
-const orders = ref([{ id: 1, paymentMethodId: 1, providerId: 2 }, { id: 2, paymentMethodId: 2, providerId: 1 }]);
+
 
 
 </script>

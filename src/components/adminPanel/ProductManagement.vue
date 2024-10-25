@@ -7,6 +7,7 @@
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Zdjęcie</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nazwa</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Kategoria</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Cena</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Akcje</th>
@@ -19,6 +20,9 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm  font-medium text-gray-900">{{ product.category }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">${{ product.price }}</div>
@@ -170,6 +174,7 @@ const products = ref([
     price: 29.99,
     stock: 15,
     image: "https://via.placeholder.com/150",
+    category: "zasilacze",
   },
   {
     id: 2,
@@ -177,6 +182,7 @@ const products = ref([
     price: 49.99,
     stock: 0,
     image: "https://via.placeholder.com/150",
+    category: "procesory",
   },
 ]);
 

@@ -43,7 +43,7 @@
   const fetchSubpages = async () => {
     try {
       const response = await axios.get(API_URL + '/subpages')
-      subpages.value = response.data
+      subpages.value = response.data.filter((subpage) => subpage.is_active === true)
     } catch (error) {
       console.error('Error fetching subpages:', error)
     }

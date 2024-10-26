@@ -5,7 +5,7 @@
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
         <thead class="bg-indigo-600 text-white">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID Zamówienia</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID Klienta</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Miasto</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Kod Pocztowy</th>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-around gap-8 mt-8">
+  <div class="flex flex-row justify-around gap-16 mt-8">
     <!-- Dostawcy -->
     <div class="text-black">
       <h2 class="text-2xl font-bold mb-4">Dostawcy</h2>
@@ -26,10 +26,11 @@
         <div class="flex space-x-2">
           <input v-model="categoryName" type="text" placeholder="Nazwa dostawcy"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-            <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addProviderOpen = true">Dodaj dostawcę</button>
+          <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addProviderOpen = true">Dodaj
+            dostawcę</button>
         </div>
       </div>
-  
+
     </div>
 
     <!-- Formy Płatności -->
@@ -58,27 +59,19 @@
         <div class="flex space-x-2">
           <input v-model="categoryName" type="text" placeholder="Nazwa formy płatności"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-            <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addPaymentMethodOpen = true">Dodaj formę płatności</button>
+          <button class="bg-indigo-600 text-white px-4 py-2 rounded" @click="addPaymentMethodOpen = true">Dodaj formę
+            płatności</button>
         </div>
       </div>
-      
     </div>
-
-  
   </div>
-
 </template>
 
 <script setup>
 import { ref } from "vue";
 
-
-// Data and state variables
 const addProviderOpen = ref(false);
 const addPaymentMethodOpen = ref(false);
 const providers = ref([{ id: 1, name: "InPost" }, { id: 2, name: "DHL" }]);
 const paymentMethods = ref([{ id: 1, name: "Przelewy24" }, { id: 2, name: "PayU" }]);
-
-
-
 </script>

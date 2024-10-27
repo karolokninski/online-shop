@@ -6,11 +6,13 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator, EmailStr, constr
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Float, Text, select, text, DECIMAL, and_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, Float, text
+from sqlalchemy.orm import sessionmaker, relationship, joinedload, selectinload
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import ARRAY, BYTEA
 from datetime import datetime, timedelta
 from typing import List, Optional
 import smtplib
@@ -38,21 +40,104 @@ Base = declarative_base()
 engine = create_async_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
-class User(Base):
-    __tablename__ = 'users'
+class ProductCategory(Base):
+    __tablename__ = 'product_categories'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, index=True, nullable=False)
-    email = Column(String(100), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(100), nullable=False)
+    category_name = Column(String(100), nullable=False)
+    parent_category_id = Column(Integer, ForeignKey('product_categories.id'), nullable=True)
+    description = Column(Text, nullable=True)
 
 class Product(Base):
     __tablename__ = 'products'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
-    description = Column(String(255))
+    product_name = Column(String(150), nullable=False)
+    category_id = Column(Integer, ForeignKey('product_categories.id'), nullable=True)
     price = Column(Float, nullable=False)
+    stock_quantity = Column(Integer, default=0)
+    description = Column(Text, nullable=True)
+    main_image = Column(BYTEA, nullable=True)
+    additional_images = Column(ARRAY(BYTEA), nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    category = relationship("ProductCategory")
 
-class UserCreate(BaseModel):
+class ProductParameter(Base):
+    __tablename__ = 'product_parameters'
+    id = Column(Integer, primary_key=True, index=True)
+    parameter_name = Column(String(100), unique=True, nullable=False)
+
+class ParameterValue(Base):
+    __tablename__ = 'parameter_values'
+    id = Column(Integer, primary_key=True, index=True)
+    parameter_id = Column(Integer, ForeignKey('product_parameters.id', ondelete='CASCADE'))
+    value = Column(Text, nullable=False)
+    product_parameter_values = relationship("ProductParameterValue", back_populates="parameter_value")
+
+class ProductParameterValue(Base):
+    __tablename__ = 'product_parameter_values'
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey('products.id', ondelete='CASCADE'))
+    parameter_value_id = Column(Integer, ForeignKey('parameter_values.id', ondelete='CASCADE'))
+    parameter_value = relationship("ParameterValue", back_populates="product_parameter_values")
+
+class DeliveryMethod(Base):
+    __tablename__ = 'delivery_methods'
+    id = Column(Integer, primary_key=True, index=True)
+    method_name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    estimated_delivery_days = Column(Integer, nullable=True)
+    cost = Column(DECIMAL(10, 2), nullable=False, default=0.00)
+
+class PaymentMethod(Base):
+    __tablename__ = 'payment_methods'
+    id = Column(Integer, primary_key=True, index=True)
+    method_name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    fee = Column(DECIMAL(10, 2), nullable=False, default=0.00)
+
+class Address(Base):
+    __tablename__ = 'addresses'
+    id = Column(Integer, primary_key=True, index=True)
+    address_line = Column(String(255), nullable=False)
+    postal_code = Column(String(20), nullable=False)
+    city = Column(String(100), nullable=False)
+    country = Column(String(100), nullable=False)
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    phone = Column(String(20), nullable=True)
+    hashed_password = Column(String(100), nullable=False)
+    address_id = Column(Integer, ForeignKey('addresses.id', ondelete="SET NULL"))
+    role = Column(String(20), default='user', nullable=False)
+    note = Column(String, nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    address = relationship("Address")
+
+class Order(Base):
+    __tablename__ = 'orders'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
+    order_date = Column(TIMESTAMP, default=datetime.utcnow)
+    delivery_method_id = Column(Integer, ForeignKey('delivery_methods.id', ondelete="SET NULL"))
+    payment_method_id = Column(Integer, ForeignKey('payment_methods.id', ondelete="SET NULL"))
+    address_id = Column(Integer, ForeignKey('addresses.id', ondelete="SET NULL"))
+    total_amount = Column(DECIMAL(10, 2), nullable=False)
+    order_status = Column(String(50), default='Pending')
+    order_items = relationship("OrderItem", back_populates="order")
+    address = relationship("Address")
+
+class OrderItem(Base):
+    __tablename__ = 'order_items'
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey('orders.id', ondelete="CASCADE"))
+    product_id = Column(Integer, ForeignKey('products.id', ondelete="SET NULL"))
+    quantity = Column(Integer, nullable=False)
+    price = Column(DECIMAL(10, 2), nullable=False)
+    order = relationship("Order", back_populates="order_items")
+
+class UserRegisterCreate(BaseModel):
     name: str
     email: str
     password: str
@@ -61,19 +146,214 @@ class EmailPasswordForm(BaseModel):
     email: str
     password: str
 
-class ProductCreate(BaseModel):
-    name: str
+class ProductCategoryCreate(BaseModel):
+    category_name: str
+    parent_category_id: Optional[int] = None
     description: Optional[str] = None
+
+class ProductCategoryResponse(BaseModel):
+    id: int
+    category_name: str
+    parent_category_id: Optional[int] = None
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ProductCreate(BaseModel):
+    product_name: str
+    category_id: Optional[int] = None
     price: float
+    stock_quantity: Optional[int] = 0
+    description: Optional[str] = None
+    main_image: Optional[bytes] = None
+    additional_images: Optional[List[bytes]] = None
 
 class ProductResponse(BaseModel):
     id: int
-    name: str
-    description: Optional[str]
+    product_name: str
+    category_id: Optional[int]
     price: float
+    stock_quantity: int
+    description: Optional[str]
+    main_image: Optional[bytes]
+    additional_images: Optional[List[bytes]]
+    created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class ProductParameterCreate(BaseModel):
+    parameter_name: str
+
+class ProductParameterResponse(ProductParameterCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class ParameterValueCreate(BaseModel):
+    parameter_id: int
+    value: str
+
+class ParameterValueResponse(ParameterValueCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class ProductParameterValueCreate(BaseModel):
+    product_id: int
+    parameter_id: int
+    value: str
+
+class ProductParameterValueResponse(ProductParameterValueCreate):
+    parameter_id: int
+    value: str
+
+    class Config:
+        from_attributes = True
+
+class DeliveryMethodCreate(BaseModel):
+    method_name: str
+    description: Optional[str] = None
+    estimated_delivery_days: Optional[int] = None
+    cost: float = Field(..., gt=0.0)
+
+class DeliveryMethodResponse(DeliveryMethodCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class PaymentMethodCreate(BaseModel):
+    method_name: str
+    description: Optional[str] = None
+    fee: float = 0.00
+
+class PaymentMethodResponse(PaymentMethodCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class AddressCreate(BaseModel):
+    address_line: str
+    postal_code: str
+    city: str
+    country: str
+
+class AddressBase(BaseModel):
+    address_line: str
+    postal_code: str
+    city: str
+    country: str
+
+class AddressResponse(BaseModel):
+    address_line: str
+    postal_code: str
+    city: str
+    country: str
+
+    class Config:
+        from_attributes = True
+
+class UserBase(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    role: Optional[str] = 'user'
+    note: Optional[str] = None
+
+    @validator('phone')
+    def validate_phone(cls, v):
+        if v and len(v) > 20:
+            raise ValueError('Numer telefonu może mieć maksymalnie 20 znaków.')
+        return v
+
+    @validator('role')
+    def validate_role(cls, v):
+        if v and len(v) > 20:
+            raise ValueError('Rola może mieć maksymalnie 20 znaków.')
+        return v
+
+class UserCreate(UserBase):
+    hashed_password: str
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    role: Optional[str] = None
+    note: Optional[str] = None
+
+    @validator('phone')
+    def validate_phone(cls, v):
+        if v and len(v) > 20:
+            raise ValueError('Numer telefonu może mieć maksymalnie 20 znaków.')
+        return v
+
+    @validator('role')
+    def validate_role(cls, v):
+        if v and len(v) > 20:
+            raise ValueError('Rola może mieć maksymalnie 20 znaków.')
+        return v
+
+class UserResponse(UserBase):
+    id: int
+    created_at: str
+
+    @validator('created_at', pre=True, always=True)
+    def format_created_at(cls, v):
+        if isinstance(v, datetime):
+            return v.strftime("%Y-%m-%d %H:%M:%S")
+        return v
+
+    class Config:
+        from_attributes = True
+
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+    price: float
+
+class OrderItemResponse(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+    price: float
+
+class OrderResponse(BaseModel):
+    id: int
+    user_id: int
+    order_date: str
+    delivery_method_id: Optional[int]
+    payment_method_id: Optional[int]
+    address_id: Optional[int]
+    total_amount: float
+    order_status: str
+    order_items: List[OrderItemResponse]
+    address: Optional[AddressResponse]
+    
+    class Config:
+        from_attributes = True
+
+    @validator('order_date', pre=True, always=True)
+    def format_order_date(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
+
+class OrderCreate(BaseModel):
+    user_id: int
+    delivery_method_id: Optional[int] = None
+    payment_method_id: Optional[int] = None
+    address: AddressCreate
+    order_items: List[OrderItemCreate]
+    total_amount: float
+
+class UpdateOrderStatus(BaseModel):
+    status: str
 
 class PasswordResetRequest(BaseModel):
     email: str
@@ -187,7 +467,7 @@ app.add_middleware(
 )
 
 @app.post("/register")
-async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(user: UserRegisterCreate, db: AsyncSession = Depends(get_db)):
     query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": user.email})
     existing_user = query.fetchone()
 
@@ -229,21 +509,22 @@ async def change_password(request_data: ChangePasswordRequest, db: AsyncSession 
 
 @app.post("/password-reset", response_model=PasswordResetResponse)
 async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = Depends(get_db)):
-    query = await db.execute(text("SELECT * FROM users WHERE email = :email"), {"email": request_data.email})
+    query = await db.execute(text("SELECT id, email FROM users WHERE email = :email"), {"email": request_data.email})
     user = query.fetchone()
 
     if not user:
         raise HTTPException(status_code=404, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
     password_reset_token = generate_token()
+    token_expiration = datetime.utcnow() + timedelta(hours=1)
 
-    token_expiration = datetime.utcnow() + timedelta(hours=1) 
-
-    await db.execute(text("""
-        UPDATE users 
-        SET password_reset_token = :token, token_expiration = :expiration 
-        WHERE email = :email
-    """), {"token": password_reset_token, "expiration": token_expiration, "email": request_data.email})
+    await db.execute(
+        text("""
+            INSERT INTO password_reset_tokens (user_id, reset_token, token_expiration)
+            VALUES (:user_id, :reset_token, :token_expiration)
+        """),
+        {"user_id": user.id, "reset_token": password_reset_token, "token_expiration": token_expiration}
+    )
     await db.commit()
 
     send_email(email=user.email, token=password_reset_token)
@@ -252,67 +533,630 @@ async def password_reset(request_data: PasswordResetRequest, db: AsyncSession = 
 
 @app.post("/validate-password-reset", response_model=PasswordResetValidationResponse)
 async def validate_password_reset(request_data: PasswordResetValidationRequest, db: AsyncSession = Depends(get_db)):
-    query = await db.execute(text("""SELECT password_reset_token, token_expiration FROM users WHERE email = :email"""), {"email": request_data.email})
-    user = query.fetchone()
+    query = await db.execute(
+        text("""
+            SELECT reset_token, token_expiration 
+            FROM password_reset_tokens 
+            JOIN users ON users.id = password_reset_tokens.user_id 
+            WHERE users.email = :email
+        """),
+        {"email": request_data.email}
+    )
+    token_data = query.fetchone()
 
-    if not user:
+    if not token_data:
         raise HTTPException(status_code=400, detail="Użytkownik o takim adresie e-mail nie istnieje.")
 
-    if user.password_reset_token != request_data.token:
-        raise HTTPException(status_code=400, detail="Nieprawdiłowy kod weryfikacyjny.")
+    if token_data.reset_token != request_data.token:
+        raise HTTPException(status_code=400, detail="Nieprawidłowy kod weryfikacyjny.")
 
-    if user.token_expiration < datetime.utcnow():
+    if token_data.token_expiration < datetime.utcnow():
         raise HTTPException(status_code=400, detail="Kod weryfikacyjny wygasł.")
 
     return {"message": "Prawidłowo zweryfikowano kod."}
 
-@app.post("/products/", response_model=ProductResponse)
-async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):
-    db_product = Product(name=product.name, description=product.description, price=product.price)
-    db.add(db_product)
+@app.post("/categories/")
+async def create_category(category: ProductCategoryCreate, db: AsyncSession = Depends(get_db)):
+    existing_category = await db.execute(
+        select(ProductCategory).where(ProductCategory.category_name == category.category_name)
+    )
+    if existing_category.scalars().first() is not None:
+        raise HTTPException(status_code=400, detail="Kategoria już istnieje.")
+
+    db_category = ProductCategory(**category.dict())
+    db.add(db_category)
+    
+    try:
+        await db.commit()
+        await db.refresh(db_category)
+        return {"message": "Pomyślnie dodano kategorię."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/categories/", response_model=List[ProductCategoryResponse])
+async def get_categories(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductCategory).offset(skip).limit(limit))
+    categories = result.scalars().all()
+    return categories
+
+@app.get("/categories/{category_id}", response_model=ProductCategoryResponse)
+async def get_category(category_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductCategory).where(ProductCategory.id == category_id))
+    category = result.scalars().first()
+
+    if category is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono kategorii.")
+    return category
+
+@app.put("/categories/{category_id}")
+async def update_category(category_id: int, category: ProductCategoryCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductCategory).where(ProductCategory.id == category_id))
+    db_category = result.scalars().first()
+    
+    if db_category is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono kategorii.")
+
+    for key, value in category.dict(exclude_unset=True).items():
+        setattr(db_category, key, value)
+
     await db.commit()
-    await db.refresh(db_product)
-    return db_product
+    await db.refresh(db_category)
+    return {"message": "Pomyślnie zaktualizowano kategorię."}
+
+@app.delete("/categories/{category_id}")
+async def delete_category(category_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductCategory).where(ProductCategory.id == category_id))
+    db_category = result.scalars().first()
+    if db_category is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono kategorii.")
+
+    await db.delete(db_category)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto kategorię."}
+
+@app.post("/products/")
+async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):
+    db_product = Product(
+        product_name=product.product_name,
+        category_id=product.category_id,
+        price=product.price,
+        stock_quantity=product.stock_quantity,
+        description=product.description,
+        main_image=product.main_image,
+        additional_images=product.additional_images
+    )
+    db.add(db_product)
+    
+    try:
+        await db.commit()
+        await db.refresh(db_product)
+        return {"message": "Pomyślnie dodano produkt."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/products/", response_model=List[ProductResponse])
 async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(text("SELECT * FROM products LIMIT :limit OFFSET :skip"), {"limit": limit, "skip": skip})
-    products = result.fetchall()
+    result = await db.execute(select(Product).offset(skip).limit(limit))
+    products = result.scalars().all()
     return products
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
-    product = result.fetchone()
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    product = result.scalar_one_or_none()
     if product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
     return product
 
-@app.put("/products/{product_id}", response_model=ProductResponse)
+@app.put("/products/{product_id}")
 async def update_product(product_id: int, product: ProductCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
-    db_product = result.fetchone()
-    if db_product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    db_product = result.scalar_one_or_none()
     
-    await db.execute(
-        text("UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id"), 
-        {"name": product.name, "description": product.description, "price": product.price, "id": product_id}
-    )
-    await db.commit()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
+    
+    db_product.product_name = product.product_name
+    db_product.category_id = product.category_id
+    db_product.price = product.price
+    db_product.stock_quantity = product.stock_quantity
+    db_product.description = product.description
+    db_product.main_image = product.main_image
+    db_product.additional_images = product.additional_images
 
-    return product
+    try:
+        await db.commit()
+        await db.refresh(db_product)
+        return {"message": "Pomyślnie zaktualizowano produkt."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/products/{product_id}")
 async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(text("SELECT * FROM products WHERE id = :id"), {"id": product_id})
-    db_product = result.fetchone()
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    db_product = result.scalar_one_or_none()
+    
     if db_product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
 
-    await db.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
+    await db.delete(db_product)
     await db.commit()
-    return {"message": "Product deleted successfully"}
+    return {"message": "Pomyślnie usunięto produkt."}
+
+@app.post("/parameters/", response_model=dict)
+async def add_parameter(parameter: ProductParameterCreate, db: AsyncSession = Depends(get_db)):
+    existing_parameter = await db.execute(select(ProductParameter).where(ProductParameter.parameter_name == parameter.parameter_name))
+    if existing_parameter.scalars().first() is not None:
+        raise HTTPException(status_code=400, detail="Parametr już istnieje.")
+
+    db_parameter = ProductParameter(**parameter.dict())
+    db.add(db_parameter)
+    
+    try:
+        await db.commit()
+        return {"message": "Pomyślnie dodano parametr."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.delete("/parameters/{parameter_id}")
+async def delete_parameter(parameter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductParameter).where(ProductParameter.id == parameter_id))
+    db_parameter = result.scalar_one_or_none()
+    if db_parameter is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru.")
+
+    try:
+        await db.delete(db_parameter)
+        return {"message": "Pomyślnie usunięto parametr."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.put("/parameters/{parameter_id}", response_model=dict)
+async def edit_parameter(parameter_id: int, parameter: ProductParameterCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductParameter).where(ProductParameter.id == parameter_id))
+    db_parameter = result.scalar_one_or_none()
+
+    if db_parameter is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru.")
+    
+    existing_parameter = await db.execute(select(ProductParameter).where(ProductParameter.parameter_name == parameter.parameter_name))
+    if existing_parameter.scalars().first() is not None:
+        raise HTTPException(status_code=400, detail="Parameter już istnieje")
+
+    db_parameter.parameter_name = parameter.parameter_name
+    await db.commit()
+    return {"message": "Pomyślnie zaktualizowano parametr."}
+
+@app.get("/parameters/", response_model=List[ProductParameterResponse])
+async def get_all_parameters(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductParameter))
+    parameters = result.scalars().all()
+    return parameters
+
+@app.get("/parameters/{parameter_id}", response_model=ProductParameterResponse)
+async def get_parameter(parameter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductParameter).where(ProductParameter.id == parameter_id))
+    parameter = result.scalar_one_or_none()
+    if parameter is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru.")
+    return parameter
+
+@app.post("/product-parameters/", response_model=dict)
+async def add_product_parameter_value(value: ProductParameterValueCreate, db: AsyncSession = Depends(get_db)):
+    product_result = await db.execute(select(Product).where(Product.id == value.product_id))
+    product = product_result.scalar_one_or_none()
+    if product is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
+
+    parameter_result = await db.execute(select(ProductParameter).where(ProductParameter.id == value.parameter_id))
+    parameter = parameter_result.scalar_one_or_none()
+    if parameter is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru.")
+
+    parameter_value_result = await db.execute(
+        select(ParameterValue).where(
+            ParameterValue.parameter_id == value.parameter_id,
+            ParameterValue.value == value.value
+        )
+    )
+    parameter_value = parameter_value_result.scalar_one_or_none()
+
+    if parameter_value is None:
+        new_parameter_value = ParameterValue(parameter_id=value.parameter_id, value=value.value)
+        db.add(new_parameter_value)
+        await db.commit()
+        await db.refresh(new_parameter_value)
+
+        db_product_parameter_value = ProductParameterValue(
+            product_id=value.product_id,
+            parameter_value_id=new_parameter_value.id
+        )
+        db.add(db_product_parameter_value)
+
+    else:
+        db_product_parameter_value = ProductParameterValue(
+            product_id=value.product_id,
+            parameter_value_id=parameter_value.id
+        )
+        db.add(db_product_parameter_value)
+
+    try:
+        await db.commit()
+        return {"message": "Pomyślnie dodano parametr produktu."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@app.put("/product-parameters/{product_id}", response_model=dict)
+async def edit_product_parameter_value(product_id: int, value: ParameterValueCreate, db: AsyncSession = Depends(get_db)):
+    product_result = await db.execute(select(Product).where(Product.id == product_id))
+    product = product_result.scalar_one_or_none()
+    if product is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
+
+    parameter_result = await db.execute(select(ProductParameter).where(ProductParameter.id == value.parameter_id))
+    parameter = parameter_result.scalar_one_or_none()
+    if parameter is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru.")
+
+    existing_result = await db.execute(
+        select(ProductParameterValue)
+        .where(ProductParameterValue.product_id == product_id, 
+               ProductParameterValue.parameter_value_id == value.parameter_id)
+    )
+    existing_parameter_value = existing_result.scalar_one_or_none()
+
+    if existing_parameter_value is None:
+        new_parameter_value = ProductParameterValue(
+            product_id=value.product_id,
+            parameter_value_id=value.parameter_id
+        )
+        db.add(new_parameter_value)
+    else:
+        existing_parameter_value.parameter_value_id = value.parameter_id
+        existing_parameter_value.value = value.value
+
+    try:
+        await db.commit()
+        return {"message": "Pomyślnie zaktualizowano parametr produktu."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.delete("/product-parameters/{product_parameter_value_id}")
+async def delete_product_parameter_value(product_parameter_value_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProductParameterValue).where(ProductParameterValue.id == product_parameter_value_id))
+    db_product_parameter_value = result.scalar_one_or_none()
+    if db_product_parameter_value is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametru produktu.")
+
+    await db.delete(db_product_parameter_value)
+    try:
+        await db.commit()
+        return {"message": "Pomyślnie usunięto parametr produktu."}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/product-parameters/{product_id}", response_model=list[ProductParameterValueResponse])
+async def get_product_parameter_value(product_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(ProductParameterValue)
+        .options(joinedload(ProductParameterValue.parameter_value))
+        .where(ProductParameterValue.product_id == product_id)
+    )
+    product_parameter_values = result.scalars().all()
+
+    if not product_parameter_values:
+        raise HTTPException(status_code=404, detail="Nie znaleziono parametrów produktu.")
+
+    response = [
+        ProductParameterValueResponse(
+            parameter_id=ppv.parameter_value.parameter_id,
+            value=ppv.parameter_value.value
+        )
+        for ppv in product_parameter_values
+    ]
+    return response
+
+@app.post("/delivery-methods/", response_model=DeliveryMethodResponse)
+async def create_delivery_method(method: DeliveryMethodCreate, db: AsyncSession = Depends(get_db)):
+    db_method = DeliveryMethod(**method.dict())
+    db.add(db_method)
+    await db.commit()
+    await db.refresh(db_method)
+    return db_method
+
+@app.get("/delivery-methods/", response_model=list[DeliveryMethodResponse])
+async def read_delivery_methods(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DeliveryMethod))
+    methods = result.scalars().all()
+    return methods
+
+@app.get("/delivery-methods/{method_id}", response_model=DeliveryMethodResponse)
+async def read_delivery_method(method_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DeliveryMethod).where(DeliveryMethod.id == method_id))
+    method = result.scalar_one_or_none()
+    if method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody dostawy.")
+    return method
+
+@app.put("/delivery-methods/{method_id}", response_model=DeliveryMethodResponse)
+async def update_delivery_method(method_id: int, method: DeliveryMethodCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DeliveryMethod).where(DeliveryMethod.id == method_id))
+    db_method = result.scalar_one_or_none()
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody dostawy.")
+    
+    db_method.method_name = method.method_name
+    db_method.description = method.description
+    db_method.estimated_delivery_days = method.estimated_delivery_days
+    db_method.cost = method.cost
+    
+    await db.commit()
+    await db.refresh(db_method)
+    return db_method
+
+@app.delete("/delivery-methods/{method_id}", response_model=dict)
+async def delete_delivery_method(method_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DeliveryMethod).where(DeliveryMethod.id == method_id))
+    db_method = result.scalar_one_or_none()
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody dostawy.")
+    
+    await db.delete(db_method)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto metodę dostawy."}
+
+@app.post("/payment-methods/", response_model=PaymentMethodResponse)
+async def create_payment_method(method: PaymentMethodCreate, db: AsyncSession = Depends(get_db)):
+    db_method = PaymentMethod(**method.dict())
+    db.add(db_method)
+    await db.commit()
+    await db.refresh(db_method)
+    return db_method
+
+@app.get("/payment-methods/", response_model=List[PaymentMethodResponse])
+async def read_payment_methods(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(PaymentMethod))
+    methods = result.scalars().all()
+    return methods
+
+@app.get("/payment-methods/{method_id}", response_model=PaymentMethodResponse)
+async def read_payment_method(method_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(PaymentMethod).where(PaymentMethod.id == method_id))
+    method = result.scalar_one_or_none()
+    if method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody płatności.")
+    return method
+
+@app.put("/payment-methods/{method_id}", response_model=PaymentMethodResponse)
+async def update_payment_method(method_id: int, method: PaymentMethodCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(PaymentMethod).where(PaymentMethod.id == method_id))
+    db_method = result.scalar_one_or_none()
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody płatności.")
+    
+    db_method.method_name = method.method_name
+    db_method.description = method.description
+    db_method.fee = method.fee
+    
+    await db.commit()
+    await db.refresh(db_method)
+    return db_method
+
+@app.delete("/payment-methods/{method_id}", response_model=dict)
+async def delete_payment_method(method_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(PaymentMethod).where(PaymentMethod.id == method_id))
+    db_method = result.scalar_one_or_none()
+    if db_method is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono metody płatności.")
+    
+    await db.delete(db_method)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto metodę płatności."}
+
+@app.post("/users/", response_model=UserResponse)
+async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    existing_user = await db.execute(select(User).where(User.email == user.email))
+    if existing_user.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Użytkownik o podanym adresie e-mail jest już zarejestrowany.")
+
+    new_user = User(**user.dict())
+    new_user.hashed_password =  get_password_hash(user.hashed_password)
+
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    return new_user
+
+@app.get("/users/", response_model=List[UserResponse])
+async def get_all_users(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User))
+    users = result.scalars().all()
+    
+    return [UserResponse.from_orm(user) for user in users]
+
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono użytkownika.")
+    return user
+
+@app.put("/users/{user_id}", response_model=UserResponse)
+async def update_user(user_id: int, user_update: UserUpdate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono użytkownika.")
+
+    for key, value in user_update.dict(exclude_unset=True).items():
+        setattr(user, key, value)
+
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+@app.delete("/users/{user_id}", response_model=dict)
+async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono użytkownika.")
+
+    await db.delete(user)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto użytkownika."}
+
+@app.post("/orders/", response_model=dict)
+async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
+    if order.address:
+        db_address = Address(**order.address.dict())
+        db.add(db_address)
+        await db.commit()
+        await db.refresh(db_address)
+        address_id = db_address.id
+    else:
+        address_id = None
+
+    db_order = Order(
+        user_id=order.user_id,
+        delivery_method_id=order.delivery_method_id,
+        payment_method_id=order.payment_method_id,
+        address_id=address_id,
+        total_amount=order.total_amount
+    )
+    db.add(db_order)
+    await db.commit()
+    await db.refresh(db_order)
+
+    for item in order.order_items:
+        existing_item_result = await db.execute(
+            select(OrderItem).where(
+                OrderItem.order_id == db_order.id,
+                OrderItem.product_id == item.product_id
+            )
+        )
+        existing_item = existing_item_result.scalar_one_or_none()
+
+        if existing_item:
+            existing_item.quantity += item.quantity
+            existing_item.price = item.price
+        else:
+            db_order_item = OrderItem(
+                order_id=db_order.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.price
+            )
+            db.add(db_order_item)
+
+    try:
+        await db.commit()
+        return {"message": "Pomyślnie dodano zamówienie."}
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="W zamówieniu podano zduplikowane produkty.")
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/orders/", response_model=List[OrderResponse])
+async def get_orders(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(
+            select(Order)
+            .options(joinedload(Order.order_items), joinedload(Order.address))
+        )
+        
+        orders = result.unique().scalars().all()
+
+        return [
+            {
+                "id": order.id,
+                "user_id": order.user_id,
+                "order_date": order.order_date.isoformat(),
+                "delivery_method_id": order.delivery_method_id,
+                "payment_method_id": order.payment_method_id,
+                "address_id": order.address_id,
+                "total_amount": order.total_amount,
+                "order_status": order.order_status,
+                "order_items": [
+                    {
+                        "id": item.id,
+                        "product_id": item.product_id,
+                        "quantity": item.quantity,
+                        "price": item.price,
+                    } for item in order.order_items
+                ],
+                "address": AddressResponse.from_orm(order.address) if order.address else None
+            }
+            for order in orders
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/orders/{order_id}", response_model=OrderResponse)
+async def get_order(order_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Order)
+        .options(selectinload(Order.order_items), selectinload(Order.address))
+        .where(Order.id == order_id)
+    )
+
+    order = result.scalars().unique().one_or_none()
+    
+    if order is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono zamówienia.")
+    
+    return OrderResponse(
+        id=order.id,
+        user_id=order.user_id,
+        order_date=order.order_date.isoformat(),
+        delivery_method_id=order.delivery_method_id,
+        payment_method_id=order.payment_method_id,
+        address_id=order.address_id,
+        total_amount=order.total_amount,
+        order_status=order.order_status,
+        order_items=[
+            {
+                "id": item.id,
+                "product_id": item.product_id,
+                "quantity": item.quantity,
+                "price": item.price,
+            } for item in order.order_items
+        ],
+        address=AddressResponse.from_orm(order.address) if order.address else None
+    )
+
+@app.put("/orders/{order_id}/status", response_model=dict)
+async def update_order_status(order_id: int, update_status: UpdateOrderStatus, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    db_order = result.scalar_one_or_none()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono zamówienia.")
+
+    db_order.order_status = update_status.status
+    await db.commit()
+    return {"message": "Pomyślnie zaktualizowano zamówienie."}
+
+@app.delete("/orders/{order_id}", response_model=dict)
+async def delete_order(order_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    db_order = result.scalar_one_or_none()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono zamówienia.")
+    
+    await db.delete(db_order)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto zamówienie."}
 
 @app.post("/subpages/")
 async def create_subpage(subpage: SubpageCreate, db: AsyncSession = Depends(get_db)):

@@ -418,7 +418,7 @@
         ...product,
         isActive: product.is_active,
       }))
-      console.log(products.value)
+
     } catch (error) {
       console.error('Błąd podczas pobierania podstron:', error)
     }

@@ -105,7 +105,8 @@ class Address(Base):
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20), nullable=True)
     hashed_password = Column(String(100), nullable=False)
@@ -259,7 +260,8 @@ class AddressResponse(BaseModel):
         from_attributes = True
 
 class UserBase(BaseModel):
-    name: str
+    first_name: str
+    last_name: str
     email: EmailStr
     phone: Optional[str] = None
     role: Optional[str] = 'user'
@@ -281,7 +283,8 @@ class UserCreate(UserBase):
     hashed_password: str
 
 class UserUpdate(BaseModel):
-    name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
     role: Optional[str] = None
@@ -475,7 +478,7 @@ async def register(user: UserRegisterCreate, db: AsyncSession = Depends(get_db))
         raise HTTPException(status_code=400, detail="Konto o podanym adresie e-mail już istnieje.")
 
     hashed_password = get_password_hash(user.password)
-    db_user = User(name=user.name, email=user.email, hashed_password=hashed_password)
+    db_user = User(first_name=user.name, email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
@@ -489,7 +492,7 @@ async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: Async
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail lub hasło.")
 
-    access_token = create_access_token(data={"name": user.name})
+    access_token = create_access_token(data={"name": user.first_name})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/change-password")
@@ -636,7 +639,7 @@ async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_
         await db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/products/", response_model=List[ProductResponse])
+@app.get("/products/", response_model=List[ProductResponse]) 
 async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Product).offset(skip).limit(limit))
     products = result.scalars().all()

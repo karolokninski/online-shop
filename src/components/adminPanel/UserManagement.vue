@@ -150,32 +150,19 @@
   </TransitionRoot>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const addUserOpen = ref(false);
 const firstName = ref("");
 const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const role = ref("zwykly");
-const users = ref([
-  {
-    id: 1,
-    firstName: "Jan",
-    lastName: "Kowalski",
-    email: "jan.kowalski@example.com",
-    role: "admin",
-  },
-  {
-    id: 2,
-    firstName: "Anna",
-    lastName: "Nowak",
-    email: "anna.nowak@example.com",
-    role: "pracownik",
-  },
-]);
+const users = ref([]);
 
 const handleAddButton = () => {
   const newUser = {
@@ -198,4 +185,19 @@ const deleteUser = (id) => {
   users.value = users.value.filter(user => user.id !== id);
   console.log("Usunięto użytkownika o id:", id);
 };
+
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get(API_URL + '/users')
+    users.value = response.data.map((user) => ({
+      ...user,
+      firstName: user.name,
+    }))
+    console.log(users.value)
+  } catch (error) {
+    console.error('Błąd podczas pobierania użytkowników:', error)
+  }
+}
+
+onMounted(fetchUsers);
 </script>

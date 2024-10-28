@@ -79,8 +79,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted  } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
+
+const API_URL = import.meta.env.VITE_API_URL;
 const editCategoryOpen = ref(false)
 const deleteCategoryOpen = ref(false)
 const currentEditId = ref()
@@ -91,6 +94,11 @@ const categoryName = ref("");
 const categories = ref([]);
 let categoryIdCounter = ref(1);
 
+const handleDeleteButton = (id) => {
+  currentDeleteId.value = id
+  currentDeletename.value = categories.value.find(p => p.id === id).name
+  deleteCategoryOpen.value = true
+}
 
 const addSampleCategories = () => {
   categories.value = [
@@ -110,19 +118,18 @@ const addCategory = () => {
   }
 };
 
-
-
-
-onMounted(() => {
-  addSampleCategories();
-});
-const handleDeleteButton = (id) => {
-  currentDeleteId.value = id
-  currentDeletename.value = categories.value.find(p => p.id === id).name
-  deleteCategoryOpen.value = true
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(API_URL + '/categories')
+    categories.value = response.data.map((category) => ({
+      ...category,
+      name: category.category_name,
+    }))
+    console.log(categories.value)
+  } catch (error) {
+    console.error('Błąd podczas pobierania kategorii:', error)
+  }
 }
+
+onMounted(fetchCategories);
 </script>
-
-<style scoped>
-
-</style>

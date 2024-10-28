@@ -6,17 +6,15 @@
     <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
       <thead class="bg-indigo-600 text-white">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID Produktu</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID Parametru</th>
           <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nazwa Parametru</th>
-          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Wartość</th>
           <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Akcje</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr v-for="parameter in parameters" :key="parameter.id" class="hover:bg-gray-100 transition duration-200">
-          <td class="px-6 py-4 whitespace-nowrap">{{ parameter.productId }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ parameter.id }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ parameter.name }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ parameter.value }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <button @click="handleEditButton(parameter.id)"
               class="text-indigo-600 hover:text-indigo-900 mr-3">Edytuj</button>
@@ -253,7 +251,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 const handleEditButton = (id) => {
@@ -305,11 +304,12 @@ const handleAddParameter = () => {
   if (newParameter.value.productId && newParameter.value.name && newParameter.value.value) {
     parameters.value.push({
       id: parameters.value.length + 1,
+      id: parameters.value.length + 1,
       productId: newParameter.value.productId,
       name: newParameter.value.name,
       value: newParameter.value.value,
     });
-
+    // Resetowanie formularza
     newParameter.value = { productId: null, name: "", value: "" };
     addParameterOpen.value = false;
   }
@@ -323,5 +323,19 @@ const handleDeleteButton = (id) => {
   currentDeleteProduct.value = parameters.value.find(p => p.id === id).productId
   deleteParameterOpen.value = true
 }
-</script>
 
+const fetchParameters = async () => {
+  try {
+    const response = await axios.get(API_URL + '/parameters')
+    parameters.value = response.data.map((parameter) => ({
+      ...parameter,
+      name: parameter.parameter_name,
+    }))
+    console.log(parameters.value)
+  } catch (error) {
+    console.error('Błąd podczas pobierania kategorii:', error)
+  }
+}
+
+onMounted(fetchParameters);
+</script>

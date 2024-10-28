@@ -8,7 +8,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     name: null,
     token: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    role: null
   }),
   actions: {
     async login(email, password, router) {
@@ -24,9 +25,11 @@ export const useUserStore = defineStore('user', {
         })
 
         this.token = response.data.access_token
+        console.log(response.data)
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.name = decodedToken.name
+        this.role = response.data.role
         router.push('/')
       } catch (error) {
         console.error('Login failed:', error.message)

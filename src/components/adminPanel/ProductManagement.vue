@@ -473,8 +473,8 @@ const addProduct = async (productName, categoryId, price, stockQuantity, descrip
       price: price,
       stock_quantity: stockQuantity,
       description: description,
-      main_image: mainImage ? mainImage : null,  // Replace with actual byte data or null
-      additional_images: null  // Modify as needed for additional images
+      main_image: mainImage ? mainImage : null,
+      additional_images: null
     });
 
     console.log('Product added successfully:', response.data);

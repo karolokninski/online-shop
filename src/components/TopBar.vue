@@ -130,6 +130,13 @@
     { name: 'Zamówienia', description: 'Zrealizowane zamówienia', href: '/konto/zamowienia', icon: ClipboardDocumentCheckIcon },
     { name: 'Ulubione', description: "Ulubione produkty", href: '/konto/ulubione', icon: HeartIcon },
   ]
+
+  if (userStore.role === 'Administrator') {
+    menuItems.push({
+      name: 'Admin panel', description: "Panel administracyjny", href: '/admin', icon: UserIcon
+    })
+  }
+
   const mobileMenuOpen = ref(false)
 
   const handleSearch = () => {

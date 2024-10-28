@@ -106,7 +106,7 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(50), nullable=False)
-    last_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=True)
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20), nullable=True)
     hashed_password = Column(String(100), nullable=False)
@@ -482,7 +482,7 @@ async def register(user: UserRegisterCreate, db: AsyncSession = Depends(get_db))
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return {"name": db_user.name, "email": db_user.email}
+    return {"name": db_user.first_name, "email": db_user.email, "role": db_user.role} 
 
 @app.post("/login")
 async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
@@ -492,8 +492,8 @@ async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: Async
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail lub hasło.")
 
-    access_token = create_access_token(data={"name": user.first_name})
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = create_access_token(data={"name": user.first_name, "role": user.role})  # Include role in the token payload
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role}  # Return the role
 
 @app.post("/change-password")
 async def change_password(request_data: ChangePasswordRequest, db: AsyncSession = Depends(get_db)):

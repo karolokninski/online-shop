@@ -204,22 +204,6 @@
                               </div>
                             </div>
 
-                            <div class="sm:col-span-4">
-                              <label for="edit-path"
-                                class="block text-sm font-medium leading-6 text-gray-900">Wartość</label>
-                              <div class="mt-2">
-                                <div class="flex">
-                                  <input v-model="form.edit.price" type="text" name="value" id="edit-value"
-                                    @blur="validatevalue('edit')"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
-                                <p v-if="form.edit.errors.value" class="text-red-500 text-xs mt-1">{{
-                                  form.edit.errors.value }}</p>
-                              </div>
-                            </div>
-
-
-
                           </div>
                         </div>
                       </div>
@@ -281,9 +265,9 @@ const currentDeleteName = ref()
 const currentDeleteProduct = ref()
 // Przykładowe parametry
 const parameters = ref([
-  { id: 1, productId: 101, name: "taktowanie", value: "2,6ghz" },
-  { id: 2, productId: 102, name: "napięcie", value: "230v" },
-  { id: 3, productId: 103, name: "Rozmiar", value: "XL" },
+  { id: 1, productId: 101, name: "taktowanie",},
+  { id: 2, productId: 102, name: "napięcie",},
+  { id: 3, productId: 103, name: "Rozmiar"},
 ]);
 
 const products = ref([
@@ -307,7 +291,6 @@ const handleAddParameter = () => {
       id: parameters.value.length + 1,
       productId: newParameter.value.productId,
       name: newParameter.value.name,
-      value: newParameter.value.value,
     });
     // Resetowanie formularza
     newParameter.value = { productId: null, name: "", value: "" };

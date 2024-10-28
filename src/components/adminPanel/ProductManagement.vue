@@ -23,7 +23,7 @@
               <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm  font-medium text-gray-900">{{ product.category }}</div>
+              <div class="text-sm font-medium text-gray-900">{{ getCategoryById(product.category_id)?.name || '' }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">${{ product.price }}</div>
@@ -35,7 +35,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ product.caption }}</div>
+              <div class="text-sm text-gray-900">{{ truncateDescription(product.description) }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="handleEditButton(product.id)"
@@ -53,132 +53,133 @@
     </div>
   </div>
 
-  <TransitionRoot as="template" :show="addProductOpen">
+  <TransitionRoot as="addProduct" :show="addProductOpen">
     <Dialog class="relative z-10" @close="addProductOpen = false">
-      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-      </TransitionChild>
+        <TransitionChild as="addProduct" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+            leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
 
-      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="template" enter="ease-out duration-300"
-            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
-            leave-from="opacity-100 translate-y-0 sm:scale-100"
-            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                  <div
-                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <PlusCircleIcon class="h-6 w-6 text-green" aria-hidden="true" />
-                  </div>
-                  <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Dodaj produkt
-                    </DialogTitle>
-                    <div class="mt-2">
-                      <p class="text-sm text-gray-500">Upewnij się, że wszystkie pola są wypełnione.</p>
-
-                      <form method="POST" onsubmit="return false">
-                        <div class="border-b border-gray-900/10 pb-8">
-                          <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-                            <div class="sm:col-span-3">
-                              <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
-                              <div class="mt-2">
-                                <input v-model="title" type="text" name="name" id="name" autocomplete="given-name"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                            </div>
-                            <div class="sm:col-span-3">
-                              <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Cena</label>
-                              <div class="mt-2">
-                                <input v-model="price" type="text" name="price" id="price" autocomplete="given-name"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                            </div>
-                            <div class="sm:col-span-3">
-                              <label for="quantity" class="block text-sm font-medium leading-6 text-gray-900">Ilość w
-                                magazynie</label>
-                              <div class="mt-2">
-                                <input v-model="quantity" type="number" name="quantity" id="quantity"
-                                  autocomplete="given-name"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                            </div>
-
-                            <div class="sm:col-span-3">
-                              <label for="country"
-                                class="block text-sm font-medium leading-6 text-gray-900">Kategoria</label>
-                              <div class="mt-2">
-                                <select id="category" name="category" autocomplete="category-name"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                  <option>Obudowy</option>
-                                  <option>Procesory</option>
-                                  <option>Karty graficzne</option>
-                                </select>
-                              </div>
-                            </div>
-
-                            <div class="col-span-full">
-                              <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Opis
-                                produktu</label>
-                              <div class="mt-2">
-                                <textarea v-model="about" id="about" name="about" rows="6"
-                                  class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                            </div>
-                            <div class="col-span-full">
-                              <label for="images" class="block text-sm font-medium leading-6 text-gray-900">Dodaj
-                                zdjęcia</label>
-                              <div class="mt-2">
-                                <input @change="handleFileUpload" type="file" name="images" id="images" accept="image/*"
-                                  multiple
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                              </div>
-                              <div class="mt-4 grid grid-cols-3 gap-4">
-                                <div v-for="image in previewImages" :key="image" class="w-full">
-                                  <img :src="image" class="w-full h-auto rounded-md object-cover" alt="Preview" />
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <TransitionChild as="addProduct" enter="ease-out duration-300"
+                    enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+                    leave-from="opacity-100 translate-y-0 sm:scale-100"
+                    leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    <DialogPanel
+                        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div
+                                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <PlusCircleIcon class="h-6 w-6 text-green" aria-hidden="true" />
                                 </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button type="button"
-                  class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto"
-                  @click="handleAddButton">
-                  Dodaj
-                </button>
-                <button type="button"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                  @click="addProductOpen = false" ref="cancelButtonRef">
-                  Anuluj
-                </button>
-              </div>
+                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Dodaj produkt
+                                    </DialogTitle>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500">Upewnij się, że wszystkie pola są wypełnione.</p>
 
-            </DialogPanel>
-          </TransitionChild>
+                                        <form method="POST" onsubmit="return false">
+                                            <div class="border-b border-gray-900/10 pb-8">
+                                                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+                                                    <div class="sm:col-span-3">
+                                                        <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
+                                                        <div class="mt-2">
+                                                            <input v-model="form.add.name" type="text" name="name" id="name" autocomplete="given-name"
+                                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                            <p v-if="form.add.errors.name" class="text-red-500 text-xs mt-1">{{ form.add.errors.name }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sm:col-span-3">
+                                                        <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Cena</label>
+                                                        <div class="mt-2">
+                                                            <input v-model="form.add.price" type="number" name="price" id="price" autocomplete="given-name"
+                                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                            <p v-if="form.add.errors.price" class="text-red-500 text-xs mt-1">{{ form.add.errors.price }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="sm:col-span-3">
+                                                        <label for="quantity" class="block text-sm font-medium leading-6 text-gray-900">Ilość w magazynie</label>
+                                                        <div class="mt-2">
+                                                            <input v-model="form.add.stock" type="number" name="quantity" id="quantity" autocomplete="given-name"
+                                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                            <p v-if="form.add.errors.stock" class="text-red-500 text-xs mt-1">{{ form.add.errors.stock }}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="sm:col-span-3">
+                                                        <label for="category" class="block text-sm font-medium leading-6 text-gray-900">Kategoria</label>
+                                                        <div class="mt-2">
+                                                            <select v-model="form.add.category_id" id="category" name="category" autocomplete="category-name"
+                                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                <option value="" disabled>Wybierz opcję</option>
+                                                                <option v-for="category in categories" :key="category.id" :value="category.id">
+                                                                    {{ category.name }}
+                                                                </option>
+                                                            </select>
+                                                            <p v-if="form.add.errors.category_id" class="text-red-500 text-xs mt-1">{{ form.add.errors.category_id }}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-span-full">
+                                                        <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Opis produktu</label>
+                                                        <div class="mt-2">
+                                                            <textarea v-model="form.add.description" id="about" name="about" rows="6"
+                                                                class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                                                            <p v-if="form.add.errors.description" class="text-red-500 text-xs mt-1">{{ form.add.errors.description }}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-span-full">
+                                                        <label for="images" class="block text-sm font-medium leading-6 text-gray-900">Dodaj zdjęcia</label>
+                                                        <div class="mt-2">
+                                                            <input @change="handleFileUpload" type="file" name="images" id="images" accept="image/*" multiple
+                                                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        </div>
+                                                        <div class="mt-4 grid grid-cols-3 gap-4">
+                                                            <div v-for="image in previewImages" :key="image" class="w-full">
+                                                                <img :src="image" class="w-full h-auto rounded-md object-cover" alt="Preview" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <button type="button"
+                                class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto"
+                                @click="handleAddButton">
+                                Dodaj
+                            </button>
+                            <button type="button"
+                                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                @click="addProductOpen = false" ref="cancelButtonRef">
+                                Anuluj
+                            </button>
+                        </div>
+
+                    </DialogPanel>
+                </TransitionChild>
+            </div>
         </div>
-      </div>
     </Dialog>
   </TransitionRoot>
 
-  <TransitionRoot as="deleteSubpage" :show="deleteProductOpen">
+  <TransitionRoot as="deleteProduct" :show="deleteProductOpen">
     <Dialog class="relative z-10" @close="deleteProductOpen = false">
-      <TransitionChild as="deleteSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+      <TransitionChild as="deleteProduct" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
         leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       </TransitionChild>
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="deleteSubpage" enter="ease-out duration-300"
+          <TransitionChild as="deleteProduct" enter="ease-out duration-300"
             enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
             leave-from="opacity-100 translate-y-0 sm:scale-100"
@@ -217,18 +218,16 @@
     </Dialog>
   </TransitionRoot>
 
-
-
   <TransitionRoot as="editProduct" :show="editProductOpen">
     <Dialog class="relative z-10" @close="editProductOpen = false">
-      <TransitionChild as="editSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+      <TransitionChild as="editProduct" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
         leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       </TransitionChild>
 
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="editSubpage" enter="ease-out duration-300"
+          <TransitionChild as="editProduct" enter="ease-out duration-300"
             enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
             leave-from="opacity-100 translate-y-0 sm:scale-100"
@@ -251,7 +250,7 @@
                         </p>
                         <div class="border-b border-gray-900/10 pb-8">
                           <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-4">
                               <label for="edit-name"
                                 class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
                               <div class="mt-2">
@@ -262,12 +261,12 @@
                                   form.edit.errors.name }}</p>
                               </div>
                             </div>
-                            <div class="sm:col-span-4">
+                            <div class="sm:col-span-2">
                               <label for="edit-path"
                                 class="block text-sm font-medium leading-6 text-gray-900">Cena</label>
                               <div class="mt-2">
                                 <div class="flex">
-                                  <input v-model="form.edit.price" type="number" name="price" id="edit-price"
+                                  <input v-model="form.edit.price" type="number" step="0.01" name="price" id="edit-price"
                                     @blur="validatePath('edit')"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                                 </div>
@@ -276,17 +275,17 @@
                               </div>
                             </div>
 
-                            <div class="sm:col-span-4">
+                            <div class="sm:col-span-6">
                               <label for="edit-price"
                                 class="block text-sm font-medium leading-6 text-gray-900">Kategoria</label>
                               <div class="mt-2">
                                 <div class="flex">
-                                  <select v-model="form.edit.category" id="edit-category"
+                                  <select v-model="form.edit.category_id" id="edit-category"
                                     @blur="validateCategory('edit')"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Wybierz opcję</option>
-                                    <option v-for="kategorie in kategorie" :key="kategorie.id" :value="kategorie.name">
-                                      {{ kategorie.name }}
+                                    <option value="" disabled>Wybierz opcję</option>
+                                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                                      {{ category.name }}
                                     </option>
                                   </select>
                                 </div>
@@ -295,17 +294,17 @@
                               </div>
                             </div>
 
-                            <div class="sm:col-span-4">
+                            <div class="sm:col-span-6">
                               <label for="edit-path"
                                 class="block text-sm font-medium leading-6 text-gray-900">Opis</label>
                               <div class="mt-2">
                                 <div class="flex">
-                                  <textarea v-model="form.edit.caption" type="text" name="caption" id="edit-caption"
+                                  <textarea v-model="form.edit.description" type="text" name="description" id="edit-description"
                                     rows="3" @blur="validateCaption('edit')"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
                                 </div>
-                                <p v-if="form.edit.errors.caption" class="text-red-500 text-xs mt-1">{{
-                                  form.edit.errors.caption }}</p>
+                                <p v-if="form.edit.errors.description" class="text-red-500 text-xs mt-1">{{
+                                  form.edit.errors.description }}</p>
                               </div>
                             </div>
                             <div class="sm:col-span-6">
@@ -314,8 +313,7 @@
                               <div class="mt-2">
                                 <input v-model="form.edit.stock" type="text" name="content" id="edit-stock"
                                   @blur="validateContent('edit')"
-                                  class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                </input>
+                                  class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                                 <p v-if="form.edit.errors.stock" class="text-red-500 text-xs mt-1">{{
                                   form.edit.errors.stock }}</p>
                               </div>
@@ -361,22 +359,31 @@
     </Dialog>
   </TransitionRoot>
 </template>
+
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
+
+const API_URL = import.meta.env.VITE_API_URL;
 const addProductOpen = ref(false)
 const editProductOpen = ref(false)
 const deleteProductOpen = ref(false)
 const currentEditId = ref()
 const currentDeleteId = ref()
 const currentDeletename = ref()
-const name = ref("");
-const price = ref("");
-const caption = ref("");
-const quantity = ref(0);
-const category = ref("");
-const about = ref("");
+const images = ref([]);
+const previewImages = ref([]);
+
+const categories = ref([
+  {
+    id: null,
+    name: "",
+    parent_category_id: null,
+    description: "",
+  },
+]);
 const products = ref([
   {
     id: 1,
@@ -384,8 +391,8 @@ const products = ref([
     price: 29.99,
     stock: 15,
     image: "https://via.placeholder.com/150",
-    category: "zasilacze",
-    caption: "blebleble",
+    category_id: 1,
+    description: "blebleble",
   },
   {
     id: 2,
@@ -393,13 +400,45 @@ const products = ref([
     price: 49.99,
     stock: 0,
     image: "https://via.placeholder.com/150",
-    category: "procesory",
-    caption: "blebleble",
+    category_id: 1,
+    description: "blebleble",
   },
 ]);
 
-const images = ref([]);
-const previewImages = ref([]);
+const form = ref({
+  add: {
+    name: '',
+    price: null,
+    description: '',
+    stock: '',
+    category_id: null,
+    image: '',
+    errors: {
+      name: '',
+      price: '',
+      description: '',
+      stock: '',
+      category_id: '',
+      image: ''
+    }
+  },
+  edit: {
+    name: '',
+    price: null,
+    description: '',
+    stock: '',
+    category_id: null,
+    image: '',
+    errors: {
+      name: '',
+      price: '',
+      description: '',
+      stock: '',
+      category_id: '',
+      image: ''
+    }
+  }
+});
 
 const handleFileUpload = (event) => {
   const files = Array.from(event.target.files);
@@ -407,10 +446,56 @@ const handleFileUpload = (event) => {
   previewImages.value.push(...files.map((file) => URL.createObjectURL(file)));
 };
 
-const handleAddButton = () => {
-  console.log("Dodaj produkt", { name: name.value, price: price.value, quantity: quantity.value, images: images.value });
-  addProductOpen.value = false;
+const handleAddButton = async () => {
+  if (!form.value.add.errors.name && !form.value.add.errors.price && !form.value.add.errors.stock && !form.value.add.errors.description) {
+    await addProduct(
+      form.value.add.name,
+      form.value.add.category_id,
+      form.value.add.price,
+      form.value.add.stock,
+      form.value.add.description,
+      form.value.add.image
+    );
+    await fetchProducts();
+    addProductOpen.value = false;
+    resetAddForm();
+  } else {
+    console.error("Form validation errors:", form.value.add.errors);
+  }
 };
+
+const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage) => {
+  console.log(productName, categoryId, price, stockQuantity, description, mainImage)
+  try {
+    const response = await axios.post(API_URL + '/products', {
+      product_name: productName,
+      category_id: categoryId,
+      price: price,
+      stock_quantity: stockQuantity,
+      description: description,
+      main_image: mainImage ? mainImage : null,  // Replace with actual byte data or null
+      additional_images: null  // Modify as needed for additional images
+    });
+
+    console.log('Product added successfully:', response.data);
+  } catch (error) {
+    console.error('Error adding product:', error);
+  }
+};
+
+const resetAddForm = () => {
+  form.value.add.title = '';
+  form.value.add.category_id = null;
+  form.value.add.price = null;
+  form.value.add.stock = '';
+  form.value.add.description = '';
+  form.value.add.image = '';
+  form.value.add.errors.title = '';
+  form.value.add.errors.price = '';
+  form.value.add.errors.stock = '';
+  form.value.add.errors.description = '';
+};
+
 const handleDeleteButton = (id) => {
   currentDeleteId.value = id
   currentDeletename.value = products.value.find(p => p.id === id).name
@@ -418,43 +503,102 @@ const handleDeleteButton = (id) => {
 }
 const handleEditButton = (id) => {
   const product = products.value.find(p => p.id === id)
+  console.log(product)
   form.value.edit.name = product.name
   form.value.edit.price = product.price
   form.value.edit.stock = product.stock
   form.value.edit.image = product.image
-  form.value.edit.caption = product.caption
-  form.value.edit.category = product.category
+  form.value.edit.description = product.description
+  form.value.edit.category_id = product.category_id
   currentEditId.value = id
   editProductOpen.value = true
 }
-const form = ref({
-  add: {
-    title: '',
-    path: '',
-    content: '',
-    isActive: false,
-    errors: {
-      title: '',
-      path: '',
-      content: ''
-    }
-  },
-  edit: {
-    title: '',
-    path: '',
-    content: '',
-    isActive: false,
-    errors: {
-      title: '',
-      path: '',
-      content: ''
+
+const submitEditProductForm = async () => {
+  if (!form.value.edit.errors.name && !form.value.edit.errors.price && !form.value.edit.errors.description && !form.value.edit.errors.stock && !form.value.edit.errors.category_id) {
+    await editProduct(
+      currentEditId.value,
+      form.value.edit.name,
+      form.value.edit.category_id,
+      form.value.edit.price,
+      form.value.edit.stock,
+      form.value.edit.description,
+      form.value.edit.image
+    );
+    await fetchProducts();
+    editProductOpen.value = false;
+    
+    form.value.edit.name = '';
+    form.value.edit.price = null;
+    form.value.edit.stock = '';
+    form.value.edit.description = '';
+    form.value.edit.category_id = null;
+    form.value.edit.image = '';
+  }
+}
+
+const editProduct = async (id, productName, categoryId, price, stockQuantity, description, mainImage) => {
+  const product = products.value.find(p => p.id === id);
+  if (product) {
+    try {
+      await axios.put(API_URL + `/products/${id}`, {
+        product_name: productName,
+        category_id: categoryId,
+        price: price,
+        stock_quantity: stockQuantity,
+        description: description,
+        main_image: mainImage ? mainImage : null,
+        additional_images: null
+      });
+
+      product.title = productName;
+      product.category_id = categoryId;
+      product.price = price;
+      product.stock_quantity = stockQuantity;
+      product.description = description;
+      product.main_image = mainImage;
+    } catch (error) {
+      console.error('Error updating product:', error);
     }
   }
-})
-const kategorie = ref([
-  { id: 1, name: 'Procesory' },
-  { id: 2, name: 'Zasilacze' },
-  { id: 3, name: 'Karty graficzne' },
-  { id: 4, name: 'Obudowy' },
-]);
+}
+const getCategoryById = (id) => {
+  return categories.value.find((category) => category.id === id);
+};
+
+const truncateDescription = (description) => {
+  return description.length > 15 ? description.substring(0, 15) + '...' : description;
+}
+
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(API_URL + '/categories')
+    categories.value = response.data.map((category) => ({
+      ...category,
+      name: category.category_name,
+    }))
+    console.log(categories.value)
+  } catch (error) {
+    console.error('Błąd podczas pobierania kategorii:', error)
+  }
+}
+
+const fetchProducts = async () => {
+  try {
+    const response = await axios.get(API_URL + '/products')
+    products.value = response.data.map((product) => ({
+      ...product,
+      name: product.product_name,
+      stock: product.stock_quantity
+    }))
+    console.log(products.value)
+  } catch (error) {
+    console.error('Błąd podczas pobierania produktów:', error)
+  }
+}
+
+onMounted(() => {
+  fetchCategories();
+  fetchProducts();
+});
 </script>

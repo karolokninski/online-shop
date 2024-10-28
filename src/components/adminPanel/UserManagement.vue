@@ -191,7 +191,8 @@ const fetchUsers = async () => {
     const response = await axios.get(API_URL + '/users')
     users.value = response.data.map((user) => ({
       ...user,
-      firstName: user.name,
+      firstName: user.first_name,
+      lastName: user.last_name,
     }))
     console.log(users.value)
   } catch (error) {

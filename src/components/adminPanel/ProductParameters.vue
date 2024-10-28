@@ -255,6 +255,9 @@ import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const handleEditButton = (id) => {
   const parameter = parameters.value.find(p => p.id === id)
   form.value.edit.name = parameter.name

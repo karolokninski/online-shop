@@ -9,6 +9,8 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nazwisko</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Rola</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nr telefonu</th>
+            <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Notatka</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Akcje</th>
           </tr>
         </thead>
@@ -22,6 +24,8 @@
                 {{ user.role.charAt(0).toUpperCase() + user.role.slice(1) }}
               </span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.phone }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ user.note }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditModal(user)" class="text-indigo-600 hover:text-indigo-900 mr-3">
                 Edytuj
@@ -220,11 +224,22 @@ const currentUser = ref({
   phone: "",
   note: "",
   role: "zwykly",
+  errors: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+    role: '',
+  }
 });
 const users = ref([]);
 
+
+
+
 const openAddModal = () => {
-  currentUser.value = { firstName: "", lastName: "", email: "", password: "", phone: "", note: "", role: "zwykly" };
+  currentUser.value = { firstName: "", lastName: "", email: "", password: "", phone: "", note: "", role: "zwykly",  };
   isEditMode.value = false;
   userModalOpen.value = true;
 };

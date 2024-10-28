@@ -121,7 +121,7 @@ const router = createRouter({
 const fetchSubpagesRoutes = () => {
   return axios.get(`${API_URL}/subpages`)
     .then(response => {
-      const subpages = response.data;
+      const subpages = response.data.filter((subpage) => subpage.is_active === true);
       subpages.forEach(subpage => {
         router.addRoute({
           path: subpage.path,
@@ -143,6 +143,11 @@ fetchSubpagesRoutes();
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'Geeked.tech';
+
+  if (from.name === 'adminPanel') {
+    fetchSubpagesRoutes();
+  }
+
   next();
 });
 

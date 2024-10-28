@@ -2,7 +2,6 @@
   <div class="text-black">
     <h1 class="text-4xl font-bold mb-8">Parametry Produktów</h1>
 
-    <!-- Tabela Parametrów -->
     <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
       <thead class="bg-indigo-600 text-white">
         <tr>
@@ -29,7 +28,6 @@
       Dodaj parametr
     </button>
 
-    <!-- Modal do dodawania parametrów -->
     <TransitionRoot as="template" :show="addParameterOpen">
       <Dialog class="relative z-10" @close="addParameterOpen = false">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
@@ -118,119 +116,116 @@
       </Dialog>
     </TransitionRoot>
 
-
-    <TransitionRoot as="deleteSubpage" :show="deleteParameterOpen">
-    <Dialog class="relative z-10" @close="deleteParameterOpen = false">
-      <TransitionChild as="deleteSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-      </TransitionChild>
-      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="deleteSubpage" enter="ease-out duration-300"
-            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
-            leave-from="opacity-100 translate-y-0 sm:scale-100"
-            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                  <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                  </div>
-                  <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Usuń kategorię</h3>
-                    <div class="mt-2">
-                      <p class="text-sm text-gray-500">Czy na pewno chcesz usunąć parametr <b>{{ currentDeleteName }}</b> dla produktu o id <b>{{ currentDeleteProduct }}</b>? Ta czynność jest nieodwracalna.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button @click="deleteParameterOpen=false" type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Usuń</button>
-                <button @click="deleteParameterOpen = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Anuluj</button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
-        </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
-
-  <TransitionRoot as="editProduct" :show="editParameterOpen">
-    <Dialog class="relative z-10" @close="editParameterOpen = false">
-      <TransitionChild as="editSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-      </TransitionChild>
-
-      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="editSubpage" enter="ease-out duration-300"
-            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
-            leave-from="opacity-100 translate-y-0 sm:scale-100"
-            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitEditProductForm">
+    <TransitionRoot as="deleteParameter" :show="deleteParameterOpen">
+      <Dialog class="relative z-10" @close="deleteParameterOpen = false">
+        <TransitionChild as="deleteParameter" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="deleteParameter" enter="ease-out duration-300"
+              enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              leave-from="opacity-100 translate-y-0 sm:scale-100"
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
-                    <div
-                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <PencilSquareIcon class="h-6 w-6 text-blue-600" aria-hidden="true" />
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                      </svg>
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Edytuj parametr
-                      </DialogTitle>
+                      <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Usuń kategorię</h3>
                       <div class="mt-2">
-                        <p class="text-sm text-gray-500">
-                          Upewnij się, że wszystkie pola są wypełnione.
-                        </p>
-                        <div class="border-b border-gray-900/10 pb-8">
-                          <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-                            <div class="sm:col-span-2">
-                              <label for="edit-name"
-                                class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
-                              <div class="mt-2">
-                                <input v-model="form.edit.name" type="text" name="edit-name" id="edit-name"
-                                  autocomplete="name" @blur="validatename('edit')"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                <p v-if="form.edit.errors.name" class="text-red-500 text-xs mt-1">{{
-                                  form.edit.errors.name }}</p>
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
+                        <p class="text-sm text-gray-500">Czy na pewno chcesz usunąć parametr <b>{{ currentDeleteName }}</b> dla produktu o id <b>{{ currentDeleteProduct }}</b>? Ta czynność jest nieodwracalna.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="submit"
-                    class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 sm:ml-3 sm:w-auto"
-                    @click="submitEditParameterForm">
-                    Edytuj
-                  </button>
-                  <button type="button"
-                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    @click="editParameterOpen = false">
-                    Anuluj
-                  </button>
+                  <button @click="deleteParameterOpen=false" type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Usuń</button>
+                  <button @click="deleteParameterOpen = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Anuluj</button>
                 </div>
-              </form>
-            </DialogPanel>
-          </TransitionChild>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+      </Dialog>
+    </TransitionRoot>
 
+    <TransitionRoot as="editProduct" :show="editParameterOpen">
+      <Dialog class="relative z-10" @close="editParameterOpen = false">
+        <TransitionChild as="editParameter" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
 
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="editParameter" enter="ease-out duration-300"
+              enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              leave-from="opacity-100 translate-y-0 sm:scale-100"
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <form @submit.prevent="submitEditProductForm">
+                  <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                      <div
+                        class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <PencilSquareIcon class="h-6 w-6 text-blue-600" aria-hidden="true" />
+                      </div>
+                      <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Edytuj parametr
+                        </DialogTitle>
+                        <div class="mt-2">
+                          <p class="text-sm text-gray-500">
+                            Upewnij się, że wszystkie pola są wypełnione.
+                          </p>
+                          <div class="border-b border-gray-900/10 pb-8">
+                            <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+                              <div class="sm:col-span-2">
+                                <label for="edit-name"
+                                  class="block text-sm font-medium leading-6 text-gray-900">Nazwa</label>
+                                <div class="mt-2">
+                                  <input v-model="form.edit.name" type="text" name="edit-name" id="edit-name"
+                                    autocomplete="name" @blur="validatename('edit')"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  <p v-if="form.edit.errors.name" class="text-red-500 text-xs mt-1">{{
+                                    form.edit.errors.name }}</p>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="submit"
+                      class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 sm:ml-3 sm:w-auto"
+                      @click="submitEditParameterForm">
+                      Edytuj
+                    </button>
+                    <button type="button"
+                      class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      @click="editParameterOpen = false">
+                      Anuluj
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -266,7 +261,6 @@ const currentEditId = ref()
 const currentDeleteId = ref()
 const currentDeleteName = ref()
 const currentDeleteProduct = ref()
-// Przykładowe parametry
 const parameters = ref([
   { id: 1, productId: 101, name: "taktowanie",},
   { id: 2, productId: 102, name: "napięcie",},
@@ -291,17 +285,13 @@ const handleAddParameter = () => {
   if (newParameter.value.productId && newParameter.value.name && newParameter.value.value) {
     parameters.value.push({
       id: parameters.value.length + 1,
-      id: parameters.value.length + 1,
       productId: newParameter.value.productId,
       name: newParameter.value.name,
     });
-    // Resetowanie formularza
     newParameter.value = { productId: null, name: "", value: "" };
     addParameterOpen.value = false;
   }
 };
-
-
 
 const handleDeleteButton = (id) => {
   currentDeleteId.value = id

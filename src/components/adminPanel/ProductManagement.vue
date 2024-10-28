@@ -171,15 +171,15 @@
     </Dialog>
   </TransitionRoot>
 
-  <TransitionRoot as="deleteSubpage" :show="deleteProductOpen">
+  <TransitionRoot as="deleteProduct" :show="deleteProductOpen">
     <Dialog class="relative z-10" @close="deleteProductOpen = false">
-      <TransitionChild as="deleteSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+      <TransitionChild as="deleteProduct" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
         leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       </TransitionChild>
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="deleteSubpage" enter="ease-out duration-300"
+          <TransitionChild as="deleteProduct" enter="ease-out duration-300"
             enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
             leave-from="opacity-100 translate-y-0 sm:scale-100"
@@ -220,14 +220,14 @@
 
   <TransitionRoot as="editProduct" :show="editProductOpen">
     <Dialog class="relative z-10" @close="editProductOpen = false">
-      <TransitionChild as="editSubpage" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+      <TransitionChild as="editProduct" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
         leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       </TransitionChild>
 
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="editSubpage" enter="ease-out duration-300"
+          <TransitionChild as="editProduct" enter="ease-out duration-300"
             enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
             leave-from="opacity-100 translate-y-0 sm:scale-100"
@@ -313,8 +313,7 @@
                               <div class="mt-2">
                                 <input v-model="form.edit.stock" type="text" name="content" id="edit-stock"
                                   @blur="validateContent('edit')"
-                                  class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                </input>
+                                  class="block w-full max-h-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                                 <p v-if="form.edit.errors.stock" class="text-red-500 text-xs mt-1">{{
                                   form.edit.errors.stock }}</p>
                               </div>
@@ -374,12 +373,6 @@ const deleteProductOpen = ref(false)
 const currentEditId = ref()
 const currentDeleteId = ref()
 const currentDeletename = ref()
-const name = ref("");
-const price = ref("");
-const description = ref("");
-const quantity = ref(0);
-const category = ref("");
-const about = ref("");
 const images = ref([]);
 const previewImages = ref([]);
 

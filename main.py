@@ -261,7 +261,7 @@ class AddressResponse(BaseModel):
 
 class UserBase(BaseModel):
     first_name: str
-    last_name: str
+    last_name: Optional[str] = None
     email: EmailStr
     phone: Optional[str] = None
     role: Optional[str] = 'user'

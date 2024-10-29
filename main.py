@@ -714,6 +714,7 @@ async def delete_parameter(parameter_id: int, db: AsyncSession = Depends(get_db)
 
     try:
         await db.delete(db_parameter)
+        await db.commit() 
         return {"message": "Pomyślnie usunięto parametr."}
     except Exception as e:
         await db.rollback()

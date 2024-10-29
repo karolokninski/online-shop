@@ -14,8 +14,8 @@
           <td class="px-6 py-4 whitespace-nowrap">{{ parameter.name }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <button @click="handleEditButton(parameter.id)"
-              class="text-indigo-600 hover:text-indigo-900 mr-3">Edytuj</button>
-            <button @click="handleDeleteButton(parameter.id)" class="text-red-600 hover:text-red-900">Usuń</button>
+              class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+            <button @click="handleDeleteButton(parameter.id)" class="text-red-600 hover:text-red-900"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
           </td>
         </tr>
       </tbody>
@@ -208,120 +208,133 @@
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-import { PencilSquareIcon } from "@heroicons/vue/24/outline";
+import { PlusCircleIcon ,PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const addParameterOpen = ref(false)
-const editParameterOpen = ref(false)
-const deleteParameterOpen = ref(false)
-const currentEditId = ref()
-const currentDeleteId = ref()
-const currentDeleteName = ref()
-const currentDeleteProduct = ref()
-const parameters = ref([])
+
+const addParameterOpen = ref(false);
+const editParameterOpen = ref(false);
+const deleteParameterOpen = ref(false);
+
+const currentEditId = ref(null);
+const currentDeleteId = ref(null);
+const currentDeleteName = ref("");
+
+const parameters = ref([]);
 
 const form = ref({
   add: {
     name: "",
-    errors: {
-      name: "",
-    }
+    errors: { name: "" }
   },
   edit: {
     name: "",
-    errors: {
-      name: "",
-    }
+    errors: { name: "" }
   }
 });
 
 const validateName = (type) => {
   const formInstance = type === 'add' ? form.value.add : form.value.edit;
+  formInstance.errors.name = !formInstance.name ? 'To pole jest wymagane' : '';
+};
 
-  if (!formInstance.name) {
-    formInstance.errors.name = 'To pole jest wymagane'
-  } else {
-    formInstance.errors.name = ''
+const fetchParameters = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/parameters`);
+    parameters.value = response.data.map(parameter => ({
+      ...parameter,
+      name: parameter.parameter_name
+    }));
+  } catch (error) {
+    console.error('Błąd podczas pobierania kategorii:', error);
   }
-}
-
-const handleEditButton = (id) => {
-  const parameter = parameters.value.find(p => p.id === id);
-  if (parameter) {
-    form.value.edit.id = parameter.id;
-    form.value.edit.name = parameter.name;
-    form.value.edit.value = parameter.value;
-    currentEditId.value = id;
-    editParameterOpen.value = true;
-  }
-}
+};
 
 const handleAddParameter = () => {
   validateName('add');
   if (!form.value.add.errors.name) {
     submitAddParameterForm();
   }
-}
-
+};
+const checkIfParameterExists = async (name) => {
+  form.value.add.errors.name = '';
+  try {
+    const response = await axios.get(`${API_URL}/parameters?name=${name}`);
+    return response.data.exists;
+  } catch (error) {
+    console.error('Error checking parameter existence:', error);
+    return false;
+  }
+};
 const submitAddParameterForm = async () => {
   try {
+
+    const parameterExists = await checkIfParameterExists(form.value.add.name);
+
+if (parameterExists) {
+  form.value.add.errors.name = 'Parametr o tej nazwie już istnieje.';
+  return;
+}
+    
     await axios.post(`${API_URL}/parameters`, { parameter_name: form.value.add.name });
     fetchParameters();
-    form.value.add.name = '';
+    form.value.add.name = "";
     addParameterOpen.value = false;
   } catch (error) {
     console.error('Error adding parameter:', error);
   }
-}
+};
+
+const handleEditButton = (id) => {
+  const parameter = parameters.value.find(p => p.id === id);
+  if (parameter) {
+    currentEditId.value = id;
+    form.value.edit.name = parameter.name;
+    editParameterOpen.value = true;
+  }
+};
 
 const submitEditParameterForm = async () => {
   validateName('edit');
   if (!form.value.edit.errors.name) {
     try {
-      await axios.put(`${API_URL}/parameters/${form.value.edit.id}`, { parameter_name: form.value.edit.name });
+      await axios.put(`${API_URL}/parameters/${currentEditId.value}`, { parameter_name: form.value.edit.name });
       fetchParameters();
+      form.value.edit.name = "";
       editParameterOpen.value = false;
     } catch (error) {
       console.error('Error editing parameter:', error);
     }
   }
-}
+};
+
 const handleDeleteButton = (id) => {
   const parameter = parameters.value.find(p => p.id === id);
   if (parameter) {
-    currentDeleteId.value = parameter.id;
+    currentDeleteId.value = id;
     currentDeleteName.value = parameter.name;
-    currentDeleteProduct.value = parameter.productId;
     deleteParameterOpen.value = true;
   }
-}
+};
 
 const submitDeleteParameter = async () => {
   try {
-    await axios.delete(`${API_URL}/parameters/${currentDeleteId.value}`);
+    if (!currentDeleteId.value) {
+      console.error('No ID selected for deletion');
+      return;
+    }
     
-    parameters.value = parameters.value.filter(parameter => parameter.id !== currentDeleteId.value);
-    currentDeleteId.value = null;
-    currentDeleteName.value = '';
-    currentDeleteProduct.value = null;
+    console.log(`Deleting parameter with ID: ${currentDeleteId.value}`);
+    
+    await axios.delete(`${API_URL}/parameters/${currentDeleteId.value}`);
+
+    fetchParameters();
+
     deleteParameterOpen.value = false;
+    currentDeleteId.value = null;
   } catch (error) {
     console.error('Error deleting parameter:', error);
   }
-}
-
-const fetchParameters = async () => {
-  try {
-    const response = await axios.get(API_URL + '/parameters')
-    parameters.value = response.data.map((parameter) => ({
-      ...parameter,
-      name: parameter.parameter_name,
-    }))
-    console.log(parameters.value)
-  } catch (error) {
-    console.error('Błąd podczas pobierania kategorii:', error)
-  }
-}
-
+};
 onMounted(fetchParameters);
 </script>

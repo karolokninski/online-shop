@@ -17,8 +17,8 @@
               <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button @click="openEditModal(category)" class="text-indigo-600 hover:text-indigo-900 mr-3">Edytuj</button>
-              <button @click="handleDeleteButton(category.id)" class="text-red-600 hover:text-red-900">Usuń</button>
+              <button @click="openEditModal(category)" class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <button @click="handleDeleteButton(category.id)" class="text-red-600 hover:text-red-900"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
         </tbody>
@@ -57,7 +57,7 @@
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <PlusCircleIcon class="h-6 w-6 text-green" aria-hidden="true" />
+                      <PencilSquareIcon class="h-6 w-6 text-green" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                       <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Edytuj kategorię</DialogTitle>
@@ -138,7 +138,7 @@
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-
+import { PlusCircleIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const editCategoryOpen = ref(false);

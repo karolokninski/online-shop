@@ -121,7 +121,8 @@
                                 <div class="mt-2">
                                   <input v-model="currentUser.firstName" type="text" name="firstName" id="firstName" autocomplete="given-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
+                                    <p v-if="currentUser.errors.firstName" class="text-red-500 text-xs mt-1">{{ currentUser.errors.firstName }}</p>
+                                  </div>
                               </div>
 
                               <div class="sm:col-span-3">
@@ -129,7 +130,8 @@
                                 <div class="mt-2">
                                   <input v-model="currentUser.lastName" type="text" name="lastName" id="lastName" autocomplete="family-name"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
+                                    <p v-if="currentUser.errors.lastName" class="text-red-500 text-xs mt-1">{{ currentUser.errors.lastName }}</p>
+                                  </div>
                               </div>
 
                               <div class="sm:col-span-3">
@@ -137,7 +139,8 @@
                                 <div class="mt-2">
                                   <input v-model="currentUser.email" type="email" name="email" id="email" autocomplete="email"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
+                                    <p v-if="currentUser.errors.email" class="text-red-500 text-xs mt-1">{{ currentUser.errors.email }}</p>
+                                  </div>
                               </div>
 
                               <div class="sm:col-span-3" v-if="!isEditMode">
@@ -145,7 +148,8 @@
                                 <div class="mt-2">
                                   <input v-model="currentUser.password" type="password" name="password" id="password" autocomplete="new-password"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
+                                    <p v-if="currentUser.errors.password" class="text-red-500 text-xs mt-1">{{ currentUser.errors.password }}</p>
+                                  </div>
                               </div>
 
                               <div class="sm:col-span-3">
@@ -153,7 +157,8 @@
                                 <div class="mt-2">
                                   <input v-model="currentUser.phone" type="text" name="phone" id="phone" autocomplete="tel"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                </div>
+                                    <p v-if="currentUser.errors.phone" class="text-red-500 text-xs mt-1">{{ currentUser.errors.phone }}</p>
+                                  </div>
                               </div>
 
                               <div class="sm:col-span-3">
@@ -239,18 +244,83 @@ const users = ref([]);
 
 
 const openAddModal = () => {
-  currentUser.value = { firstName: "", lastName: "", email: "", password: "", phone: "", note: "", role: "zwykly",  };
+  currentUser.value = { firstName: "", lastName: "", email: "", password: "", phone: "", note: "", role: "zwykly",  errors: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+    role: '',
+  }};
   isEditMode.value = false;
   userModalOpen.value = true;
 };
 
 const openEditModal = (user) => {
-  currentUser.value = { ...user };
+  currentUser.value = { ...user,  errors: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+    role: '',
+  } };
   isEditMode.value = true;
   userModalOpen.value = true;
 };
 
+
+const validateUserForm = () => {
+  let isValid = true;
+  currentUser.value.errors = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+  };
+
+  if (!currentUser.value.firstName) {
+    currentUser.value.errors.firstName = 'Imię jest wymagane';
+    isValid = false;
+  }
+
+  if (!currentUser.value.lastName) {
+    currentUser.value.errors.lastName = 'Nazwisko jest wymagane';
+    isValid = false;
+  }
+
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!currentUser.value.email) {
+    currentUser.value.errors.email = 'Email jest wymagany';
+    isValid = false;
+  } else if (!emailRegex.test(currentUser.value.email)) {
+    currentUser.value.errors.email = 'Niepoprawny format email';
+    isValid = false;
+  }
+
+
+  const phoneRegex = /^[0-9]{9,15}$/;
+  if (!currentUser.value.phone) {
+    currentUser.value.errors.phone = 'Telefon jest wymagany';
+    isValid = false;
+  } else if (!phoneRegex.test(currentUser.value.phone)) {
+    currentUser.value.errors.phone = 'Niepoprawny format telefonu';
+    isValid = false;
+  }
+
+  if (!isEditMode.value && !currentUser.value.password) {
+    currentUser.value.errors.password = 'Hasło jest wymagane';
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 const handleUserAction = async () => {
+  if (!validateUserForm()) return;
+
   try {
     if (isEditMode.value) {
       await axios.put(`${API_URL}/users/${currentUser.value.id}`, {
@@ -280,6 +350,7 @@ const handleUserAction = async () => {
     console.error('Błąd podczas dodawania/edytowania użytkownika:', error);
   }
 };
+
 
 const deleteUser = async (id) => {
   await axios.delete(`${API_URL}/users/${id}`);

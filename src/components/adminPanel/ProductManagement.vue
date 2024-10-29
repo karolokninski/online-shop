@@ -81,7 +81,7 @@
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">Upewnij się, że wszystkie pola są wypełnione.</p>
 
-                                        <form method="POST" onsubmit="return false">
+                                        <form @submit.prevent="">
                                             <div class="border-b border-gray-900/10 pb-8">
                                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
                                                     <div class="sm:col-span-3">
@@ -234,7 +234,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitEditProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div
@@ -447,7 +447,7 @@ const handleFileUpload = (event) => {
 };
 
 const handleAddButton = async () => {
-  if (!form.value.add.errors.name && !form.value.add.errors.price && !form.value.add.errors.stock && !form.value.add.errors.description) {
+  if (form.value.add.name && !form.value.add.errors.name && !form.value.add.errors.price && !form.value.add.errors.stock && !form.value.add.errors.description) {
     await addProduct(
       form.value.add.name,
       form.value.add.category_id,

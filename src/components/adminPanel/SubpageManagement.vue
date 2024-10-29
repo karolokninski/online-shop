@@ -53,7 +53,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitAddProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -167,7 +167,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitEditProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">

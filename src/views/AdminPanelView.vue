@@ -63,6 +63,10 @@
       if (!useUserStore().isAuthenticated) {
         return { name: 'signIn' }
       }
+
+      if (useUserStore().role !== 'Administrator') {
+        return { name: 'homepage' }
+      }
     },
   }
 </script>

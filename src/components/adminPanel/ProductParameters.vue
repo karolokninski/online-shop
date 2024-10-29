@@ -256,9 +256,26 @@ const handleAddParameter = () => {
     submitAddParameterForm();
   }
 };
-
+const checkIfParameterExists = async (name) => {
+  form.value.add.errors.name = '';
+  try {
+    const response = await axios.get(`${API_URL}/parameters?name=${name}`);
+    return response.data.exists;
+  } catch (error) {
+    console.error('Error checking parameter existence:', error);
+    return false;
+  }
+};
 const submitAddParameterForm = async () => {
   try {
+
+    const parameterExists = await checkIfParameterExists(form.value.add.name);
+
+if (parameterExists) {
+  form.value.add.errors.name = 'Parametr o tej nazwie już istnieje.';
+  return;
+}
+    
     await axios.post(`${API_URL}/parameters`, { parameter_name: form.value.add.name });
     fetchParameters();
     form.value.add.name = "";

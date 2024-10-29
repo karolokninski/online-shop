@@ -27,12 +27,15 @@
         <div class="flex space-x-2">
           <input v-model="newCategoryName" type="text" placeholder="Wpisz nazwę kategorii"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-          <button 
+            
+            <button 
             @click="addCategory" 
             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Dodaj Kategorię
           </button>
+          
         </div>
+        <p v-if="categorynameerror2" class="text-red-500 text-xs mt-1">{{ categorynameerror2 }}</p>
       </div>
     </div>
 
@@ -61,7 +64,8 @@
                       <div class="mt-2">
                         <input v-model="currentEditName" type="text" placeholder="Wpisz nową nazwę kategorii"
                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                      </div>
+                          <p v-if="categorynameerror" class="text-red-500 text-xs mt-1">{{ categorynameerror }}</p>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -146,6 +150,33 @@ const newCategoryName = ref('');
 const currentEditName = ref('');
 const categories = ref([]);
 
+const categorynameerror = ref('');
+const categorynameerror2 = ref('');
+
+const validateCategory = () => {
+  let isValid = true;
+  categorynameerror.value = ''; 
+  if (currentEditName.value.trim() === '') {
+    categorynameerror.value = 'Nazwa jest wymagana';
+    isValid = false;
+  }
+  return isValid;
+};
+
+const validateNewCategory = () => {
+  let isValid = true;
+  categorynameerror2.value = ''; 
+
+  if (newCategoryName.value.trim() === '') {
+    categorynameerror2.value = 'Nazwa kategorii jest wymagana';
+    isValid = false;
+  }
+
+  return isValid;
+};
+
+
+
 const fetchCategories = async () => {
   try {
     const response = await axios.get(`${API_URL}/categories`);
@@ -160,6 +191,7 @@ const fetchCategories = async () => {
 };
 
 const addCategory = async () => {
+  if (!validateNewCategory()) return;
   if (newCategoryName.value.trim() === '') return;
   try {
     await axios.post(`${API_URL}/categories`, {
@@ -179,6 +211,7 @@ const openEditModal = (category) => {
 };
 
 const updateCategory = async () => {
+  if (!validateCategory()) return;
   if (currentEditName.value.trim() === '') return;
   try {
     await axios.put(`${API_URL}/categories/${currentEditId.value}`, {

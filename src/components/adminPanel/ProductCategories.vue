@@ -5,14 +5,12 @@
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
         <thead class="bg-indigo-600 text-white">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID Kategorii</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nazwa Kategorii</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Akcje</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="category in categories" :key="category.id" class="hover:bg-gray-100 transition duration-200">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ category.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
             </td>

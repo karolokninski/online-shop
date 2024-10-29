@@ -6,14 +6,14 @@
         <thead class="bg-indigo-600 text-white">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">User Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Order Date</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Delivery Method</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Method</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total Amount</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Klient</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Data zamówienia</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Dostawa</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Płatność</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Wartość zamówienia</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Produkty</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Akcje</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -45,7 +45,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">{{ order.order_status }}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td v-if="order.order_items.length" class="px-6 py-4 whitespace-nowrap">
               <table class="min-w-full bg-gray-100 mt-4 rounded-lg shadow-lg overflow-hidden">
                 <thead class="bg-indigo-200 text-gray-900">
                   <tr>
@@ -63,6 +63,7 @@
                 </tbody>
               </table>
             </td>
+            <td v-else></td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditOrderModal(order)" class="text-indigo-600 hover:text-indigo-900">
                 <PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" />
@@ -75,7 +76,6 @@
         </tbody>
       </table>
     </div>
-    <!-- Add modal and other components go here -->
   </div>
 </template>
 
@@ -83,7 +83,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from 'axios';
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
+// import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -128,7 +128,6 @@ const form = ref({
   }
 });
 
-// Validation function
 const validateForm = (type) => {
   const formInstance = form.value[type];
   const errors = {};
@@ -146,7 +145,6 @@ const validateForm = (type) => {
   return Object.keys(errors).length === 0;
 }
 
-// Fetch orders from API
 const fetchOrders = async () => {
   try {
     const response = await axios.get(`${API_URL}/orders`);
@@ -156,7 +154,6 @@ const fetchOrders = async () => {
   }
 }
 
-// Fetch delivery methods
 const fetchDeliveryMethods = async () => { 
   try {
     const response = await axios.get(`${API_URL}/delivery-methods/`);
@@ -166,7 +163,6 @@ const fetchDeliveryMethods = async () => {
   }
 };
 
-// Fetch payment methods
 const fetchPaymentMethods = async () => {
   try {
     const response = await axios.get(`${API_URL}/payment-methods/`);
@@ -176,7 +172,6 @@ const fetchPaymentMethods = async () => {
   }
 };
 
-// Fetch users
 const fetchUsers = async () => {
   try {
     const response = await axios.get(`${API_URL}/users/`);
@@ -186,7 +181,6 @@ const fetchUsers = async () => {
   }
 };
 
-// Open modals
 const openAddOrderModal = () => {
   addOrderOpen.value = true;
   resetAddForm();
@@ -204,11 +198,10 @@ const openEditOrderModal = (order) => {
 
 const openDeleteOrderModal = (order) => {
   currentDeleteId.value = order.id;
-  currentDeleteName.value = order.address.city; // or any other identifier
+  currentDeleteName.value = order.address.city;
   deleteOrderOpen.value = true;
 }
 
-// Add Order
 const submitAddOrder = async () => {
   if (validateForm('add')) {
     try {
@@ -227,7 +220,6 @@ const submitAddOrder = async () => {
   }
 }
 
-// Edit Order
 const submitEditOrder = async () => {
   if (validateForm('edit')) {
     try {
@@ -246,7 +238,6 @@ const submitEditOrder = async () => {
   }
 }
 
-// Delete Order
 const submitDeleteOrder = async () => {
   try {
     await axios.delete(`${API_URL}/orders/${currentDeleteId.value}`);
@@ -257,7 +248,6 @@ const submitDeleteOrder = async () => {
   }
 }
 
-// Reset form data
 const resetAddForm = () => {
   form.value.add = {
     user_id: "",
@@ -274,7 +264,6 @@ const resetAddForm = () => {
   };
 }
 
-// On mounted fetch all necessary data
 onMounted(() => {
   fetchOrders();
   fetchDeliveryMethods();

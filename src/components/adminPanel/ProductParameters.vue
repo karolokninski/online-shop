@@ -11,7 +11,7 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr v-for="parameter in parameters" :key="parameter.id" class="hover:bg-gray-100 transition duration-200">
-          <td class="px-6 py-4 whitespace-nowrap">{{ parameter.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ parameter.name }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <button @click="handleEditButton(parameter.id)"
               class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>

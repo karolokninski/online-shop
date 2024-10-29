@@ -1,28 +1,24 @@
 <template>
-  <div class="flex flex-row justify-around gap-16 mt-8">
-
+  <div class="flex flex-col gap-16">
     <div class="text-black">
-      <h2 class="text-2xl font-bold mb-4">Dostawcy</h2>
+      <h2 class="text-4xl font-bold mb-8">Dostawcy</h2>
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
         <thead class="bg-indigo-600 text-white">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase">ID Dostawcy</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Dostawca</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Opis</th>
-            <th class="px-6 py-3 text-right text-xs font-medium uppercase">Czas dostawy (dni)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase">Czas dostawy (dni)</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Koszt</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase">Akcje</th>
-
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="provider in providers" :key="provider.id" class="hover:bg-gray-100 transition">
-            <td class="px-6 py-4">{{ provider.id }}</td>
-            <td class="px-6 py-4">{{ provider.name }}</td>
-            <td class="px-6 py-4">{{ provider.description }}</td>
-            <td class="px-6 py-4 text-center">{{ provider.estimated_delivery_days }}</td>
-            <td class="px-6 py-4 text-center">{{ provider.cost }}</td>
-            <td class="px-6 py-4 text-right">
+            <td class="px-6 py-4 text-left">{{ provider.name }}</td>
+            <td class="px-6 py-4 text-left">{{ truncateDescription(provider.description) }}</td>
+            <td class="px-6 py-4 text-left">{{ provider.estimated_delivery_days }}</td>
+            <td class="px-6 py-4 text-left">{{ provider.cost }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditProviderModal(provider)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
               <button @click="openDeleteProviderModal(provider.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
@@ -38,24 +34,22 @@
     </div>
 
     <div class="text-black">
-      <h2 class="text-2xl font-bold mb-4">Formy Płatności</h2>
+      <h2 class="text-4xl font-bold mb-8">Formy Płatności</h2>
       <table class="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mb-4">
         <thead class="bg-indigo-600 text-white">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase">ID Formy Płatności</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase">Nazwa Formy Płatności</th>
-            <th class="px-6 py-3 text-right text-xs font-medium uppercase">Opis</th>
-            <th class="px-6 py-3 text-right text-xs font-medium uppercase">Opłata</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase">Opis</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase">Opłata</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase">Akcje</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="paymentMethod in paymentMethods" :key="paymentMethod.id" class="hover:bg-gray-100 transition">
-            <td class="px-6 py-4">{{ paymentMethod.id }}</td>
-            <td class="px-6 py-4">{{ paymentMethod.method_name }}</td>
-            <td class="px-6 py-4">{{ paymentMethod.description }}</td>
-            <td class="px-6 py-4">{{ paymentMethod.fee }}</td>
-            <td class="px-6 py-4 text-right">
+            <td class="px-6 py-4 text-left">{{ paymentMethod.method_name }}</td>
+            <td class="px-6 py-4 text-left">{{ truncateDescription(paymentMethod.description) }}</td>
+            <td class="px-6 py-4 text-left">{{ paymentMethod.fee }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditPaymentMethodModal(paymentMethod)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
               <button @click="openDeletePaymentMethodModal(paymentMethod.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
@@ -278,7 +272,6 @@
       </Dialog>
     </TransitionRoot>
 
-
     <TransitionRoot as="div" :show="deleteConfirmationOpen" @close="deleteConfirmationOpen = false">
       <Dialog as="div" class="relative z-10">
         <TransitionChild as="div" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
@@ -463,11 +456,6 @@
       </Dialog>
     </TransitionRoot>
 
-
-
-
-
-
     <TransitionRoot as="editSubpage" :show="editPaymentMethodOpen" @close="editPaymentMethodOpen = false">
       <Dialog class="relative z-10" @close="editPaymentMethodOpen = false">
         <TransitionChild as="editProvider" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
@@ -557,7 +545,6 @@
         </div>
       </Dialog>
     </TransitionRoot>
-
   </div>
 </template>
 
@@ -627,8 +614,6 @@ const fetchProviders = async () => {
   }
 };
 
-
-
 const fetchPaymentMethods = async () => {
   try {
     const response = await axios.get(API_URL + "/payment-methods/");
@@ -637,7 +622,6 @@ const fetchPaymentMethods = async () => {
     console.error("Error fetching payment methods:", error);
   }
 };
-
 
 const validateTitle = (formType) => {
   const formInstance = formType === 'add' ? form.value.add : form.value.edit;
@@ -671,8 +655,6 @@ const validateEstimatedDeliveryDays = (formType) => {
   }
 };
 
-
-
 const submitAddProviderForm = async () => {
   validateTitle('add');
   validateCost('add');
@@ -692,7 +674,6 @@ const submitAddProviderForm = async () => {
   console.log("Sending data:", newProviderData);
 
   try {
-
     const response = await axios.post(API_URL + "/delivery-methods/", newProviderData);
     const newProvider = {
       id: response.data.id,
@@ -852,8 +833,6 @@ const validateFee2 = (formType) => {
   }
 };
 
-
-
 const submitAddPaymentMethodForm = async () => {
   validateTitle2('add');
   validateFee2('add');
@@ -889,9 +868,6 @@ const submitAddPaymentMethodForm = async () => {
   }
 };
 
-
-
-
 const openEditPaymentMethodModal = (paymentMethod) => {
   currentPaymentMethodId.value = paymentMethod.id;
   form2.value.edit.name = paymentMethod.method_name;
@@ -899,7 +875,6 @@ const openEditPaymentMethodModal = (paymentMethod) => {
   form2.value.edit.fee = paymentMethod.fee;
   editPaymentMethodOpen.value = true;
 };
-
 
 const submitEditPaymentMethodForm = async () => {
   validateTitle3('edit');
@@ -926,4 +901,7 @@ const submitEditPaymentMethodForm = async () => {
   }
 };
 
+const truncateDescription = (description) => {
+  return description.length > 15 ? description.substring(0, 15) + '...' : description;
+};
 </script>

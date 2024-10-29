@@ -182,7 +182,6 @@ const fetchCategories = async () => {
       ...category,
       name: category.category_name,
     }));
-    console.log(categories.value)
   } catch (error) {
     console.error('Błąd podczas pobierania kategorii:', error);
   }

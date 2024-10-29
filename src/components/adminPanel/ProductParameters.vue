@@ -324,12 +324,8 @@ const submitDeleteParameter = async () => {
       return;
     }
     
-    console.log(`Deleting parameter with ID: ${currentDeleteId.value}`);
-    
     await axios.delete(`${API_URL}/parameters/${currentDeleteId.value}`);
-
     fetchParameters();
-
     deleteParameterOpen.value = false;
     currentDeleteId.value = null;
   } catch (error) {

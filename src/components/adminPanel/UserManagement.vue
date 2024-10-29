@@ -331,9 +331,7 @@ const handleUserAction = async () => {
         role: currentUser.value.role,
         note: currentUser.value.note,
       });
-      console.log("Edytowano użytkownika:", currentUser.value);
     } else {
-      console.log("Dodano użytkownika:", currentUser.value);
       await axios.post(`${API_URL}/users`, {
         first_name: currentUser.value.firstName,
         last_name: currentUser.value.lastName,
@@ -355,7 +353,6 @@ const handleUserAction = async () => {
 const deleteUser = async (id) => {
   await axios.delete(`${API_URL}/users/${id}`);
   users.value = users.value.filter(user => user.id !== id);
-  console.log("Usunięto użytkownika o id:", id);
 };
 
 const fetchUsers = async () => {
@@ -370,7 +367,6 @@ const fetchUsers = async () => {
       role: user.role,
       note: user.note,
     }));
-    console.log(users.value);
   } catch (error) {
     console.error('Błąd podczas pobierania użytkowników:', error);
   }

@@ -25,7 +25,6 @@ export const useUserStore = defineStore('user', {
         })
 
         this.token = response.data.access_token
-        console.log(response.data)
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.name = decodedToken.name

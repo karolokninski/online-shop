@@ -466,7 +466,6 @@ const handleAddButton = async () => {
 };
 
 const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage) => {
-  console.log(productName, categoryId, price, stockQuantity, description, mainImage)
   try {
     const response = await axios.post(API_URL + '/products', {
       product_name: productName,
@@ -477,8 +476,6 @@ const addProduct = async (productName, categoryId, price, stockQuantity, descrip
       main_image: mainImage ? mainImage : null,
       additional_images: null
     });
-
-    console.log('Product added successfully:', response.data);
   } catch (error) {
     console.error('Error adding product:', error);
   }
@@ -504,7 +501,6 @@ const handleDeleteButton = (id) => {
 }
 const handleEditButton = (id) => {
   const product = products.value.find(p => p.id === id)
-  console.log(product)
   form.value.edit.name = product.name
   form.value.edit.price = product.price
   form.value.edit.stock = product.stock
@@ -578,7 +574,6 @@ const fetchCategories = async () => {
       ...category,
       name: category.category_name,
     }))
-    console.log(categories.value)
   } catch (error) {
     console.error('Błąd podczas pobierania kategorii:', error)
   }
@@ -592,7 +587,6 @@ const fetchProducts = async () => {
       name: product.product_name,
       stock: product.stock_quantity
     }))
-    console.log(products.value)
   } catch (error) {
     console.error('Błąd podczas pobierania produktów:', error)
   }

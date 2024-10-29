@@ -600,7 +600,6 @@ onMounted(async () => {
 
 const fetchProviders = async () => {
   try {
-    console.log("Pobieram dostawców...");
     const response = await axios.get(API_URL + "/delivery-methods/");
     providers.value = response.data.map(provider => ({
       id: provider.id,
@@ -670,8 +669,6 @@ const submitAddProviderForm = async () => {
     estimated_delivery_days: form.value.add.estimated_delivery_days,
     description: form.value.add.description,
   };
-
-  console.log("Sending data:", newProviderData);
 
   try {
     const response = await axios.post(API_URL + "/delivery-methods/", newProviderData);
@@ -846,8 +843,6 @@ const submitAddPaymentMethodForm = async () => {
     fee: form2.value.add.fee,
     description: form2.value.add.description,
   };
-
-  console.log("Sending data:", newPaymentMethodData);
 
   try {
     const response = await axios.post(API_URL + "/payment-methods/", newPaymentMethodData);

@@ -64,7 +64,7 @@
         return { name: 'signIn' }
       }
 
-      if (useUserStore().role !== 'Administrator') {
+      if (useUserStore().role !== 'admin') {
         return { name: 'homepage' }
       }
     },

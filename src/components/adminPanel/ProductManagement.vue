@@ -10,14 +10,15 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Kategoria</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Cena</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Opis</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Opis</th>
             <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Akcje</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="product in products" :key="product.id" class="hover:bg-gray-100 transition duration-200">
             <td class="px-6 py-4">
-              <img :src="product.image" alt="Product Image" class="w-12 h-12 rounded-md object-cover" />
+              <img v-if="product.image" :src="product.image" alt="Product Image" class="w-12 h-12 rounded-md object-cover" />
+              <PhotoIcon v-else class="w-12 h-12 rounded-md object-cover" aria-hidden="true" />
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
@@ -364,7 +365,7 @@
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-import { PlusCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
+import { PlusCircleIcon, PhotoIcon, TrashIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const addProductOpen = ref(false)

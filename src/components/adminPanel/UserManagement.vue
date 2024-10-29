@@ -25,7 +25,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.phone }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ user.note }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ truncateDescription(user.note) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditModal(user)" class="text-indigo-600 hover:text-indigo-900 mr-3">
                 <PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" />
@@ -375,6 +375,10 @@ const fetchUsers = async () => {
     console.error('Błąd podczas pobierania użytkowników:', error);
   }
 }
+
+const truncateDescription = (description) => {
+  return description.length > 15 ? description.substring(0, 15) + '...' : description;
+};
 
 onMounted(fetchUsers);
 </script>

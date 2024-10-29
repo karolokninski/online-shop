@@ -17,8 +17,8 @@
               <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button @click="openEditModal(category)" class="text-indigo-600 hover:text-indigo-900 mr-3">Edytuj</button>
-              <button @click="handleDeleteButton(category.id)" class="text-red-600 hover:text-red-900">Usuń</button>
+              <button @click="openEditModal(category)" class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <button @click="handleDeleteButton(category.id)" class="text-red-600 hover:text-red-900"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
         </tbody>
@@ -27,12 +27,15 @@
         <div class="flex space-x-2">
           <input v-model="newCategoryName" type="text" placeholder="Wpisz nazwę kategorii"
             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-          <button 
+            
+            <button 
             @click="addCategory" 
             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Dodaj Kategorię
           </button>
+          
         </div>
+        <p v-if="categorynameerror2" class="text-red-500 text-xs mt-1">{{ categorynameerror2 }}</p>
       </div>
     </div>
 
@@ -54,14 +57,15 @@
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <PlusCircleIcon class="h-6 w-6 text-green" aria-hidden="true" />
+                      <PencilSquareIcon class="h-6 w-6 text-green" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                       <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Edytuj kategorię</DialogTitle>
                       <div class="mt-2">
                         <input v-model="currentEditName" type="text" placeholder="Wpisz nową nazwę kategorii"
                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                      </div>
+                          <p v-if="categorynameerror" class="text-red-500 text-xs mt-1">{{ categorynameerror }}</p>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -134,7 +138,7 @@
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-
+import { PlusCircleIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const editCategoryOpen = ref(false);
@@ -145,6 +149,33 @@ const currentDeletename = ref('');
 const newCategoryName = ref('');
 const currentEditName = ref('');
 const categories = ref([]);
+
+const categorynameerror = ref('');
+const categorynameerror2 = ref('');
+
+const validateCategory = () => {
+  let isValid = true;
+  categorynameerror.value = ''; 
+  if (currentEditName.value.trim() === '') {
+    categorynameerror.value = 'Nazwa jest wymagana';
+    isValid = false;
+  }
+  return isValid;
+};
+
+const validateNewCategory = () => {
+  let isValid = true;
+  categorynameerror2.value = ''; 
+
+  if (newCategoryName.value.trim() === '') {
+    categorynameerror2.value = 'Nazwa kategorii jest wymagana';
+    isValid = false;
+  }
+
+  return isValid;
+};
+
+
 
 const fetchCategories = async () => {
   try {
@@ -160,6 +191,7 @@ const fetchCategories = async () => {
 };
 
 const addCategory = async () => {
+  if (!validateNewCategory()) return;
   if (newCategoryName.value.trim() === '') return;
   try {
     await axios.post(`${API_URL}/categories`, {
@@ -179,6 +211,7 @@ const openEditModal = (category) => {
 };
 
 const updateCategory = async () => {
+  if (!validateCategory()) return;
   if (currentEditName.value.trim() === '') return;
   try {
     await axios.put(`${API_URL}/categories/${currentEditId.value}`, {

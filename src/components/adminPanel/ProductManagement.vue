@@ -39,8 +39,8 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="handleEditButton(product.id)"
-                class="text-indigo-600 hover:text-indigo-900 mr-3">Edytuj</button>
-              <button @click="handleDeleteButton(product.id)" class="text-red-600 hover:text-red-900">Usuń</button>
+                class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <button @click="handleDeleteButton(product.id)" class="text-red-600 hover:text-red-900"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
         </tbody>
@@ -81,7 +81,7 @@
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">Upewnij się, że wszystkie pola są wypełnione.</p>
 
-                                        <form method="POST" onsubmit="return false">
+                                        <form @submit.prevent="">
                                             <div class="border-b border-gray-900/10 pb-8">
                                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
                                                     <div class="sm:col-span-3">
@@ -234,7 +234,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitEditProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div
@@ -364,7 +364,7 @@
 import { ref, onMounted } from "vue";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-import { PlusCircleIcon } from "@heroicons/vue/24/outline";
+import { PlusCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const addProductOpen = ref(false)
@@ -447,7 +447,7 @@ const handleFileUpload = (event) => {
 };
 
 const handleAddButton = async () => {
-  if (!form.value.add.errors.name && !form.value.add.errors.price && !form.value.add.errors.stock && !form.value.add.errors.description) {
+  if (form.value.add.name && !form.value.add.errors.name && !form.value.add.errors.price && !form.value.add.errors.stock && !form.value.add.errors.description) {
     await addProduct(
       form.value.add.name,
       form.value.add.category_id,

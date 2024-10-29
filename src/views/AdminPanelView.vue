@@ -40,16 +40,11 @@
         <RouterView class="flex-1"></RouterView>
         <div v-show="$route.name==='adminPanel'" class="text-black flex flex-col gap-8">
           <div class="flex flex-col gap-2">
-            <h2 class="text-2xl">Zamówienia</h2>
-            <h3 class="text-lg">Nie masz żadnych zamówień</h3>
-            <p>Gdy zrealizujesz pierwsze zamówienie, pojawi się ono tutaj.</p>
+            <h2 class="text-2xl">Witamy w Panelu administratora!</h2>
+            
           </div>
 
-          <div class="flex flex-col gap-2">
-            <h2 class="text-2xl">Listy zakupowe</h2>
-            <h3 class="text-lg">Nie masz żadnych zapisanych list</h3>
-            <p>Masz na oku ciekawe produkty? Dodaj je do listy!</p>
-          </div>
+          
         </div>
       </div>
     </main>

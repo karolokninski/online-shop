@@ -22,10 +22,10 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="handleEditButton(product.id)" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                Edytuj
+                <PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" />
               </button>
               <button @click="handleDeleteButton(product.id)" class="text-red-600 hover:text-red-900">
-                Usuń
+                <TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" />
               </button>
             </td>
           </tr>
@@ -53,7 +53,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitAddProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -167,7 +167,7 @@
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <form @submit.prevent="submitEditProductForm">
+              <form @submit.prevent="">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -311,7 +311,7 @@
   import { ref, onMounted } from 'vue'
   import axios from 'axios'
   import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-  import { PlusCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+  import { PlusCircleIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
   const API_URL = import.meta.env.VITE_API_URL
   const addSubpageOpen = ref(false)

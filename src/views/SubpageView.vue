@@ -20,7 +20,6 @@
     try {
       const response = await axios.get(API_URL + `/subpages/${route.meta.id}`)
       subpage.value = response.data
-      console.log(subpage.value)
     } catch (error) {
       console.error('Error fetching subpage:', error)
     }

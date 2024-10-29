@@ -11,7 +11,7 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr v-for="parameter in parameters" :key="parameter.id" class="hover:bg-gray-100 transition duration-200">
-          <td class="px-6 py-4 whitespace-nowrap">{{ parameter.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ parameter.name }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <button @click="handleEditButton(parameter.id)"
               class="text-indigo-600 hover:text-indigo-900 mr-3"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
@@ -42,7 +42,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitAddParameterForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -149,7 +149,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitEditProductForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -324,12 +324,8 @@ const submitDeleteParameter = async () => {
       return;
     }
     
-    console.log(`Deleting parameter with ID: ${currentDeleteId.value}`);
-    
     await axios.delete(`${API_URL}/parameters/${currentDeleteId.value}`);
-
     fetchParameters();
-
     deleteParameterOpen.value = false;
     currentDeleteId.value = null;
   } catch (error) {

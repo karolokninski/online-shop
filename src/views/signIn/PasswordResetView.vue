@@ -243,7 +243,6 @@
 
       try {
         var result = await userStore.verifyPasswordResetCode(code.value, email.value)
-        console.log(result)
         if (result.status != 200 && result.response.data.detail) {
           validationErrorMessage.value = result.response.data.detail
         } else if (result.status == 200) {

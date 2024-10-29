@@ -38,13 +38,11 @@
           </button>
         </RouterLink>
         <RouterView class="flex-1"></RouterView>
-        <div v-show="$route.name==='adminPanel'" class="text-black flex flex-col gap-8">
-          <div class="flex flex-col gap-2">
-            <h2 class="text-2xl">Witamy w Panelu administratora!</h2>
-            
-          </div>
-
-          
+        <div v-show="$route.name==='adminPanel'" class="text-black flex flex-col gap-8" style="width: 80%;">
+          <h2 class="text-4xl">Panel Administracyjny sklepu Geeked.tech</h2>
+          <p class="text-lg">Panel administracyjny sklepu internetowego to kompleksowy system zarządzania wszystkimi kluczowymi elementami sklepu. Umożliwia on sprawne zarządzanie produktami, kategoriami oraz parametrami produktów – każdy produkt można łatwo przypisać do różnych kategorii oraz dodać do niego specyficzne parametry.</p>
+          <p class="text-lg">Panel zawiera także funkcjonalność zarządzania klientami, pozwalając na przeglądanie i edytowanie kont klientów oraz dodawanie do nich indywidualnych notatek. Obsługuje również zarządzanie zamówieniami, umożliwiając składanie ich zarówno przez zarejestrowanych, jak i niezarejestrowanych użytkowników.</p>
+          <p class="text-lg">Panel administracyjny zapewnia pełną kontrolę nad sposobami i kosztami dostawy, jak również nad metodami płatności, co pozwala dostosować sklep do preferencji klientów. Dzięki opcji tworzenia podstron informacyjnych, administrator może z łatwością edytować i aktualizować ważne treści, takie jak regulamin, informacje o firmie czy warunki dostawy, które będą widoczne w menu sklepu.</p>
         </div>
       </div>
     </main>

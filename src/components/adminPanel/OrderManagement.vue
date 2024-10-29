@@ -7,10 +7,10 @@
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Klient</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Data zamówienia</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Data</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Dostawa</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Płatność</th>
-            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Wartość zamówienia</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Wartość</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Produkty</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Akcje</th>
@@ -49,9 +49,9 @@
               <table class="min-w-full bg-gray-100 mt-4 rounded-lg shadow-lg overflow-hidden">
                 <thead class="bg-indigo-200 text-gray-900">
                   <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Product ID</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Quantity</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Price</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">ID</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Ilość</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Cena</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">

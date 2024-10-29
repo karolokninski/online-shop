@@ -22,10 +22,10 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="handleEditButton(product.id)" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                Edytuj
+                <PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" />
               </button>
               <button @click="handleDeleteButton(product.id)" class="text-red-600 hover:text-red-900">
-                Usuń
+                <TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" />
               </button>
             </td>
           </tr>
@@ -311,7 +311,7 @@
   import { ref, onMounted } from 'vue'
   import axios from 'axios'
   import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-  import { PlusCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+  import { PlusCircleIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
   const API_URL = import.meta.env.VITE_API_URL
   const addSubpageOpen = ref(false)

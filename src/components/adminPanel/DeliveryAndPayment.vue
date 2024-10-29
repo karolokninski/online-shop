@@ -23,8 +23,8 @@
             <td class="px-6 py-4 text-center">{{ provider.estimated_delivery_days }}</td>
             <td class="px-6 py-4 text-center">{{ provider.cost }}</td>
             <td class="px-6 py-4 text-right">
-              <button @click="openEditProviderModal(provider)" class="text-indigo-600 mr-2">Edytuj</button>
-              <button @click="openDeleteProviderModal(provider.id)" class="text-red-600">Usuń</button>
+              <button @click="openEditProviderModal(provider)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <button @click="openDeleteProviderModal(provider.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
         </tbody>
@@ -56,8 +56,8 @@
             <td class="px-6 py-4">{{ paymentMethod.description }}</td>
             <td class="px-6 py-4">{{ paymentMethod.fee }}</td>
             <td class="px-6 py-4 text-right">
-              <button @click="openEditPaymentMethodModal(paymentMethod)" class="text-indigo-600 mr-2">Edytuj</button>
-              <button @click="openDeletePaymentMethodModal(paymentMethod.id)" class="text-red-600">Usuń</button>
+              <button @click="openEditPaymentMethodModal(paymentMethod)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <button @click="openDeletePaymentMethodModal(paymentMethod.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
         </tbody>
@@ -564,7 +564,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { PlusCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { PlusCircleIcon,  PencilSquareIcon, TrashIcon  } from '@heroicons/vue/24/outline'
 import { Dialog, DialogTitle, DialogPanel, TransitionRoot, TransitionChild } from "@headlessui/vue";
 const API_URL = import.meta.env.VITE_API_URL
 const addProviderOpen = ref(false);

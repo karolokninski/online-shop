@@ -12,6 +12,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Method</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Total Amount</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Produkty</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
@@ -43,6 +44,24 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">{{ order.order_status }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <table class="min-w-full bg-gray-100 mt-4 rounded-lg shadow-lg overflow-hidden">
+                <thead class="bg-indigo-200 text-gray-900">
+                  <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Product ID</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Quantity</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Price</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="item in order.order_items" :key="item.id">
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ item.product_id }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ item.quantity }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ (item.price * item.quantity).toFixed(2) }} PLN</td>
+                  </tr>
+                </tbody>
+              </table>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="openEditOrderModal(order)" class="text-indigo-600 hover:text-indigo-900">

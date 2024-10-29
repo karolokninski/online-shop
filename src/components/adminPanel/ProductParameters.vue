@@ -280,7 +280,6 @@ const submitEditParameterForm = async () => {
     try {
       await axios.put(`${API_URL}/parameters/${form.value.edit.id}`, { parameter_name: form.value.edit.name });
       fetchParameters();
-      form.value.edit.name = '';
       editParameterOpen.value = false;
     } catch (error) {
       console.error('Error editing parameter:', error);

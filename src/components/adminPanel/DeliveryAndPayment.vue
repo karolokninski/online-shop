@@ -744,11 +744,11 @@ const submitEditProviderForm = async () => {
 
   try {
 
-    await axios.put(`${API_URL}/delivery-methods/${currentProviderId.value}`, updatedProviderData);
+    const response=await axios.put(`${API_URL}/delivery-methods/${currentProviderId.value}`, updatedProviderData);
 
     const index = providers.value.findIndex(provider => provider.id === currentProviderId.value);
     if (index !== -1) {
-      providers.value[index] = { ...providers.value[index], ...updatedProviderData };
+      providers.value[index] =  response.data;
     }
 
     editProviderOpen.value = false;

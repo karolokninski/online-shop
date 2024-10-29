@@ -173,8 +173,6 @@ const validateNewCategory = () => {
   return isValid;
 };
 
-
-
 const fetchCategories = async () => {
   try {
     const response = await axios.get(`${API_URL}/categories`);

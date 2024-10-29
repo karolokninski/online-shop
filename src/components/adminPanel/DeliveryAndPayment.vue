@@ -80,7 +80,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitAddProviderForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -184,7 +184,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitEditProviderForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -384,7 +384,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitAddPaymentMethodForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -472,7 +472,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form @submit.prevent="submitEditPaymentMethodForm">
+                <form @submit.prevent="">
                   <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                       <div
@@ -593,35 +593,6 @@ const form = ref({
   }
 })
 
-onMounted(async () => {
-  await fetchProviders();
-  await fetchPaymentMethods();
-});
-
-const fetchProviders = async () => {
-  try {
-    const response = await axios.get(API_URL + "/delivery-methods/");
-    providers.value = response.data.map(provider => ({
-      id: provider.id,
-      name: provider.method_name,
-      cost: provider.cost,
-      estimated_delivery_days: provider.estimated_delivery_days,
-      description: provider.description,
-    }));
-  } catch (error) {
-    console.error("Błąd podczas pobierania dostawców:", error);
-  }
-};
-
-const fetchPaymentMethods = async () => {
-  try {
-    const response = await axios.get(API_URL + "/payment-methods/");
-    paymentMethods.value = response.data;
-  } catch (error) {
-    console.error("Error fetching payment methods:", error);
-  }
-};
-
 const validateTitle = (formType) => {
   const formInstance = formType === 'add' ? form.value.add : form.value.edit;
 
@@ -690,11 +661,11 @@ const submitAddProviderForm = async () => {
   }
 };
 
-
 const openDeleteProviderModal = (id) => {
   currentProviderId.value = id;
   deleteConfirmationOpen.value = true;
 };
+
 const deleteProvider = async () => {
   try {
     await axios.delete(API_URL + `/delivery-methods/${currentProviderId.value}`);
@@ -705,10 +676,7 @@ const deleteProvider = async () => {
   }
 };
 
-
-
 const openEditProviderModal = (provider) => {
-
   form.value.edit.name = provider.name;
   form.value.edit.cost = provider.cost;
   form.value.edit.estimated_delivery_days = provider.estimated_delivery_days;
@@ -730,7 +698,6 @@ const submitEditProviderForm = async () => {
   validateCost('edit');
   validateEstimatedDeliveryDays('edit');
 
-
   if (form.value.edit.errors.name || form.value.edit.errors.cost || form.value.edit.errors.estimated_delivery_days) {
     return;
   }
@@ -743,14 +710,8 @@ const submitEditProviderForm = async () => {
   };
 
   try {
-
-    const response=await axios.put(`${API_URL}/delivery-methods/${currentProviderId.value}`, updatedProviderData);
-
-    const index = providers.value.findIndex(provider => provider.id === currentProviderId.value);
-    if (index !== -1) {
-      providers.value[index] =  response.data;
-    }
-
+    await axios.put(`${API_URL}/delivery-methods/${currentProviderId.value}`, updatedProviderData);
+    fetchProviders();
     editProviderOpen.value = false;
   } catch (error) {
     console.error("Error updating provider:", error);
@@ -771,7 +732,6 @@ const confirmDeletePaymentMethod = async () => {
     console.error("Błąd podczas usuwania metody płatności:", error);
   }
 };
-//zrobione
 
 const form2 = ref({
   add: {
@@ -795,7 +755,6 @@ const form2 = ref({
 });
 
 const validateTitle2 = (formType) => {
-
   const form = formType === 'add' ? form2.value.add : form2.value.edit;
 
   if (!form.method_name) {
@@ -805,7 +764,6 @@ const validateTitle2 = (formType) => {
   }
 };
 const validateTitle3 = (formType) => {
-
   const form = formType === 'add' ? form2.value.add : form2.value.edit;
 
   if (!form.name) {
@@ -817,8 +775,6 @@ const validateTitle3 = (formType) => {
 
 const validateFee2 = (formType) => {
   const form = formType === 'add' ? form2.value.add : form2.value.edit;
-
-
   const fee = Number(form.fee);
 
   if (isNaN(fee) || form.fee === '' || form.fee === null || form.fee === undefined || form.fee === '') {
@@ -885,11 +841,8 @@ const submitEditPaymentMethodForm = async () => {
   };
 
   try {
-    const response = await axios.put(API_URL + `/payment-methods/${currentPaymentMethodId.value}`, updatedPaymentMethodData);
-    const index = paymentMethods.value.findIndex(method => method.id === currentPaymentMethodId.value);
-    if (index !== -1) {
-      paymentMethods.value[index] = response.data;
-    }
+    await axios.put(API_URL + `/payment-methods/${currentPaymentMethodId.value}`, updatedPaymentMethodData);
+    fetchPaymentMethods();
     editPaymentMethodOpen.value = false;
   } catch (error) {
     console.error("Błąd podczas edytowania metody płatności:", error);
@@ -899,4 +852,33 @@ const submitEditPaymentMethodForm = async () => {
 const truncateDescription = (description) => {
   return description.length > 15 ? description.substring(0, 15) + '...' : description;
 };
+
+const fetchProviders = async () => {
+  try {
+    const response = await axios.get(API_URL + "/delivery-methods/");
+    providers.value = response.data.map(provider => ({
+      id: provider.id,
+      name: provider.method_name,
+      cost: provider.cost,
+      estimated_delivery_days: provider.estimated_delivery_days,
+      description: provider.description,
+    }));
+  } catch (error) {
+    console.error("Błąd podczas pobierania dostawców:", error);
+  }
+};
+
+const fetchPaymentMethods = async () => {
+  try {
+    const response = await axios.get(API_URL + "/payment-methods/");
+    paymentMethods.value = response.data;
+  } catch (error) {
+    console.error("Error fetching payment methods:", error);
+  }
+};
+
+onMounted(async () => {
+  await fetchProviders();
+  await fetchPaymentMethods();
+});
 </script>

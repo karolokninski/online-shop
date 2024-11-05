@@ -17,7 +17,7 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="product in products" :key="product.id" class="hover:bg-gray-100 transition duration-200">
             <td class="px-6 py-4">
-              <img v-if="product.image" :src="product.image" alt="Product Image"
+              <img v-if="product.main_image" :src="formatImage(product.main_image)" alt="Product Image"
                 class="w-12 h-12 rounded-md object-cover" />
               <PhotoIcon v-else class="w-12 h-12 rounded-md object-cover" aria-hidden="true" />
             </td>
@@ -175,7 +175,7 @@
                               <label for="images" class="block text-sm font-medium leading-6 text-gray-900">Dodaj zdjęcia</label>
                               <div class="mt-2">
                                 <input 
-                                  @change="validateImage('add'); handleFileUpload" 
+                                  @change="handleImageUpload" 
                                   type="file" 
                                   name="images" 
                                   id="images" 
@@ -183,7 +183,7 @@
                                   multiple
                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
                                 />
-                                <p v-if="form.add.errors.images" class="text-red-500 text-xs mt-1">{{ form.add.errors.images }}</p>
+                                <p v-if="form.add.errors.image" class="text-red-500 text-xs mt-1">{{ form.add.errors.image }}</p>
                               </div>
                               <div class="mt-4 grid grid-cols-3 gap-4">
                                 <div v-for="image in previewImages" :key="image" class="w-full">
@@ -387,7 +387,7 @@
                                 <input 
                                   type="file" 
                                   id="edit-image" 
-                                  @change="validateImage('edit'); handleImageUpload" 
+                                  @change="handleImageUpload" 
                                   accept="image/*"
                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
                                 />
@@ -437,7 +437,7 @@ const deleteProductOpen = ref(false)
 const currentEditId = ref()
 const currentDeleteId = ref()
 const currentDeletename = ref()
-const mainImage = ref([]);
+const mainImage = ref();
 const additionalImages = ref([]);
 const previewImages = ref([]);
 
@@ -502,11 +502,11 @@ const validateDescription = (formType) => {
 }
 
 const validateImage = (formType) => {
-    const images = form.value[formType].images || [];
-    form.value[formType].errors.images = images.length > 0 ? '' : 'Dodanie co najmniej jednego zdjęcia jest wymagane.';
+    const images = form.value[formType].image || [];
+    form.value[formType].errors.image = images.length > 0 ? '' : 'Dodanie co najmniej jednego zdjęcia jest wymagane.';
 }
 
-const handleFileUpload = async (event) => {
+const handleImageUpload = async (event) => {
   const files = Array.from(event.target.files);
   previewImages.value.push(...files.map((file) => URL.createObjectURL(file)));
 
@@ -521,7 +521,42 @@ const handleFileUpload = async (event) => {
   }
 };
 
+const formatImage = (image) => {
+  return `data:image/jpeg;base64,${image}`;
+}
+
+const toBase64 = (input) => {
+  return new Promise((resolve, reject) => {
+    if (input instanceof Blob || input instanceof File) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(input);
+      reader.onload = () => {
+        const arrayBuffer = reader.result;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        let binary = '';
+        for (let i = 0; i < uint8Array.byteLength; i++) {
+          binary += String.fromCharCode(uint8Array[i]);
+        }
+        resolve(btoa(binary));
+      };
+      reader.onerror = (error) => reject(error);
+    } else if (input instanceof Uint8Array) {
+      let binary = '';
+      for (let i = 0; i < input.byteLength; i++) {
+        binary += String.fromCharCode(input[i]);
+      }
+      resolve(btoa(binary));
+    } else {
+      reject(new TypeError("Input must be a File, Blob, or Uint8Array"));
+    }
+  });
+};
+
+
 const handleAddButton = async () => {
+  form.value.add.image = mainImage.value;
+
+  validateImage('add');
   validateName('add');
   validateCategory('add');
   validatePrice('add');
@@ -537,7 +572,7 @@ const handleAddButton = async () => {
       form.value.add.price,
       form.value.add.stock,
       form.value.add.description,
-      mainImage,
+      form.value.add.image,
       additionalImages
     );
     await fetchProducts();
@@ -549,15 +584,18 @@ const handleAddButton = async () => {
 };
 
 const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage, additional_images) => {
+  console.log(productName, categoryId, price, stockQuantity, description, mainImage, additional_images)
   try {
+    const mainImageBase64 = mainImage ? await toBase64(mainImage) : null;
+
     await axios.post(API_URL + '/products', {
       product_name: productName,
       category_id: categoryId,
       price: price,
-      stock_quantity: stockQuantity,
+      stock_quantity: stockQuantity || 0,
       description: description,
-      main_image: mainImage.value ? null : null,
-      additional_images: additional_images.value ? null : null
+      main_image: mainImageBase64,
+      additional_images: additional_images ? null : null
     });
   } catch (error) {
     console.error('Error adding product:', error);
@@ -598,6 +636,9 @@ const handleEditButton = (id) => {
 }
 
 const submitEditProductForm = async () => {
+  form.value.edit.image = mainImage.value
+
+  validateImage('edit');
   validateName('edit');
   validateCategory('edit');
   validatePrice('edit');

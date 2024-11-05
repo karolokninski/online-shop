@@ -1,4 +1,5 @@
 import os
+import base64
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Form, Request
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
@@ -170,6 +171,13 @@ class ProductCreate(BaseModel):
     main_image: Optional[bytes] = None
     additional_images: Optional[List[bytes]] = None
 
+    def __init__(self, **data):
+        if data.get("main_image"):
+            data["main_image"] = base64.b64decode(data["main_image"])
+        if data.get("additional_images"):
+            data["additional_images"] = [base64.b64decode(img) for img in data["additional_images"]]
+        super().__init__(**data)
+
 class ProductResponse(BaseModel):
     id: int
     product_name: str
@@ -177,12 +185,31 @@ class ProductResponse(BaseModel):
     price: float
     stock_quantity: int
     description: Optional[str]
-    main_image: Optional[bytes]
-    additional_images: Optional[List[bytes]]
+    main_image: Optional[str]
+    additional_images: Optional[List[str]]
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+        json_encoders = {
+            bytes: lambda v: encode_to_base64(v)
+        }
+
+    @classmethod
+    def from_orm(cls, obj):
+        additional_images_base64 = [encode_to_base64(img) for img in obj.additional_images or []]
+        return cls(
+            id=obj.id,
+            product_name=obj.product_name,
+            category_id=obj.category_id,
+            price=obj.price,
+            stock_quantity=obj.stock_quantity,
+            description=obj.description,
+            main_image=encode_to_base64(obj.main_image),
+            additional_images=additional_images_base64,
+            created_at=obj.created_at,
+        )
 
 class ProductParameterCreate(BaseModel):
     parameter_name: str
@@ -399,6 +426,11 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def encode_to_base64(data: Optional[bytes]) -> Optional[str]:
+    if data is not None:
+        return base64.b64encode(data).decode('utf-8')
+    return None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -620,6 +652,7 @@ async def delete_category(category_id: int, db: AsyncSession = Depends(get_db)):
 
 @app.post("/products/")
 async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):
+    print(product)
     db_product = Product(
         product_name=product.product_name,
         category_id=product.category_id,
@@ -639,11 +672,11 @@ async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_
         await db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/products/", response_model=List[ProductResponse]) 
+@app.get("/products/", response_model=List[ProductResponse])
 async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Product).offset(skip).limit(limit))
     products = result.scalars().all()
-    return products
+    return [ProductResponse.from_orm(product) for product in products]
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
@@ -714,7 +747,6 @@ async def delete_parameter(parameter_id: int, db: AsyncSession = Depends(get_db)
 
     try:
         await db.delete(db_parameter)
-        await db.commit() 
         return {"message": "Pomyślnie usunięto parametr."}
     except Exception as e:
         await db.rollback()

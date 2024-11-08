@@ -1,5 +1,102 @@
 <template>
-  <div class="text-black">
-    <h1>Ustawienia konta</h1>
+  <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center">Ustawienia konta</h2>
+
+
+    <div class="flex flex-col md:flex-row gap-8">
+
+
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold mb-4 text-center">Dane użytkownika</h3>
+        <div>
+
+          <label class="block text-gray-700 text-sm font-bold mb-2">Imię</label>
+          <input type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+            value="Jan" readonly>
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Nazwisko</label>
+          <input type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+            value="Kowalski" readonly>
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Email</label>
+          <input type="email" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+            value="jan.kowalski@example.com" readonly>
+
+
+        </div>
+      </div>
+
+
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold mb-4 text-center">Zmień hasło</h3>
+        <div>
+          <form action="">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Stare hasło</label>
+            <input type="password" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+              placeholder="Wpisz stare hasło">
+
+            <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Nowe hasło</label>
+            <input type="password" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+              placeholder="Wpisz nowe hasło">
+
+            <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Powtórz nowe hasło</label>
+            <input type="password" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+              placeholder="Powtórz nowe hasło">
+            <div class="mt-8 flex justify-center">
+              <button
+                class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zmień
+                hasło</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold mb-4 text-center">Adres dostawy</h3>
+        <form>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Miasto</label>
+          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+            placeholder="Wpisz kraj">
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kod pocztowy</label>
+          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+            placeholder="Wpisz kod pocztowy">
+
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Ulica</label>
+          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+            placeholder="Wpisz ulicę">
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer domu</label>
+          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+            placeholder="Wpisz numer domu">
+
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer telefonu</label>
+          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
+            placeholder="Wpisz numer telefonu">
+          <div class="mt-8 flex justify-center">
+            <button
+              class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zapisz
+              zmiany</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
   </div>
 </template>
+
+<script setup>
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+const userId = userStore.id;
+console.log('User ID:', userId);
+
+
+</script>

@@ -11,15 +11,15 @@
         <div>
 
           <label class="block text-gray-700 text-sm font-bold mb-2">Imię</label>
-          <input type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-            value="Jan" readonly>
+          <input v-model="User.firstName" type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+            value="" readonly>
 
           <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Nazwisko</label>
-          <input type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+          <input v-model="User.lastName" type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
             value="Kowalski" readonly>
 
           <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Email</label>
-          <input type="email" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
+          <input v-model="User.email "type="email" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
             value="jan.kowalski@example.com" readonly>
 
 
@@ -93,10 +93,49 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user';
-
+import { ref, reactive, onMounted } from "vue";
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
 const userStore = useUserStore();
 const userId = userStore.id;
 console.log('User ID:', userId);
+const User = reactive({
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  addressid: "",
+  errors: {
+    general: '',
+  }
+});
 
 
+async function fetchUserById(id) {
+  try {
+    const response = await axios.get(`${API_URL}/users/${id}`);
+    const userData = response.data;
+
+
+    User.firstName = userData.first_name;
+    User.lastName = userData.last_name;
+    User.email = userData.email;
+    User.phone = userData.phone;
+    User.addressid = userData.address_id;
+    
+    console.log("Dane użytkownika:", userData);
+  } catch (error) {
+    console.error("Błąd podczas pobierania danych użytkownika:", error);
+    User.errors.general = "Nie udało się pobrać danych użytkownika.";
+  }
+}
+
+onMounted(() => {
+  if (userId) {
+    fetchUserById(userId);
+  } else {
+    console.error("Brak ID użytkownika.");
+    User.errors.general = "ID użytkownika jest wymagane do pobrania danych.";
+  }
+});
 </script>

@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
         this.isAuthenticated = true
         this.name = decodedToken.name
         this.role = response.data.role
-        this.id = decodedToken.sub || response.data.id;
+        this.id = response.data.id;
         router.push('/')
       } catch (error) {
         console.error('Login failed:', error.message)
@@ -52,10 +52,10 @@ export const useUserStore = defineStore('user', {
         })
 
         this.token = response.data.access_token
-        const decodedToken = jose.decodeJwt(this.token)
+        //const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.name = name
-        this.id = decodedToken.sub || response.data.id; 
+        this.id = response.data.id; 
         router.push('/')
       } catch (error) {
         console.error('Registration failed:', error.message)

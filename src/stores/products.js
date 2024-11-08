@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia'
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useProductsStore = defineStore('products', {
   state: () => ({
@@ -62,5 +65,17 @@ export const useProductsStore = defineStore('products', {
     ]
   }),
   actions: {
+    async fetchProducts() {
+      try {
+        const response = await axios.get(API_URL + '/products')
+        this.products = response.data.map((product) => ({
+          ...product,
+          name: product.product_name,
+          stock: product.stock_quantity
+        }))
+      } catch (error) {
+        console.error('Błąd podczas pobierania produktów:', error)
+      }
+    }
   }
 });

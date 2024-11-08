@@ -1,7 +1,7 @@
 import os
 import base64
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException, Form, Request
+from fastapi import FastAPI, Depends, HTTPException, Form, Request, Query
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -514,7 +514,7 @@ async def register(user: UserRegisterCreate, db: AsyncSession = Depends(get_db))
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return {"name": db_user.first_name, "email": db_user.email, "role": db_user.role} 
+    return {"name": db_user.first_name, "email": db_user.email, "role": db_user.role, "id": user.id} 
 
 @app.post("/login")
 async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
@@ -524,8 +524,8 @@ async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: Async
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Nieprawidłowy adres e-mail lub hasło.")
 
-    access_token = create_access_token(data={"name": user.first_name, "role": user.role})  # Include role in the token payload
-    return {"access_token": access_token, "token_type": "bearer", "role": user.role}  # Return the role
+    access_token = create_access_token(data={"name": user.first_name, "role": user.role, "id": user.id})
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role, "id": user.id}
 
 @app.post("/change-password")
 async def change_password(request_data: ChangePasswordRequest, db: AsyncSession = Depends(get_db)):
@@ -673,9 +673,22 @@ async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/products/", response_model=List[ProductResponse])
-async def get_products(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Product).offset(skip).limit(limit))
+async def get_products(
+    skip: int = 0, 
+    limit: int = 10,
+    name: Optional[str] = Query(None), 
+    db: AsyncSession = Depends(get_db)
+):
+    if name is not None:
+        query = select(Product).where(Product.product_name.ilike(f"{name}%")).offset(skip).limit(limit)
+    else:
+        query = select(Product).offset(skip).limit(limit)
+
+    result = await db.execute(query)
     products = result.scalars().all()
+    
+    if products is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu.")
     return [ProductResponse.from_orm(product) for product in products]
 
 @app.get("/products/{product_id}", response_model=ProductResponse)

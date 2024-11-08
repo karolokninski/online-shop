@@ -111,11 +111,12 @@ class User(Base):
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20), nullable=True)
     hashed_password = Column(String(100), nullable=False)
-    address_id = Column(Integer, ForeignKey('addresses.id', ondelete="SET NULL"))
+    address_id = Column(Integer, ForeignKey('addresses.id', ondelete="SET NULL"), nullable=True) 
     role = Column(String(20), default='user', nullable=False)
     note = Column(String, nullable=True)
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
-    address = relationship("Address")
+    address = relationship("Address", backref="users", uselist=False)
+    
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -278,13 +279,14 @@ class AddressBase(BaseModel):
     country: str
 
 class AddressResponse(BaseModel):
+    id: int
     address_line: str
     postal_code: str
     city: str
     country: str
 
     class Config:
-        from_attributes = True
+        from_attributes=True
 
 class UserBase(BaseModel):
     first_name: str
@@ -331,6 +333,7 @@ class UserUpdate(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    address_id: Optional[int]
     created_at: str
 
     @validator('created_at', pre=True, always=True)
@@ -1063,6 +1066,69 @@ async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(user)
     await db.commit()
     return {"message": "Pomyślnie usunięto użytkownika."}
+
+@app.post("/addresses/", response_model=AddressResponse)
+async def create_address(
+    address: AddressCreate, user_id: Optional[int] = None, db: AsyncSession = Depends(get_db)
+):
+    db_address = Address(
+        address_line=address.address_line,
+        postal_code=address.postal_code,
+        city=address.city,
+        country=address.country
+    )
+    
+    db.add(db_address)
+    await db.commit()
+    await db.refresh(db_address)
+
+    if user_id:
+        result = await db.execute(select(User).where(User.id == user_id).options(selectinload(User.address)))
+        user = result.scalar_one_or_none()
+
+        if user:
+            user.address_id = db_address.id
+            await db.commit()
+            await db.refresh(user)
+        else:
+            raise HTTPException(status_code=404, detail="Nie znaleziono użytkownika.")
+
+    return db_address
+
+@app.get("/addresses/{address_id}", response_model=AddressResponse)
+async def get_address(address_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Address).filter(Address.id == address_id))
+    address = result.scalar_one_or_none()
+    if not address:
+        raise HTTPException(status_code=404, detail="Nie znaleziono adresu.")
+    return AddressResponse.from_orm(address)
+
+@app.put("/addresses/{address_id}", response_model=AddressResponse)
+async def update_address(address_id: int, address: AddressCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Address).filter(Address.id == address_id))
+    db_address = result.scalar_one_or_none()
+    if not db_address:
+        raise HTTPException(status_code=404, detail="Nie znaleziono adresu.")
+
+    db_address.address_line = address.address_line
+    db_address.postal_code = address.postal_code
+    db_address.city = address.city
+    db_address.country = address.country
+
+    await db.commit()
+    await db.refresh(db_address)
+    return AddressResponse.from_orm(db_address)
+
+@app.delete("/addresses/{address_id}", response_model=dict)
+async def delete_address(address_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Address).filter(Address.id == address_id))
+    db_address = result.scalar_one_or_none()
+    if not db_address:
+        raise HTTPException(status_code=404, detail="Nie znaleziono adresu.")
+
+    await db.delete(db_address)
+    await db.commit()
+    return {"message": "Pomyślnie usunięto adres."}
 
 @app.post("/orders/", response_model=dict)
 async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):

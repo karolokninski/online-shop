@@ -680,10 +680,13 @@ async def get_products(
     skip: int = 0, 
     limit: int = 10,
     name: Optional[str] = Query(None), 
+    id: Optional[int] = Query(None), 
     db: AsyncSession = Depends(get_db)
 ):
     if name is not None:
         query = select(Product).where(Product.product_name.ilike(f"{name}%")).offset(skip).limit(limit)
+    elif id is not None:
+        query = select(Product).where(Product.id == id)
     else:
         query = select(Product).offset(skip).limit(limit)
 

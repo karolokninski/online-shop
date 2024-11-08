@@ -36,7 +36,7 @@ const query = computed(() => router.query.q);
 watch(
   query,
   (query) => {
-    productsStore.fetchProducts(query);
+    productsStore.fetchProducts(query, undefined);
   },
   { immediate: true }
 );

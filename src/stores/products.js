@@ -9,12 +9,16 @@ export const useProductsStore = defineStore('products', {
     loading: false
   }),
   actions: {
-    async fetchProducts(name) {
+    async fetchProducts(name, id) {
       this.loading = true;
       let NEW_API_URL = API_URL + '/products';
       
       if (name && name.trim() !== '') {
         NEW_API_URL += `?name=${encodeURIComponent(name)}`;
+      }
+
+      if (id && id.trim() !== '') {
+        NEW_API_URL += `?id=${encodeURIComponent(id)}`;
       }
       
       try {
@@ -28,7 +32,8 @@ export const useProductsStore = defineStore('products', {
       } catch (error) {
         console.error('Błąd podczas pobierania produktów:', error)
       } finally {
-        this.loading = false; // End loading
+        this.loading = false;
+        console.log(this.products)
       }
     }
   }

@@ -169,15 +169,26 @@ class ProductCreate(BaseModel):
     price: float
     stock_quantity: Optional[int] = 0
     description: Optional[str] = None
-    main_image: Optional[bytes] = None
-    additional_images: Optional[List[bytes]] = None
+    main_image: Optional[str] = None
+    additional_images: Optional[List[str]] = None
 
-    def __init__(self, **data):
-        if data.get("main_image"):
-            data["main_image"] = base64.b64decode(data["main_image"])
-        if data.get("additional_images"):
-            data["additional_images"] = [base64.b64decode(img) for img in data["additional_images"]]
-        super().__init__(**data)
+    @validator('main_image', pre=True, always=True)
+    def validate_main_image(cls, v):
+        if v is not None:
+            try:
+                base64.b64decode(v)
+            except (ValueError, TypeError):
+                raise ValueError("main_image must be a valid Base64 encoded string")
+        return v
+
+    @validator('additional_images', each_item=True, pre=True, always=True)
+    def validate_additional_images(cls, v):
+        if v is not None:
+            try:
+                base64.b64decode(v)
+            except (ValueError, TypeError):
+                raise ValueError("Each item in additional_images must be a valid Base64 encoded string")
+        return v
 
 class ProductResponse(BaseModel):
     id: int
@@ -655,22 +666,39 @@ async def delete_category(category_id: int, db: AsyncSession = Depends(get_db)):
 
 @app.post("/products/")
 async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):
-    print(product)
+    main_image = base64.b64decode(product.main_image) if product.main_image else None
+    additional_images = [base64.b64decode(img) for img in product.additional_images] if product.additional_images else None
+
     db_product = Product(
         product_name=product.product_name,
         category_id=product.category_id,
         price=product.price,
         stock_quantity=product.stock_quantity,
         description=product.description,
-        main_image=product.main_image,
-        additional_images=product.additional_images
+        main_image=main_image,
+        additional_images=additional_images
     )
     db.add(db_product)
     
     try:
         await db.commit()
         await db.refresh(db_product)
-        return {"message": "Pomyślnie dodano produkt."}
+
+        response_product = {
+            "id": db_product.id,
+            "product_name": db_product.product_name,
+            "category_id": db_product.category_id,
+            "price": db_product.price,
+            "stock_quantity": db_product.stock_quantity,
+            "description": db_product.description,
+            "main_image": base64.b64encode(db_product.main_image).decode('utf-8') if db_product.main_image else None,
+            "additional_images": [
+                base64.b64encode(img).decode('utf-8') for img in db_product.additional_images or []
+            ],
+            "created_at": db_product.created_at
+        }
+        
+        return {"message": "Pomyślnie dodano produkt.", "product": response_product}
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=400, detail=str(e))

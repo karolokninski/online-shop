@@ -107,14 +107,7 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toISOString().split('T')[0];
 };
-const fetchOrderItems = async (orderId) => {
-  try {
-    const response = await axios.get(`${API_URL}/orders/${orderId}/items`);
-    selectedOrder.items = response.data; 
-  } catch (error) {
-    console.error('Error fetching order items:', error);
-  }
-};
+
 const fetchProductName = async (productId) => {
   try {
     const response = await axios.get(`${API_URL}/products/${productId}`);

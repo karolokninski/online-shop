@@ -26,14 +26,14 @@
           <h3 class="text-2xl font-bold mb-4">Szczóły zamówienia</h3>
 
           <div>
-            <p class="mb-2"><strong>Data zamówienia:</strong> {{ selectedOrder.date }}</p>
+            <p class="mb-2"><strong>Data zamówienia:</strong> {{ formatDate(selectedOrder.date) }}</p>
             <p class="mb-2"><strong>Status:</strong> {{ selectedOrder.status }}</p>
             <p class="mb-4"><strong>Łączna kwota:</strong> {{ selectedOrder.total }} PLN</p>
 
-            <h4 class="font-semibold mb-2">Przedmioty w zamówieniu:</h4>
+            <h2 class="text-2xl font-bold mb-4">Przedmioty w zamówieniu:</h2>
             <ul>
               <li v-for="item in selectedOrder.items" :key="item.id">
-                <p><strong>Produkt:</strong> {{ item.name }} - <strong>Ilość:</strong> {{ item.quantity }}</p>
+                <p><strong>Produkt:</strong> {{ item.name }}  <strong>Ilość:</strong> {{ item.quantity }}    <strong>Cena:</strong>  {{ item.price }}</p>
               </li>
             </ul>
           </div>
@@ -47,7 +47,7 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user';
-import { reactive, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -59,7 +59,7 @@ console.log('User ID:', userId);
 const orders = reactive([]);
 
 
-const isModalOpen = reactive(false);
+const isModalOpen = ref(false);
 const selectedOrder = reactive({
   date: "",
   status: "",
@@ -84,7 +84,8 @@ const fetchOrders = async (id) => {
           date: order.order_date,
           status: order.order_status,
           total: order.total_amount,
-          id: order.id
+          id: order.id,
+          items: order.order_items
         });
       });
     } else if (typeof orderData === 'object') {
@@ -92,7 +93,8 @@ const fetchOrders = async (id) => {
         date: orderData.order_date,
         status: orderData.order_status,
         total: orderData.total_amount,
-        id: orderData.id
+        id: orderData.id,
+        items: orderData.order_items
       });
     } else {
       console.log("Unexpected data structure:", orderData);
@@ -113,15 +115,33 @@ const fetchOrderItems = async (orderId) => {
     console.error('Error fetching order items:', error);
   }
 };
-
-const openModal = (order) => {
+const fetchProductName = async (productId) => {
+  try {
+    const response = await axios.get(`${API_URL}/products/${productId}`);
+    return response.data.product_name; 
+  } catch (error) {
+    console.error(`Error fetching product name for ID ${productId}:`, error);
+    return "Unknown Product"; 
+  }
+};
+const openModal = async (order) => {
   selectedOrder.date = order.date;
   selectedOrder.status = order.status;
   selectedOrder.total = order.total;
-  fetchOrderItems(order.id); 
-  isModalOpen.value = true; 
-};
 
+  // Map each item in the order to include the name fetched from the products table
+  selectedOrder.items = await Promise.all(order.items.map(async (item) => {
+    const name = await fetchProductName(item.product_id);
+    return {
+      name,
+      quantity: item.quantity,
+      price: item.price
+    };
+  }));
+
+  console.log("Order items with names:", selectedOrder.items);
+  isModalOpen.value = true;
+};
 const closeModal = () => {
   isModalOpen.value = false;
 };

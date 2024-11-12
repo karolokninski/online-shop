@@ -7,31 +7,31 @@
     "vue": {
       "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "7358e1e7",
+      "fileHash": "4d83a9c2",
       "needsInterop": false
     },
     "pinia": {
       "src": "../../node_modules/pinia/dist/pinia.mjs",
       "file": "pinia.js",
-      "fileHash": "c6603c74",
+      "fileHash": "35771bb5",
       "needsInterop": false
     },
     "pinia-plugin-persistedstate": {
       "src": "../../node_modules/pinia-plugin-persistedstate/dist/index.js",
       "file": "pinia-plugin-persistedstate.js",
-      "fileHash": "2c9bec6e",
+      "fileHash": "47c9d979",
       "needsInterop": false
     },
     "vue-router": {
       "src": "../../node_modules/vue-router/dist/vue-router.mjs",
       "file": "vue-router.js",
-      "fileHash": "11cd11db",
+      "fileHash": "5439a819",
       "needsInterop": false
     },
     "axios": {
       "src": "../../node_modules/axios/index.js",
       "file": "axios.js",
-      "fileHash": "fee4357c",
+      "fileHash": "8509d2b1",
       "needsInterop": false
     }
   },

@@ -253,6 +253,6 @@
   });
 
   onMounted(() => {
-    productsStore.fetchProducts(undefined, id)
+    productsStore.fetchProducts(undefined, undefined, undefined, id)
   })
 </script>

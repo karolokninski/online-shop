@@ -8,7 +8,7 @@
         class="bg-white p-4 rounded-lg shadow mb-4 cursor-pointer" 
         @click="openModal(order)"
       >
-        <p class="text-lg font-semibold mb-2"><strong>Data zamówienia:</strong> {{ order.date }}</p>
+        <p class="text-lg font-semibold mb-2"><strong>Data zamówienia:</strong> {{ formatDate(order.date) }}</p>
         <p class="text-lg font-semibold mb-2"><strong>Status zamówienia:</strong> {{ order.status }}</p>
         <p class="text-lg font-semibold"><strong>Łączna kwota:</strong> {{ order.total }} PLN</p>
       </div>
@@ -83,7 +83,7 @@ const fetchOrders = async (id) => {
         orders.push({
           date: order.order_date,
           status: order.order_status,
-          total: order.order_total,
+          total: order.total_amount,
           id: order.id
         });
       });
@@ -91,7 +91,7 @@ const fetchOrders = async (id) => {
       orders.push({
         date: orderData.order_date,
         status: orderData.order_status,
-        total: orderData.order_total,
+        total: orderData.total_amount,
         id: orderData.id
       });
     } else {
@@ -101,7 +101,10 @@ const fetchOrders = async (id) => {
     console.error('Error fetching orders:', error);
   }
 };
-
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toISOString().split('T')[0];
+};
 const fetchOrderItems = async (orderId) => {
   try {
     const response = await axios.get(`${API_URL}/orders/${orderId}/items`);

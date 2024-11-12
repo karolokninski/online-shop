@@ -2,7 +2,7 @@
   <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-center">Historia zamówień</h2>
 
-
+ 
     <div v-if="orders.length > 0" v-for="(order, index) in orders" :key="index">
       <div 
         class="bg-white p-4 rounded-lg shadow mb-4 cursor-pointer" 
@@ -75,10 +75,10 @@ const fetchOrders = async (id) => {
 
     console.log("Order data received:", orderData); 
 
- 
+    orders.length = 0; 
+
     if (Array.isArray(orderData)) {
- 
-      orders.length = 0; 
+
       orderData.forEach(order => {
         orders.push({
           date: order.order_date,
@@ -87,14 +87,20 @@ const fetchOrders = async (id) => {
           id: order.id
         });
       });
+    } else if (typeof orderData === 'object') {
+      orders.push({
+        date: orderData.order_date,
+        status: orderData.order_status,
+        total: orderData.order_total,
+        id: orderData.id
+      });
     } else {
-      console.log("The data is not an array, check its structure.");
-
+      console.log("Unexpected data structure:", orderData);
     }
   } catch (error) {
     console.error('Error fetching orders:', error);
   }
-}
+};
 
 const fetchOrderItems = async (orderId) => {
   try {

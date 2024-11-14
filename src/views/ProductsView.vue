@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <h2 v-else class="pt-24 text-black">Brak wyników</h2>
+    <h2 v-else class="pt-24 pb-12 text-lg text-black text-center">Brak wyników</h2>
   </div>
   <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
     <div class="flex flex-1 justify-between sm:hidden">
@@ -38,7 +38,7 @@
         <p class="text-sm text-gray-700">
           Produkty od
           {{ ' ' }}
-          <span class="font-medium">{{ pageRecordNumStart + 1 }}</span>
+          <span class="font-medium">{{ pageRecordRangeStart }}</span>
           {{ ' ' }}
           do
           {{ ' ' }}
@@ -154,6 +154,12 @@ const pageRecordNumEnd = computed({
     }
 
     return pageRecordNumStart.value + productsPerPage;
+  }
+});
+
+const pageRecordRangeStart = computed({
+  get() {
+    return (pageRecordNumStart.value > 0) ? pageRecordNumStart.value + 1 : 0;
   }
 });
 

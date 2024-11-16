@@ -583,10 +583,17 @@ const handleAddButton = async () => {
   }
 };
 
-const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage, additional_images) => {
-  console.log(productName, categoryId, price, stockQuantity, description, mainImage, additional_images)
+const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage, additionalImages) => {
   try {
-    const mainImageBase64 = mainImage ? await toBase64(mainImage) : null;
+    // additionalImages = [mainImage, mainImage]
+
+    const mainImageBase64 = mainImage ? await toBase64(mainImage) : null
+    const additionalImagesBase64 = additionalImages 
+      ? await Promise.all(additionalImages.map(image => toBase64(image)))
+      : null
+
+    // console.log(productName, categoryId, price, stockQuantity, description, typeof mainImageBase64, additionalImagesBase64)
+    // console.log(productName, categoryId, price, stockQuantity, description, mainImageBase64, additionalImagesBase64)
 
     await axios.post(API_URL + '/products', {
       product_name: productName,
@@ -595,7 +602,7 @@ const addProduct = async (productName, categoryId, price, stockQuantity, descrip
       stock_quantity: stockQuantity || 0,
       description: description,
       main_image: mainImageBase64,
-      additional_images: additional_images ? null : null
+      additional_images: additionalImagesBase64
     });
   } catch (error) {
     console.error('Error adding product:', error);

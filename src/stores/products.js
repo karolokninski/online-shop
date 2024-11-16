@@ -9,12 +9,26 @@ export const useProductsStore = defineStore('products', {
     loading: false
   }),
   actions: {
-    async fetchProducts(name) {
+    async fetchProducts(skip, limit, name, id) {
       this.loading = true;
       let NEW_API_URL = API_URL + '/products';
-      
+      const queryParams = [];
+
+      if (skip) {
+          queryParams.push(`skip=${encodeURIComponent(skip)}`);
+      }
+      if (limit) {
+          queryParams.push(`limit=${encodeURIComponent(limit)}`);
+      }
       if (name && name.trim() !== '') {
-        NEW_API_URL += `?name=${encodeURIComponent(name)}`;
+          queryParams.push(`name=${encodeURIComponent(name)}`);
+      }
+      if (id) {
+          queryParams.push(`id=${encodeURIComponent(id)}`);
+      }
+
+      if (queryParams.length > 0) {
+          NEW_API_URL += `?${queryParams.join('&')}`;
       }
       
       try {
@@ -25,10 +39,27 @@ export const useProductsStore = defineStore('products', {
           stock: product.stock_quantity
         }));
         this.errorMessage = '';
+
+        for (let i = 1000; i < 1150; i++) {
+          this.products.push({
+            id: i,
+            product_name: 'sigma',
+            category_id: 1,
+            price: i,
+            stock_quantity: 1,
+            description: 'sigma',
+            main_image: null,
+            additional_images: [],
+            created_at: null,
+            name: 'sigma',
+            stock: 1
+          });
+        }
       } catch (error) {
         console.error('Błąd podczas pobierania produktów:', error)
       } finally {
-        this.loading = false; // End loading
+        this.loading = false;
+        console.log(this.products)
       }
     }
   }

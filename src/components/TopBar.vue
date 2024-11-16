@@ -1,12 +1,23 @@
 <template>
-  <header class="absolute bg-white inset-x-0 top-0 z-50 mt-2" style="margin-bottom: 1rem;">
+  <header class="bg-white inset-x-0 sticky top-0 z-40" style="margin-bottom: 1rem;">
     <nav class="flex flex-col" aria-label="Global">
-      <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
-        <div class="flex lg:flex-1 h-12">
-          <RouterLink to="/" class="ml-1 pt-0 pb-0 px-1 flex flex-row border-b-2 border-black">
-            <img class="h-12 w-auto" src="@/assets/logo.svg" alt="logo Geeked.tech" />
-            <span class="text-black text-lg font-semibold mb-1 mt-auto">Geeked</span>
+      <div class="flex flex-row items-center gap-4 md:gap-16 lg:gap-12 xl:gap-32 py-2 px-6 lg:px-8">
+        <div class="flex h-12">
+          <ShopLogo></ShopLogo>
+        </div>
+        <div class="hidden lg:flex text md:gap-x-2 lg:gap-x-6 xl:gap-x-12">
+          <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="my-auto text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
+          <SubpageMenu class="text-sm font-semibold leading-none text-black"></SubpageMenu>
+        </div>
+        <div class="flex-1">
+          <SearchBar class="hidden sm:flex"></SearchBar>
+        </div>
+        <div class="hidden lg:flex lg:justify-end gap-2">
+          <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black flex flex-row">
+            <UserIcon class="h-8 w-6" aria-hidden="true" />
           </RouterLink>
+          <UserMenu v-else class="text-sm font-semibold leading-none text-black"></UserMenu>
+          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold my-auto text-black w-6 h-6" />
         </div>
         <div class="flex lg:hidden gap-3">
           <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold leading-6 text-black w-6 h-6" />
@@ -15,46 +26,14 @@
             <Bars3Icon class="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div class="hidden lg:flex text lg:gap-x-12">
-          <RouterLink v-for="item in navigation" :key="item.name" :to="item.href" class="my-auto text-sm font-semibold leading-6 text-black">{{ item.name }}</RouterLink>
-          <SubpageMenu class="text-sm font-semibold leading-none text-black"></SubpageMenu>
-        </div>
-        <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
-          <RouterLink to="/logowanie" v-if="!userStore.isAuthenticated" class="text-sm font-semibold leading-6 text-black flex flex-row">
-            <UserIcon class="h-8 w-6" aria-hidden="true" />
-          </RouterLink>
-          <UserMenu v-else class="text-sm font-semibold leading-none text-black"></UserMenu>
-          <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold my-auto text-black w-6 h-6" />
-        </div>
       </div>
-      <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
-        <div class="relative flex items-center w-80 mx-auto h-12 bg-white">
-          <input
-            class="peer h-full w-full outline-none text-sm text-black pr-2"
-            type="text"
-            id="search"
-            v-model="searchStore.query"
-            @keyup.enter="handleSearch"
-            placeholder="Szukaj..." /> 
-          
-          <div class="grid place-items-center h-full w-12 text-gray-300 border border-black">
-            <button @click="handleSearch">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="black">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+      <SearchBar class="sm:hidden"></SearchBar>
     </nav>
     <Dialog class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
-      <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+      <DialogPanel class="fixed inset-y-0 right-0 z-40 w-full overflow-y-auto bg-white px-6 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex items-center justify-between">
           <div class="flex lg:flex-1 h-12">
-            <RouterLink to="/" class="ml-1 pt-0 pb-0 px-1 flex flex-row border-b-2 border-black">
-              <img class="h-12 w-auto" src="@/assets/logo.svg" alt="logo Geeked.tech" />
-              <span class="text-black text-lg font-semibold mb-1 mt-auto">Geeked</span>
-            </RouterLink>
+            <ShopLogo></ShopLogo>
           </div>
           <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = false">
             <span class="sr-only">Zamknij menu</span>
@@ -63,8 +42,8 @@
         </div>
         <div class="flex-1 mt-6 h-auto">
           <div class="flex-1 -my-6 h-auto divide-y-2 divide-gray-500">
-            <div class="py-6">
-              <a v-for="item in navigation" :key="item.name" :href="item.href" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ item.name }}</a>
+            <div class="py-3">
+              <a v-for="item in navigation" :key="item.name" :href="item.href" class="-mx-3 block rounded-lg px-3 py-1 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ item.name }}</a>
             </div>
             <div v-if="!userStore.isAuthenticated" class="py-6">
               <RouterLink to="/logowanie" class="text-sm font-semibold leading-6 text-gray-900">Zaloguj się</RouterLink>
@@ -102,13 +81,11 @@
       </DialogPanel>
     </Dialog>
   </header>
-  <ShoppingCart class="fixed bottom-0 right-0 z-50"></ShoppingCart>
+  <ShoppingCart class="fixed bottom-0 right-0 z-40"></ShoppingCart>
 </template>
 
 <script setup>
   import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useSearchStore } from '@/stores/search'
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   import { useUserStore } from '@/stores/user'
   import { Dialog, DialogPanel } from '@headlessui/vue'
@@ -116,11 +93,11 @@
   import ShoppingCart from './ShoppingCart.vue'
   import UserMenu from './topBar/UserMenu.vue'
   import SubpageMenu from './topBar/SubpageMenu.vue'
+  import SearchBar from './topBar/SearchBar.vue'
+import ShopLogo from './LogoButton.vue'
   
-  const searchStore = useSearchStore()
   const shoppingCartStore = useShoppingCartStore()
   const userStore = useUserStore()
-  const router = useRouter()
   const navigation = [
     { name: 'Produkty', href: '/produkty' },
     { name: 'Nasze sklepy', href: '/sklepy' },
@@ -138,14 +115,4 @@
   }
 
   const mobileMenuOpen = ref(false)
-
-  const handleSearch = () => {
-    if (searchStore.query.trim()) {
-        // searchStore.performSearch(searchStore.query);
-        router.push({
-          name: 'products',
-          query: { q: searchStore.query }
-        });
-      }
-  };
 </script>

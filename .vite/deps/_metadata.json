@@ -1,31 +1,37 @@
 {
-  "hash": "39ff0f6e",
+  "hash": "a21c82d0",
   "configHash": "c84532f4",
-  "lockfileHash": "5e210aa6",
-  "browserHash": "183bb8cc",
+  "lockfileHash": "115ea006",
+  "browserHash": "bca3595a",
   "optimized": {
     "vue": {
       "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "7b1c8ef3",
+      "fileHash": "4d83a9c2",
       "needsInterop": false
     },
     "pinia": {
       "src": "../../node_modules/pinia/dist/pinia.mjs",
       "file": "pinia.js",
-      "fileHash": "8580560b",
+      "fileHash": "35771bb5",
       "needsInterop": false
     },
     "pinia-plugin-persistedstate": {
       "src": "../../node_modules/pinia-plugin-persistedstate/dist/index.js",
       "file": "pinia-plugin-persistedstate.js",
-      "fileHash": "095b8231",
+      "fileHash": "47c9d979",
       "needsInterop": false
     },
     "vue-router": {
       "src": "../../node_modules/vue-router/dist/vue-router.mjs",
       "file": "vue-router.js",
-      "fileHash": "705cfb6e",
+      "fileHash": "5439a819",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "8509d2b1",
       "needsInterop": false
     }
   },
@@ -35,6 +41,9 @@
     },
     "chunk-6L5ECR3P": {
       "file": "chunk-6L5ECR3P.js"
+    },
+    "chunk-PZ5AY32C": {
+      "file": "chunk-PZ5AY32C.js"
     }
   }
 }

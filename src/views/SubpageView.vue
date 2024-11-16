@@ -1,6 +1,6 @@
 <template>
 	<TopBar></TopBar>
-  <div class="flex flex-col bg-white text-black pt-48">
+  <div class="flex flex-col bg-white text-black pt-6">
     <h1 class="text-3xl text-center">{{ subpage.title }}</h1>
     <div class="mt-4 text-lg text-center whitespace-pre-line" v-html="subpage.content"></div>
   </div>

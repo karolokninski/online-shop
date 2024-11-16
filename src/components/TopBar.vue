@@ -27,25 +27,7 @@
           <ShoppingCartIcon @click="shoppingCartStore.open = true" class="font-semibold my-auto text-black w-6 h-6" />
         </div>
       </div>
-      <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
-        <div class="relative flex items-center w-80 mx-auto h-12 bg-white">
-          <input
-            class="peer h-full w-full outline-none text-sm text-black pr-2"
-            type="text"
-            id="search"
-            v-model="searchStore.query"
-            @keyup.enter="handleSearch"
-            placeholder="Szukaj..." /> 
-          
-          <div class="grid place-items-center h-full w-12 text-gray-300 border border-black">
-            <button @click="handleSearch">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="black">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+      <SearchBar></SearchBar>
     </nav>
     <Dialog class="lg:hidden" @close="mobileMenuOpen = false" :open="mobileMenuOpen">
       <DialogPanel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
@@ -107,8 +89,6 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useSearchStore } from '@/stores/search'
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   import { useUserStore } from '@/stores/user'
   import { Dialog, DialogPanel } from '@headlessui/vue'
@@ -116,11 +96,10 @@
   import ShoppingCart from './ShoppingCart.vue'
   import UserMenu from './topBar/UserMenu.vue'
   import SubpageMenu from './topBar/SubpageMenu.vue'
+  import SearchBar from './topBar/SearchBar.vue'
   
-  const searchStore = useSearchStore()
   const shoppingCartStore = useShoppingCartStore()
   const userStore = useUserStore()
-  const router = useRouter()
   const navigation = [
     { name: 'Produkty', href: '/produkty' },
     { name: 'Nasze sklepy', href: '/sklepy' },
@@ -138,14 +117,4 @@
   }
 
   const mobileMenuOpen = ref(false)
-
-  const handleSearch = () => {
-    if (searchStore.query.trim()) {
-        // searchStore.performSearch(searchStore.query);
-        router.push({
-          name: 'products',
-          query: { q: searchStore.query }
-        });
-      }
-  };
 </script>

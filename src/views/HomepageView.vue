@@ -1,8 +1,8 @@
 <template>
   <TopBar></TopBar>
-  <div class="bg-white pt-16">
+  <div class="bg-white">
     <div class="tlo relative isolate px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+      <div class="mx-auto max-w-2xl py-24">
         <div class="text-center">
           <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Geeked.tech</h1>
           <p class="mt-6 text-lg leading-8 text-gray-800">W naszym sklepie znajdziesz najwyższej jakości sprzęt komputerowy i podzepoły.</p>

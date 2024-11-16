@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
     <TopBar></TopBar>
-    <div class="flex-grow container mx-auto py-10 mt-20" style="justify-content: center; align-items: center ; text-align: center;">
+    <div class="flex-grow container mx-auto py-6" style="justify-content: center; align-items: center ; text-align: center;">
       <h2 class="text-2xl font-bold text-black mb-4 mt-8">Nasze Sklepy</h2>
         <div class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
           <div class="container mx-auto py-9">

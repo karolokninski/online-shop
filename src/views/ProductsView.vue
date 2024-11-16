@@ -1,6 +1,6 @@
 <template>
   <TopBar></TopBar>
-  <div class="pt-10">
+  <div>
     <ProductCategoryFilter></ProductCategoryFilter>
   </div>
 </template>

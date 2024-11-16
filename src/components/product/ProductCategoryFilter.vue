@@ -55,7 +55,7 @@
       </TransitionRoot>
 
       <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
+        <div class="flex items-baseline justify-between border-b border-gray-200 pb-6">
           <h1 class="text-3xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
 
           <div class="flex items-center">
@@ -78,10 +78,6 @@
               </transition>
             </Menu>
 
-            <button type="button" class="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7">
-              <span class="sr-only">View grid</span>
-              <Squares2X2Icon class="size-5" aria-hidden="true" />
-            </button>
             <button type="button" class="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden" @click="mobileFiltersOpen = true">
               <span class="sr-only">Filters</span>
               <FunnelIcon class="size-5" aria-hidden="true" />
@@ -151,7 +147,7 @@ import {
   TransitionRoot,
 } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/vue/20/solid'
+import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/vue/20/solid'
 
 const sortOptions = [
   { name: 'Most Popular', href: '#', current: true },

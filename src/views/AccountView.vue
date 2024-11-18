@@ -1,19 +1,15 @@
 <template>
   <div class="bg-white flex min-h-full flex-1 flex-col mt-2">
-    <header class="absolute bg-white inset-x-0 top-0 z-50 px-2 pt-5">
+    <header class="absolute bg-white inset-x-0 top-0 z-40 px-2 pt-5">
       <nav class="flex flex-col" aria-label="Global">
         <div class="flex flex-row items-center justify-between py-2 px-6 lg:px-8">
           <div class="flex lg:flex-1">
-            <RouterLink to="/" class="-m-1.5 pt-0 pb-0 px-1 flex flex-row border-b-2 border-black">
-              <img class="h-12 w-auto" src="@/assets/logo.svg" alt="logo Geeked.tech" />
-              <span class="text-black text-lg font-semibold mb-1 mt-auto">Geeked</span>
-            </RouterLink>
+            <ShopLogo></ShopLogo>
           </div>
         </div>
       </nav>
     </header>
     <main class="flex flex-row mt-16 divide-x">
-      <!-- max-sm:hidden -->
       <div v-show="$route.name==='account' || width > 480" class="flex-none p-4">
         <div class="flex flex-col p-4 text-left">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>
@@ -58,6 +54,7 @@
 
 <script>
   import { useUserStore } from '@/stores/user'
+import ShopLogo from '@/components/LogoButton.vue'
   export default {
     beforeRouteEnter(to, from) {
       if (!useUserStore().isAuthenticated) {

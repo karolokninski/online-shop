@@ -1,9 +1,10 @@
 <template>
   <Menu as="div" class="relative inline-block text-left">
     <div>
-      <MenuButton class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+      <MenuButton @click="handleOpenMenu" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
         Informacje
-        <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+        <ChevronUpIcon v-if="isMenuOpen" class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+        <ChevronDownIcon v-else class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
       </MenuButton>
     </div>
 
@@ -33,12 +34,17 @@
 
 <script setup>
   import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-  import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+  import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/20/solid'
   import { ref, onMounted } from 'vue'
   import axios from 'axios'
 
   const API_URL = import.meta.env.VITE_API_URL
   const subpages = ref([])
+  const isMenuOpen = ref(false)
+
+  const handleOpenMenu = () => {
+    isMenuOpen.value = !isMenuOpen.value
+  }
 
   const fetchSubpages = async () => {
     try {

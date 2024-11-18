@@ -16,14 +16,21 @@
 
           <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Nazwisko</label>
           <input v-model="User.lastName" type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-            value="Kowalski" readonly>
+            value="" readonly>
 
           <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Email</label>
           <input v-model="User.email "type="email" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
-            value="jan.kowalski@example.com" readonly>
+            value="" readonly>
 
-
+            <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer telefonu</label>
+          <input v-model="User.phone "type="number" class="w-full px-4 py-2  border border-gray-300 rounded focus:outline-none"
+            value="">
+            <div class="mt-8 flex justify-center"></div>
+            <button
+                class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zmień
+                numer telefonu</button>
         </div>
+        
       </div>
 
 
@@ -58,24 +65,24 @@
       <div class="flex-1">
         <h3 class="text-xl font-semibold mb-4 text-center">Adres dostawy</h3>
         <form>
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Miasto</label>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kraj</label>
           <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
             placeholder="Wpisz kraj">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kod pocztowy</label>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Miasto</label>
           <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
             placeholder="Wpisz kod pocztowy">
 
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Ulica</label>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kod pocztowy</label>
           <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
             placeholder="Wpisz ulicę">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer domu</label>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Ulica</label>
           <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
             placeholder="Wpisz numer domu">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer telefonu</label>
+          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer domu</label>
           <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
             placeholder="Wpisz numer telefonu">
           <div class="mt-8 flex justify-center">
@@ -109,7 +116,16 @@ const User = reactive({
     general: '',
   }
 });
-
+const Address = reactive({
+  city: "",
+  postalCode: "",
+  street: "",
+  houseNumber: "",
+  country: "",
+  errors: {
+    general: '',
+  }
+});
 
 async function fetchUserById(id) {
   try {
@@ -127,6 +143,19 @@ async function fetchUserById(id) {
   } catch (error) {
     console.error("Błąd podczas pobierania danych użytkownika:", error);
     User.errors.general = "Nie udało się pobrać danych użytkownika.";
+  }
+}
+async function fetchAddressById(id) {
+  try {
+    const response = await axios.get(`${API_URL}/address/${id}`);
+    const addressData = response.data;
+
+
+    Address.city = addressData.city;
+   
+    
+    console.log("adres:", addressData);
+  } catch (error) {
   }
 }
 

@@ -9,7 +9,7 @@
       <div class="flex-1">
         <h3 class="text-xl font-semibold mb-4 text-center">Dane użytkownika</h3>
         <div>
-
+          <form @submit.prevent="savePhone"> 
           <label class="block text-gray-700 text-sm font-bold mb-2">Imię</label>
           <input v-model="User.firstName" type="text" class="w-full px-4 py-2 bg-gray-200 border border-gray-300 rounded focus:outline-none"
             value="" readonly>
@@ -26,11 +26,17 @@
           <input v-model="User.phone "type="number" class="w-full px-4 py-2  border border-gray-300 rounded focus:outline-none"
             value="">
             <div class="mt-8 flex justify-center"></div>
-            <button
+            
+            <button type="submit"
                 class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zmień
                 numer telefonu</button>
-        </div>
+              </form>
         
+        
+        <div v-if="User.errors.general" class="mt-4 text-red-500 text-center">
+          {{ User.errors.general }}
+        </div>
+      </div>
       </div>
 
 
@@ -53,6 +59,7 @@
               <button
                 class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zmień
                 hasło</button>
+                
             </div>
           </form>
         </div>
@@ -64,33 +71,29 @@
 
       <div class="flex-1">
         <h3 class="text-xl font-semibold mb-4 text-center">Adres dostawy</h3>
-        <form>
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kraj</label>
-          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
-            placeholder="Wpisz kraj">
+        <form @submit.prevent="saveAddress">
+        <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kraj</label>
+        <input v-model="Address.country" type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none" placeholder="Wpisz kraj">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Miasto</label>
-          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
-            placeholder="Wpisz kod pocztowy">
+        <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Miasto</label>
+        <input v-model="Address.city" type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none" placeholder="Wpisz miasto">
 
+        <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kod pocztowy</label>
+        <input v-model="Address.postalCode" type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none" placeholder="Wpisz kod pocztowy">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Kod pocztowy</label>
-          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
-            placeholder="Wpisz ulicę">
+        <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Ulica i nr domu</label>
+        <input v-model="Address.addressLine" type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none" placeholder="Wpisz ulicę">
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Ulica</label>
-          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
-            placeholder="Wpisz numer domu">
+        <div class="mt-8 flex justify-center">
+          <button type="submit" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">
+            Zapisz zmiany
+          </button>
+        </div>
 
-          <label class="block text-gray-700 text-sm font-bold mt-4 mb-2">Numer domu</label>
-          <input type="text" class="w-full px-4 py-2 bg-white border border-gray-300 rounded focus:outline-none"
-            placeholder="Wpisz numer telefonu">
-          <div class="mt-8 flex justify-center">
-            <button
-              class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none">Zapisz
-              zmiany</button>
-          </div>
-        </form>
+        <div v-if="Address.errors.general" class="mt-4 text-red-500 text-center">
+          {{ Address.errors.general }}
+        </div>
+      </form>
       </div>
     </div>
 
@@ -119,8 +122,7 @@ const User = reactive({
 const Address = reactive({
   city: "",
   postalCode: "",
-  street: "",
-  houseNumber: "",
+  addressLine: "",
   country: "",
   errors: {
     general: '',
@@ -139,7 +141,7 @@ async function fetchUserById(id) {
     User.phone = userData.phone;
     User.addressid = userData.address_id;
     
-    console.log("Dane użytkownika:", userData);
+
   } catch (error) {
     console.error("Błąd podczas pobierania danych użytkownika:", error);
     User.errors.general = "Nie udało się pobrać danych użytkownika.";
@@ -147,21 +149,84 @@ async function fetchUserById(id) {
 }
 async function fetchAddressById(id) {
   try {
-    const response = await axios.get(`${API_URL}/address/${id}`);
+    const response = await axios.get(`${API_URL}/addresses/${id}`);
     const addressData = response.data;
 
-
     Address.city = addressData.city;
-   
-    
-    console.log("adres:", addressData);
+    Address.postalCode = addressData.postal_code;
+    Address.addressLine = addressData.address_line;
+    Address.country = addressData.country;
+
   } catch (error) {
+    console.error("Błąd podczas pobierania adresu:", error);
   }
 }
 
-onMounted(() => {
+async function saveAddress() {
+  if (!Address.city || !Address.postalCode || !Address.addressLine || !Address.country) {
+    Address.errors.general = "Wszystkie pola są wymagane.";
+    return;
+  }
+
+  try {
+    if (User.addressid == null) {
+
+      const response = await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
+        city: Address.city,
+        address_line: Address.addressLine,
+        postal_code: Address.postalCode,
+        country: Address.country,
+      });
+
+      await fetchUserById(userId); 
+      if (User.addressid) {
+        await fetchAddressById(User.addressid); 
+      }
+    } else {
+
+      const response = await axios.put(`${API_URL}/addresses/${User.addressid}`, {
+        city: Address.city,
+        postal_code: Address.postalCode,
+        address_line: Address.addressLine,
+        country: Address.country,
+      });
+
+      if (response.status === 200) {
+        console.log("Adres został zaktualizowany");
+        await fetchAddressById(User.addressid); 
+      }
+    }
+  } catch (error) {
+    console.error("Błąd podczas zapisywania adresu:", error);
+    Address.errors.general = "Nie udało się zapisać adresu.";
+  }
+}
+async function savePhone() {
+  if (!User.phone) {
+    User.errors.general = "Wszystkie pola są wymagane.";
+    return;
+  }
+      const response = await axios.put(`${API_URL}/users/${userId}`, {
+        phone: User.phone,
+      });
+
+      if (response.status === 200) {
+        console.log("telefon został zaktualizowany");
+        await fetchUserById(userId); 
+      }
+    }
+
+
+
+onMounted(async() => {
   if (userId) {
-    fetchUserById(userId);
+  await fetchUserById(userId);
+  
+    if (User.addressid) {
+    fetchAddressById(User.addressid);
+    } else {
+      console.error("Brak adresu dla użytkownika.");
+    }
   } else {
     console.error("Brak ID użytkownika.");
     User.errors.general = "ID użytkownika jest wymagane do pobrania danych.";

@@ -2,7 +2,6 @@
   <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-center">Historia zamówień</h2>
 
- 
     <div v-if="orders.length > 0" v-for="(order, index) in orders" :key="index">
       <div 
         class="bg-white p-4 rounded-lg shadow mb-4 cursor-pointer" 
@@ -18,8 +17,6 @@
     <div v-else class="text-center text-gray-500">
       Brak zamówień do wyświetlenia.
     </div>
-
-
     <transition name="modal">
       <div v-if="isModalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
@@ -54,7 +51,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 const userStore = useUserStore();
 const userId = userStore.id;
 console.log('User ID:', userId);
-
 
 const orders = reactive([]);
 
@@ -121,8 +117,6 @@ const openModal = async (order) => {
   selectedOrder.date = order.date;
   selectedOrder.status = order.status;
   selectedOrder.total = order.total;
-
-  // Map each item in the order to include the name fetched from the products table
   selectedOrder.items = await Promise.all(order.items.map(async (item) => {
     const name = await fetchProductName(item.product_id);
     return {

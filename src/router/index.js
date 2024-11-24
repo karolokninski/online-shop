@@ -17,7 +17,14 @@ const routes = [
   {
     path: '/produkty',
     name: 'products',
-    component: () => import('../views/ProductsView.vue')
+    component: () => import('../views/ProductsView.vue'),
+    children: [
+      {
+        path: ':category',
+        name: 'productsCategory',
+        component: () => import('../views/ProductsView.vue'),
+      },
+    ]
   },
   {
     path: '/produkt/:id',

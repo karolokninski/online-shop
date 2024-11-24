@@ -23,8 +23,8 @@
                 <form class="mt-4 border-t border-gray-200">
                   <h3 class="sr-only">Categories</h3>
                   <ul role="list" class="px-2 py-3 font-medium text-gray-900">
-                    <li v-for="category in subCategories" :key="category.name">
-                      <a :href="category.href" class="block px-2 py-3">{{ category.name }}</a>
+                    <li v-for="category in subCategories" :key="category.id">
+                      <RouterLink :to="category.href" class="block px-2 py-3">{{ category.name }}</RouterLink>
                     </li>
                   </ul>
 
@@ -56,7 +56,8 @@
 
       <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-baseline justify-between border-b border-gray-200 pb-6">
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900">Produkty</h1>
+          <h1 v-if="currentCategory" class="text-3xl font-bold tracking-tight text-gray-900">{{ currentCategory }}</h1>
+          <h1 v-else class="text-3xl font-bold tracking-tight text-gray-900">Produkty</h1>
 
           <div class="flex items-center">
             <Menu as="div" class="relative inline-block text-left">
@@ -93,8 +94,8 @@
             <form class="hidden lg:block">
               <h3 class="sr-only">Categories</h3>
               <ul role="list" class="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
-                <li v-for="category in subCategories" :key="category.name">
-                  <a :href="category.href">{{ category.name }}</a>
+                <li v-for="category in subCategories" :key="category.id">
+                  <RouterLink :to="category.href">{{ category.name }}</RouterLink>
                 </li>
               </ul>
 
@@ -132,7 +133,10 @@
 
 <script setup>
 import ProductList from '@/components/product/ProductList.vue';
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+import { useProductsStore } from '@/stores/products';
 import {
   Dialog,
   DialogPanel,
@@ -145,15 +149,15 @@ import {
   MenuItems,
   TransitionChild,
   TransitionRoot,
-} from '@headlessui/vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/vue/20/solid'
-import axios from 'axios';
-import { useProductsStore } from '@/stores/products';
+} from '@headlessui/vue';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
+import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/vue/20/solid';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const productsStore = useProductsStore();
+const router = useRoute();
 
+const currentCategory = ref();
 const sortOptions = [
   { id: 'relevance', name: 'Od najtrafniejszych', href: '#', current: false },
   { id: 'newest', name: 'Czas: od najnowszych', href: '#', current: false },
@@ -161,9 +165,7 @@ const sortOptions = [
   { id: 'price_low_to_high', name: 'Cena: od najtańszych', href: '#', current: false },
   { id: 'price_high_to_low', name: 'Cena: od najdroższych', href: '#', current: false },
 ];
-
-const subCategories = ref()
-
+const subCategories = ref();
 const filters = [
   {
     id: 'color',
@@ -238,12 +240,25 @@ const fetchCategories = async () => {
     subCategories.value = response.data.map(category => ({
       ...category,
       name: category.category_name,
+      href: "/produkty/" + category.category_name,
     }));
-    console.log
+    console.log("kategorie:",subCategories)
+    subCategories.value = subCategories.value.filter(cat => cat.name !== currentCategory.value);
   } catch (error) {
     console.error('Błąd podczas pobierania kategorii:', error);
   }
 };
 
-fetchCategories();
+watch(
+  () => router.params.category, (newCategory) => {
+    currentCategory.value = newCategory;
+    fetchCategories();
+  },
+  { immediate: true }
+);
+
+// onMounted(() => {
+//   currentCategory.value = router.params.category;
+//   fetchCategories();
+// });
 </script>

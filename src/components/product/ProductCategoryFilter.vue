@@ -56,13 +56,13 @@
 
       <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-baseline justify-between border-b border-gray-200 pb-6">
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900">Produkty</h1>
 
           <div class="flex items-center">
             <Menu as="div" class="relative inline-block text-left">
               <div>
                 <MenuButton class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                  Sort
+                  Sortowanie
                   <ChevronDownIcon class="-mr-1 ml-1 size-5 shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
                 </MenuButton>
               </div>
@@ -70,8 +70,8 @@
               <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                 <MenuItems class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none">
                   <div class="py-1">
-                    <MenuItem v-for="option in sortOptions" :key="option.name" v-slot="{ active }">
-                      <a :href="option.href" :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100 outline-none' : '', 'block px-4 py-2 text-sm']">{{ option.name }}</a>
+                    <MenuItem v-for="option in sortOptions" :key="option.id" v-slot="{ active }">
+                      <a @click="sortProducts(option.id)" :href="option.href" :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100 outline-none' : '', 'block px-4 py-2 text-sm']">{{ option.name }}</a>
                     </MenuItem>
                   </div>
                 </MenuItems>
@@ -149,16 +149,18 @@ import {
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/vue/20/solid'
 import axios from 'axios';
+import { useProductsStore } from '@/stores/products';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const productsStore = useProductsStore();
 
 const sortOptions = [
-  { name: 'Od najtrafniejszych', href: '#', current: false },
-  { name: 'Czas: od najnowszych', href: '#', current: false },
-  { name: 'Czas: od najstarszych', href: '#', current: false },
-  { name: 'Cena: od najtańszych', href: '#', current: false },
-  { name: 'Cena: od najdroższych', href: '#', current: false },
-]
+  { id: 'relevance', name: 'Od najtrafniejszych', href: '#', current: false },
+  { id: 'newest', name: 'Czas: od najnowszych', href: '#', current: false },
+  { id: 'oldest', name: 'Czas: od najstarszych', href: '#', current: false },
+  { id: 'price_low_to_high', name: 'Cena: od najtańszych', href: '#', current: false },
+  { id: 'price_high_to_low', name: 'Cena: od najdroższych', href: '#', current: false },
+];
 
 const subCategories = ref()
 
@@ -201,6 +203,34 @@ const filters = [
 ]
 
 const mobileFiltersOpen = ref(false)
+
+const sortProducts = (optionId) => {
+  switch (optionId) {
+    case 'relevance':
+      productsStore.products.sort((a, b) => a.id - b.id);
+      break;
+
+    case 'newest':
+      productsStore.products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      break;
+
+    case 'oldest':
+      productsStore.products.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      break;
+
+    case 'price_low_to_high':
+      productsStore.products.sort((a, b) => a.price - b.price);
+      break;
+
+    case 'price_high_to_low':
+      productsStore.products.sort((a, b) => b.price - a.price);
+      break;
+
+    default:
+      console.warn('Unsupported sort option:', optionId);
+      break;
+  }
+}
 
 const fetchCategories = async () => {
   try {

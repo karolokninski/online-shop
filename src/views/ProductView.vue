@@ -5,7 +5,7 @@
       <ol role="list" class="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
         <li v-for="breadcrumb in product.breadcrumbs" :key="breadcrumb.id">
           <div class="flex items-center">
-            <a :href="breadcrumb.href" class="mr-2 text-sm font-medium text-gray-900">{{ breadcrumb.name }}</a>
+            <RouterLink :to="breadcrumb.href" class="mr-2 text-sm font-medium text-gray-900">{{ breadcrumb.name }}</RouterLink>
             <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true" class="h-5 w-4 text-gray-300">
               <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
             </svg>
@@ -116,70 +116,86 @@
   
 <script setup>
   import TopBar from '@/components/TopBar.vue';
-  import { onMounted, ref, computed } from 'vue'
+  import { onMounted, ref } from 'vue'
   import { useRoute } from 'vue-router';
   import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   import { useProductsStore } from '@/stores/products'
+  import axios from 'axios';
 
+  const API_URL = import.meta.env.VITE_API_URL;
   const shoppingCartStore = useShoppingCartStore()
   const productsStore = useProductsStore()
   const router = useRoute()
-  const id = router.params.id
   
+  const id = ref()
+  const product = ref()
+  const category = ref()
   const selectedColor = ref()
   const selectedSize = ref()
 
   const addToCart = () => {
-    shoppingCartStore.addProduct(id)
+    shoppingCartStore.addProduct(id.value)
     shoppingCartStore.open = true
   }
 
   const formatImage = (image) => {
-    console.log(product)
 		return `data:image/jpeg;base64,${image}`
 	}
 
-  const product = computed(() => {
-    if (productsStore.products && productsStore.products.length > 0) {
-      const productData = productsStore.products[0];
-      const additionalData = {
-        href: '#',
-        breadcrumbs: [
-          { id: 1, name: 'Men', href: '#' },
-          { id: 2, name: 'Clothing', href: '#' },
-        ],
-        colors: [
-          { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
-          { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
-          { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
-        ],
-        sizes: [
-          { name: 'XXS', inStock: false },
-          { name: 'XS', inStock: true },
-          { name: 'S', inStock: true },
-          { name: 'M', inStock: true },
-          { name: 'L', inStock: true },
-          { name: 'XL', inStock: true },
-          { name: '2XL', inStock: true },
-          { name: '3XL', inStock: true },
-        ],
-        highlights: [
-          'Hand cut and sewn locally',
-          'Dyed with our proprietary colors',
-          'Pre-washed & pre-shrunk',
-          'Ultra-soft 100% cotton',
-        ],
-        details:
-          'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
-      };
+  const additionalData = {
+    href: '#',
+    breadcrumbs: [
+      { id: 1, name: 'Produkty', href: '/produkty' },
+    ],
+    colors: [
+      { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
+      { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
+      { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
+    ],
+    sizes: [
+      { name: 'XXS', inStock: false },
+      { name: 'XS', inStock: true },
+      { name: 'S', inStock: true },
+      { name: 'M', inStock: true },
+      { name: 'L', inStock: true },
+      { name: 'XL', inStock: true },
+      { name: '2XL', inStock: true },
+      { name: '3XL', inStock: true },
+    ],
+    highlights: [
+      'Hand cut and sewn locally',
+      'Dyed with our proprietary colors',
+      'Pre-washed & pre-shrunk',
+      'Ultra-soft 100% cotton',
+    ],
+    details:
+      'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
+  };
 
-      return { ...productData, ...additionalData };
+  const fetchCategory = async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}/categories/${id}`);
+      category.value = response.data;
+    } catch (error) {
+      console.error('Błąd podczas pobierania kategorii:', error);
     }
-    return null;
-  });
+  };
 
-  onMounted(() => {
-    productsStore.fetchProducts(undefined, undefined, undefined, id)
+  onMounted(async () => {
+    id.value = router.params.id;
+    if (productsStore.products.find(p => p.id == id.value)) {
+      product.value = productsStore.products.find(p => p.id == id.value);
+    }
+    else {
+      await productsStore.fetchProducts(undefined, undefined, undefined, id.value);
+      product.value = productsStore.products.find(p => p.id == id.value);
+    }
+    product.value = {
+      ...product.value,
+      ...additionalData,
+    };
+    await fetchCategory(product.value.category_id);
+    product.value.breadcrumbs.push({id: 2, name: category.value.category_name, href: '/produkty/' + category.value.category_name });
   })
 </script>

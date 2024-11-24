@@ -59,7 +59,6 @@ export const useProductsStore = defineStore('products', {
         console.error('Błąd podczas pobierania produktów:', error);
       } finally {
         this.loading = false;
-        console.log(this.products);
       }
     },
   },

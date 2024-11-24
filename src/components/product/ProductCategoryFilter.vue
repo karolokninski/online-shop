@@ -133,7 +133,7 @@
 
 <script setup>
 import ProductList from '@/components/product/ProductList.vue';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { useProductsStore } from '@/stores/products';
@@ -242,7 +242,6 @@ const fetchCategories = async () => {
       name: category.category_name,
       href: "/produkty/" + category.category_name,
     }));
-    console.log("kategorie:",subCategories)
     subCategories.value = subCategories.value.filter(cat => cat.name !== currentCategory.value);
   } catch (error) {
     console.error('Błąd podczas pobierania kategorii:', error);
@@ -256,9 +255,4 @@ watch(
   },
   { immediate: true }
 );
-
-// onMounted(() => {
-//   currentCategory.value = router.params.category;
-//   fetchCategories();
-// });
 </script>

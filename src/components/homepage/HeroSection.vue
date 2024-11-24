@@ -15,29 +15,29 @@
                 <div class="flex items-center space-x-6 lg:space-x-8">
                   <div class="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div class="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-01.jpg" alt="" class="size-full object-cover" />
+                      <img :src="image1Src" alt="" class="size-full object-cover" />
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg" alt="" class="size-full object-cover" />
-                    </div>
-                  </div>
-                  <div class="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-03.jpg" alt="" class="size-full object-cover" />
-                    </div>
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg" alt="" class="size-full object-cover" />
-                    </div>
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg" alt="" class="size-full object-cover" />
+                      <img :src="image2Src" alt="" class="size-full object-cover" />
                     </div>
                   </div>
                   <div class="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-06.jpg" alt="" class="size-full object-cover" />
+                      <img :src="image3Src" alt="" class="size-full object-cover" />
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-07.jpg" alt="" class="size-full object-cover" />
+                      <img :src="image4Src" alt="" class="size-full object-cover" />
+                    </div>
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img :src="image5Src" alt="" class="size-full object-cover" />
+                    </div>
+                  </div>
+                  <div class="grid shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img :src="image6Src" alt="" class="size-full object-cover" />
+                    </div>
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img :src="image7Src" alt="" class="size-full object-cover" />
                     </div>
                   </div>
                 </div>
@@ -50,3 +50,14 @@
     </div>
   </div>
 </template>
+<script setup>
+import image1Src from '@/assets/o1.jpg';
+import image2Src from '@/assets/o2.jpg';
+import image3Src from '@/assets/o3.jpg';
+import image4Src from '@/assets/o5.jpg';
+import image5Src from '@/assets/kartygraficzne.jpg';
+import image6Src from '@/assets/o4.jpg';
+import image7Src from '@/assets/strefa.jpg';
+
+
+</script>

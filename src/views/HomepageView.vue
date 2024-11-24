@@ -2,7 +2,7 @@
   <TopBar></TopBar>
   <HeroSection></HeroSection>
   <CategoryPrieview></CategoryPrieview>
-  <Sale></Sale>
+
   <NewsletterAndShops></NewsletterAndShops>
   <Footer></Footer>
 </template>

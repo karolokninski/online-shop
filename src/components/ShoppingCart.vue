@@ -75,7 +75,7 @@
                     </div>
                     <p class="mt-0.5 text-sm text-gray-500">Wysyłka i podatki obliczane przy kasie.</p>
                     <div class="mt-6">
-                      <RouterLink to="/zamowienie" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Przejdź do dostawy</RouterLink>
+                      <RouterLink to="/zamowienie" @click="shoppingCartStore.open = false" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Przejdź do dostawy</RouterLink>
                     </div>
                     <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                       <p>

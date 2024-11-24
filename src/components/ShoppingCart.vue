@@ -28,7 +28,8 @@
                         <ul role="list" class="-my-6 divide-y divide-gray-200">
                           <li v-for="product in shoppingCartStore.products" :key="product.id" class="flex py-6">
                             <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                              <img :src="product.imageSrc" :alt="product.imageAlt" class="h-full w-full object-cover object-center" />
+                              <img v-if="product.imageSrc" :src="product.imageSrc" :alt="product.imageAlt" class="h-full w-full object-cover object-center" />
+                              <PhotoIcon v-else class="p-6 rounded-md object-cover text-gray-300" aria-hidden="true" />
                             </div>
 
                             <div class="ml-4 flex flex-1 flex-col">
@@ -98,7 +99,7 @@
   
 <script setup>
   import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-  import { XMarkIcon } from '@heroicons/vue/24/outline'
+  import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline'
   import { useShoppingCartStore } from '@/stores/shoppingCart'
   
   const shoppingCartStore = useShoppingCartStore()

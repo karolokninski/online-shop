@@ -148,21 +148,20 @@ import {
 } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon } from '@heroicons/vue/20/solid'
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const sortOptions = [
-  { name: 'Most Popular', href: '#', current: true },
-  { name: 'Best Rating', href: '#', current: false },
-  { name: 'Newest', href: '#', current: false },
-  { name: 'Price: Low to High', href: '#', current: false },
-  { name: 'Price: High to Low', href: '#', current: false },
+  { name: 'Od najtrafniejszych', href: '#', current: false },
+  { name: 'Czas: od najnowszych', href: '#', current: false },
+  { name: 'Czas: od najstarszych', href: '#', current: false },
+  { name: 'Cena: od najtańszych', href: '#', current: false },
+  { name: 'Cena: od najdroższych', href: '#', current: false },
 ]
-const subCategories = [
-  { name: 'Totes', href: '#' },
-  { name: 'Backpacks', href: '#' },
-  { name: 'Travel Bags', href: '#' },
-  { name: 'Hip Bags', href: '#' },
-  { name: 'Laptop Sleeves', href: '#' },
-]
+
+const subCategories = ref()
+
 const filters = [
   {
     id: 'color',
@@ -202,4 +201,19 @@ const filters = [
 ]
 
 const mobileFiltersOpen = ref(false)
+
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/categories`);
+    subCategories.value = response.data.map(category => ({
+      ...category,
+      name: category.category_name,
+    }));
+    console.log
+  } catch (error) {
+    console.error('Błąd podczas pobierania kategorii:', error);
+  }
+};
+
+fetchCategories();
 </script>

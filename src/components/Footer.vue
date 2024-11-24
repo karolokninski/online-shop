@@ -5,9 +5,18 @@
         <img src="../assets/logo.svg" alt="Logo" class="h-12" />
       </div>
       <div class="space-x-8">
-        <a href="#about" class="text-lightslategray hover:text-white"><b>O nas</b></a>
-        <a href="#products" class="text-lightslategray hover:text-white"><b>Produkty</b></a>
-        <a href="#contact" class="text-lightslategray hover:text-white"><b>Kontakt</b></a>
+        <router-link class="text-lightslategray hover:text-white"
+              :to="'/info/about'">
+            <b>O nas</b>
+        </router-link>
+        <router-link class="text-lightslategray hover:text-white"
+              :to="'/produkty'">
+            <b>Produkty</b>
+        </router-link>
+        <router-link class="text-lightslategray hover:text-white"
+              :to="'/info/kontakt'">
+            <b>Kontakt</b>
+        </router-link>
       </div>
       <div style="display: flex; flex-direction: row; flex-wrap: wrap;">
         <a href="https://instagram.com" target="_blank">

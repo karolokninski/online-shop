@@ -22,27 +22,30 @@
 </template>
 
 <script setup>
+import TelefonyImg from '@/assets/telefony.jpg';
+import KartyImg from '@/assets/kartygraficzne.jpg';
+import ProcesoryImg from '@/assets/procesory.jpeg';
 const callouts = [
   {
-    name: 'Desk and Office',
-    description: 'Work from home accessories',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-01.jpg',
-    imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
-    href: '#',
+    name: 'Telefony',
+    description: 'Urządzenia mobilne',
+    imageSrc: TelefonyImg,
+    imageAlt: 'Prawa ręka człowieka',
+    href: '/produkty/Telefony',
   },
   {
-    name: 'Self-Improvement',
-    description: 'Journals and note-taking',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-02.jpg',
-    imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
-    href: '#',
+    name: 'Karty graficzne',
+    description: 'Podzespoły',
+    imageSrc: KartyImg,
+    imageAlt: 'Dla graczy i profesjonalistów',
+    href: '/produkty/Karty%20Graficzne',
   },
   {
-    name: 'Travel',
-    description: 'Daily commute essentials',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-03.jpg',
-    imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
-    href: '#',
+    name: 'Procesory',
+    description: 'Podzespoły',
+    imageSrc: ProcesoryImg,
+    imageAlt: 'Serce komputera',
+    href: '/produkty/Procesory',
   },
 ]
 </script>

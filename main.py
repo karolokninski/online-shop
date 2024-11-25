@@ -21,6 +21,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import random
 import string
+from httpx import AsyncClient
 
 load_dotenv()
 
@@ -35,6 +36,10 @@ EMAIL_SMTP_PORT = os.getenv("EMAIL_SMTP_PORT")
 EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
+CLIENT_ID = os.getenv("TPAY_CLIENT_ID", "your_client_id_here")
+CLIENT_SECRET = os.getenv("TPAY_CLIENT_SECRET", "your_client_secret_here")
+TPAY_AUTH_URL = os.getenv("TPAY_AUTH_URL", "https://api.tpay.com/oauth/auth")
+TPAY_TRANSACTION_URL = os.getenv("TPAY_TRANSACTION_URL", "https://api.tpay.com/transactions")
 
 Base = declarative_base()
 
@@ -432,6 +437,15 @@ class SubpageUpdate(BaseModel):
     path: str | None = None
     content: str | None = None
     is_active: bool | None = None
+
+class TransactionRequest(BaseModel):
+    amount: float
+    description: str
+    payer_email: str
+    payer_name: str
+
+class TransactionResponse(BaseModel):
+    transaction_url: str
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -1362,3 +1376,60 @@ async def get_subpage(subpage_id: int, db: AsyncSession = Depends(get_db)):
     if subpage is None:
         raise HTTPException(status_code=404, detail="Nie znaleziono podstrony.")
     return subpage
+
+async def get_tpay_token():
+    """Generate a TPay access token."""
+    async with AsyncClient() as client:
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        data = {
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+        }
+        response = await client.post(TPAY_AUTH_URL, headers=headers, data=data)
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch access token.")
+        
+        token_data = response.json()
+        return token_data.get("access_token")
+
+
+@app.post("/transactions", response_model=TransactionResponse)
+async def create_transaction(request: TransactionRequest):
+    """
+    Create a TPay transaction and return the transaction URL.
+    """
+    access_token = await get_tpay_token()
+    print(access_token)
+
+    if not access_token:
+        raise HTTPException(status_code=500, detail="Access token generation failed.")
+    
+    async with AsyncClient() as client:
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "amount": request.amount,
+            "description": request.description,
+            "payer": {
+                "email": request.payer_email,
+                "name": request.payer_name,
+            },
+        }
+        response = await client.post(TPAY_TRANSACTION_URL, headers=headers, json=payload)
+        response = response.json()
+        
+        if response.get("result") != "success":
+            raise HTTPException(
+                status_code=response.get("result"),
+                detail=f"Failed to create transaction: {response}"
+            )
+        
+        transaction_url = response.get("transactionPaymentUrl")
+
+        if not transaction_url:
+            raise HTTPException(status_code=500, detail="Transaction URL not provided by TPay.")
+        
+        return TransactionResponse(transaction_url=transaction_url)

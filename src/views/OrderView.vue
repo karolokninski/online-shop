@@ -84,10 +84,6 @@
             <h2 class="text-xl font-semibold text-gray-900">Dane do wysyłki</h2>
             <form @submit.prevent class="mt-4 space-y-4">
               <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
-                <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-              </div>
-              <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
                 <input type="tel" id="phone" name="phone" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
               </div>
@@ -122,9 +118,14 @@
             <label for="use-address" class="text-sm font-medium text-gray-700">
               <span>Użyj twojego adresu:</span>
               <span class="font-semibold">
-                <br />{{ Address.addressLine }}
-                <br />{{ Address.city }}
+                <br />{{ User.phone }}
                 <br />{{ Address.country }}
+                <br />{{ Address.postalCode }}
+                <br />{{ Address.city }}
+                <br />{{ Address.addressLine }}
+                
+                
+                
               </span>
             </label>
           </div>
@@ -201,6 +202,26 @@
 
       </div>
     </div>
+    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Zapisać ten adres?</h2>
+      <p class="text-sm text-gray-600 mb-6">Czy chcesz zapisać ten adres jako domyślny dla przyszłych zamówień?</p>
+      <div class="flex justify-end space-x-4">
+        <button
+          @click="saveAddress"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+        >
+          Zapisz
+        </button>
+        <button
+          @click="closeModal"
+          class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+        >
+          Anuluj
+        </button>
+      </div>
+    </div>
+  </div>
   </template>
   
   <script setup>
@@ -210,6 +231,7 @@ import { useShoppingCartStore } from '@/stores/shoppingCart'
 import { useUserStore } from '@/stores/user';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
+const showModal = ref(false);
 const userStore = useUserStore();
 const userId = userStore.id;
 const shoppingCartStore = useShoppingCartStore();
@@ -240,7 +262,6 @@ const Address = reactive({
   }
 });
 const newAddress = reactive({
-  name: "",
   city: "",
   postalCode: "",
   addressLine: "",
@@ -258,9 +279,20 @@ const errors = reactive({
 const router = useRouter()
 
 const handlePayment = () => {
-  if (validateForm()==true) {
-    console.log("git"); 
+  if (validateForm()) {
+    if (!document.querySelector("#use-address").checked && userId) {
+      openModal();
+    } else {
+      //instrukcje
+    }
   }
+};
+const openModal = () => {
+  showModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+  //instrukcje
 };
 const validateForm = () => {
   newAddress.phone=document.getElementById('phone').value
@@ -268,8 +300,11 @@ const validateForm = () => {
   newAddress.postalCode=document.getElementById('postalCode').value
   newAddress.addressLine=document.getElementById('addressLine').value
   newAddress.country=document.getElementById('country').value
-  newAddress.name=document.getElementById('name').value
-  if (!document.querySelector("#use-address").checked&&(newAddress.phone==""||newAddress.city==""|| newAddress.addressLine==""|| newAddress.postalCode==""||newAddress.country==""||newAddress.name=="")) {
+  if (!document.querySelector("#use-address").checked&&(newAddress.phone==""||newAddress.city==""|| newAddress.addressLine==""|| newAddress.postalCode==""||newAddress.country=="")) {
+    errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+    return false;
+  }
+  if (!userId&&(newAddress.phone==""||newAddress.city==""|| newAddress.addressLine==""|| newAddress.postalCode==""||newAddress.country=="")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
   }
@@ -303,6 +338,43 @@ const updateTotalCost = () => {
 
   total= (productsCost + deliveryCost + paymentFee).toFixed(2);
 console.log(total)
+};
+const saveAddress = async () => {
+  try {
+   await axios.put(`${API_URL}/users/${userId}`, {
+    phone: newAddress.phone,
+  });
+  if (User.addressid == null) {
+
+ await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
+  city: newAddress.city,
+  address_line: newAddress.addressLine,
+  postal_code: newAddress.postalCode,
+  country: newAddress.country,
+});
+
+await fetchUserById(userId);
+if (User.addressid) {
+  await fetchAddressById(User.addressid);
+}
+} else {
+
+await axios.put(`${API_URL}/addresses/${User.addressid}`, {
+  city: newAddress.city,
+  address_line: newAddress.addressLine,
+  postal_code: newAddress.postalCode,
+  country: newAddress.country,
+});
+}
+
+    alert('Adres został zapisany!');
+  } catch (error) {
+    console.error('Błąd podczas zapisywania adresu:', error);
+    alert('Nie udało się zapisać adresu.');
+  } finally {
+    closeModal();
+  }
+  //instrukcje
 };
 const fetchProviders = async () => {
   try {

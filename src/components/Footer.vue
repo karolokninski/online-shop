@@ -5,15 +5,15 @@
         <img src="../assets/logo.svg" alt="Logo" class="h-12" />
       </div>
       <div class="space-x-8">
-        <router-link class="text-lightslategray hover:text-white"
+        <router-link class="text-black hover:text-gray"
               :to="'/info/about'">
             <b>O nas</b>
         </router-link>
-        <router-link class="text-lightslategray hover:text-white"
+        <router-link class="text-black hover:text-gray"
               :to="'/produkty'">
             <b>Produkty</b>
         </router-link>
-        <router-link class="text-lightslategray hover:text-white"
+        <router-link class="text-black hover:text-gray"
               :to="'/info/kontakt'">
             <b>Kontakt</b>
         </router-link>

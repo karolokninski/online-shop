@@ -50,62 +50,60 @@
         </div>
       </div>
 
-      <div class="w-full lg:w-1/4 lg:pl-8 flex flex-col">
-        <div class="bg-white shadow-md rounded-md p-6">
-          <h2 class="text-xl font-semibold text-gray-900">Dane do wysyłki</h2>
-          <form @submit.prevent class="mt-4 space-y-4">
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
-              <input type="text" id="name" name="name" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-            <div>
-              <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
-              <input type="tel" id="phone" name="phone" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-            <div>
-              <label for="city" class="block text-sm font-medium text-gray-700">Kraj</label>
-              <input type="text" id="country" name="city" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-            <div>
-              <label for="city" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
-              <input type="text" id="postalCode" name="city" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-            <div>
-              <label for="city" class="block text-sm font-medium text-gray-700">Miasto</label>
-              <input type="text" id="city" name="city" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-            <div>
-              <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
-              <input type="text" id="addressLine" name="address" required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-            </div>
-          </form>
-          <div v-if="errors.address" class="text-red-500 text-sm mt-2">
+        <div class="w-full lg:w-1/4 lg:pl-8 flex flex-col">
+          <div class="bg-white shadow-md rounded-md p-6">
+            <h2 class="text-xl font-semibold text-gray-900">Dane do wysyłki</h2>
+            <form @submit.prevent class="mt-4 space-y-4">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
+                <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
+                <input type="tel" id="phone" name="phone" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+              <div>
+                <label for="city" class="block text-sm font-medium text-gray-700">Kraj</label>
+                <input type="text" id="country" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+              <div>
+                <label for="city" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
+                <input type="text" id="postalCode" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+              <div>
+                <label for="city" class="block text-sm font-medium text-gray-700">Miasto</label>
+                <input type="text" id="city" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+              <div>
+                <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
+                <input type="text" id="addressLine" name="address" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              </div>
+            </form>
+            <div v-if="errors.address" class="text-red-500 text-sm mt-2">
             {{ errors.address }}
           </div>
-          <div v-if="Address.city && Address.postalCode && Address.addressLine && Address.country">
-            <div class="bg-white shadow-lg rounded-md p-6">
-              <div class="flex items-center space-x-3">
-                <input type="checkbox" id="use-address"
-                  class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-                <label for="use-address" class="text-sm font-medium text-gray-700">
-                  <span>Użyj twojego adresu:</span>
-                  <span class="font-semibold">
-                    <br />{{ Address.addressLine }}
-                    <br />{{ Address.city }}
-                    <br />{{ Address.country }}
-                  </span>
-                </label>
-              </div>
-            </div>
+            <div v-if="Address.city && Address.postalCode && Address.addressLine && Address.country">
+        <div class="bg-white shadow-lg rounded-md p-6">
+          <div class="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="use-address"
+              class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label for="use-address" class="text-sm font-medium text-gray-700">
+              <span>Użyj twojego adresu:</span>
+              <span class="font-semibold">
+                <br />{{ Address.addressLine }}
+                <br />{{ Address.city }}
+                <br />{{ Address.country }}
+              </span>
+            </label>
           </div>
         </div>
       </div>
+          </div>
+        </div>
+
 
       <div class="w-full lg:w-1/4 lg:pl-8 flex flex-col">
         <div class="bg-white shadow-md rounded-md p-6">
@@ -156,18 +154,22 @@
             </div>
           </div>
         </div>
+    </div>
+
+
+
       </div>
     </div>
-  </div>
-</template>
-
-<script setup>
-import { onMounted, watch, ref, reactive } from 'vue'
+  </template>
+  
+  <script setup>
+  import { onMounted, watch, ref, reactive} from 'vue'
 import { useRouter } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart'
 import { useUserStore } from '@/stores/user';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
+const showModal = ref(false);
 const userStore = useUserStore();
 const userId = userStore.id;
 const shoppingCartStore = useShoppingCartStore();
@@ -198,7 +200,6 @@ const Address = reactive({
   }
 });
 const newAddress = reactive({
-  name: "",
   city: "",
   postalCode: "",
   addressLine: "",
@@ -215,32 +216,19 @@ const errors = reactive({
 });
 const router = useRouter()
 
-const handlePayment = async () => {
-  if (validateForm) {
-    try {
-      const response = await axios.post(`${API_URL}/transactions`, {
-        amount: 24.2,
-        description: "zamówienie na stronie Geeked.tech",
-        payer_email: "maciek@policja.pl",
-        payer_name: "Kundel Rufffs",
-      });
-      console.log(response)
-    } catch (error) {
-      console.error("Błąd podczas płatności tpay:", error);
-    }
-  }
-  else {
-    console.log("nie git");
+const handlePayment = () => {
+  if (validateForm()==true) {
+    console.log("git"); 
   }
 };
 const validateForm = () => {
-  newAddress.phone = document.getElementById('phone').value
-  newAddress.city = document.getElementById('city').value
-  newAddress.postalCode = document.getElementById('postalCode').value
-  newAddress.addressLine = document.getElementById('addressLine').value
-  newAddress.country = document.getElementById('country').value
-  newAddress.name = document.getElementById('name').value
-  if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
+  newAddress.phone=document.getElementById('phone').value
+  newAddress.city=document.getElementById('city').value
+  newAddress.postalCode=document.getElementById('postalCode').value
+  newAddress.addressLine=document.getElementById('addressLine').value
+  newAddress.country=document.getElementById('country').value
+  newAddress.name=document.getElementById('name').value
+  if (!document.querySelector("#use-address").checked&&(newAddress.phone==""||newAddress.city==""|| newAddress.addressLine==""|| newAddress.postalCode==""||newAddress.country==""||newAddress.name=="")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
   }
@@ -274,6 +262,43 @@ const updateTotalCost = () => {
 
   total = (productsCost + deliveryCost + paymentFee).toFixed(2);
   console.log(total)
+};
+const saveAddress = async () => {
+  try {
+   await axios.put(`${API_URL}/users/${userId}`, {
+    phone: newAddress.phone,
+  });
+  if (User.addressid == null) {
+
+ await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
+  city: newAddress.city,
+  address_line: newAddress.addressLine,
+  postal_code: newAddress.postalCode,
+  country: newAddress.country,
+});
+
+await fetchUserById(userId);
+if (User.addressid) {
+  await fetchAddressById(User.addressid);
+}
+} else {
+
+await axios.put(`${API_URL}/addresses/${User.addressid}`, {
+  city: newAddress.city,
+  address_line: newAddress.addressLine,
+  postal_code: newAddress.postalCode,
+  country: newAddress.country,
+});
+}
+
+    alert('Adres został zapisany!');
+  } catch (error) {
+    console.error('Błąd podczas zapisywania adresu:', error);
+    alert('Nie udało się zapisać adresu.');
+  } finally {
+    closeModal();
+  }
+  //instrukcje
 };
 const fetchProviders = async () => {
   try {

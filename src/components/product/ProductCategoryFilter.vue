@@ -1,7 +1,6 @@
 <template>
   <div class="bg-white">
     <div>
-      <!-- Mobile filter dialog -->
       <TransitionRoot as="template" :show="mobileFiltersOpen">
         <Dialog class="relative z-40 lg:hidden" @close="mobileFiltersOpen = false">
           <TransitionChild as="template" enter="transition-opacity ease-linear duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="transition-opacity ease-linear duration-300" leave-from="opacity-100" leave-to="opacity-0">
@@ -12,15 +11,14 @@
             <TransitionChild as="template" enter="transition ease-in-out duration-300 transform" enter-from="translate-x-full" enter-to="translate-x-0" leave="transition ease-in-out duration-300 transform" leave-from="translate-x-0" leave-to="translate-x-full">
               <DialogPanel class="relative ml-auto flex size-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
                 <div class="flex items-center justify-between px-4">
-                  <h2 class="text-lg font-medium text-gray-900">Filters</h2>
+                  <h2 class="text-lg font-medium text-gray-900">Filtry</h2>
                   <button type="button" class="-mr-2 flex size-10 items-center justify-center rounded-md bg-white p-2 text-gray-400" @click="mobileFiltersOpen = false">
-                    <span class="sr-only">Close menu</span>
+                    <span class="sr-only">Zamknij menu</span>
                     <XMarkIcon class="size-6" aria-hidden="true" />
                   </button>
                 </div>
 
-                <!-- Filters -->
-                <form class="mt-4 border-t border-gray-200">
+                <form @submit.prevent="" class="mt-4 border-t border-gray-200">
                   <h3 class="sr-only">Categories</h3>
                   <ul role="list" class="px-2 py-3 font-medium text-gray-900">
                     <li v-for="category in subCategories" :key="category.id">
@@ -40,13 +38,41 @@
                     </h3>
                     <DisclosurePanel class="pt-6">
                       <div class="space-y-6">
-                        <div v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
+                        <div v-if="section.type == 'scope'" class="flex items-center space-x-2 w-full text-gray-900">
+                          <div class="relative flex-1">
+                            <input
+                              v-model="minValue"
+                              type="number"
+                              placeholder="od"
+                              class="w-full border rounded-lg px-3 pr-7 py-2 text-sm focus:outline-none focus:ring-2"
+                              :class="minClass"
+                            />
+                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                              zł
+                            </span>
+                          </div>
+                          <span class="text-gray-500 text-sm">-</span>
+                          <div class="relative flex-1">
+                            <input
+                              v-model="maxValue"
+                              type="number"
+                              placeholder="do"
+                              class="w-full border rounded-lg px-3 pr-7 py-2 text-sm focus:outline-none focus:ring-2"
+                              :class="maxClass"
+                            />
+                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                              zł
+                            </span>
+                          </div>
+                        </div>
+                        <div v-else v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
                           <input :id="`filter-mobile-${section.id}-${optionIdx}`" :name="`${section.id}[]`" :value="option.value" type="checkbox" :checked="option.checked" class="size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                           <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 min-w-0 flex-1 text-gray-500">{{ option.label }}</label>
                         </div>
                       </div>
                     </DisclosurePanel>
                   </Disclosure>
+                  <button @click="sortProducts" class="flex mx-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-6 mt-2 rounded">Filtruj</button>
                 </form>
               </DialogPanel>
             </TransitionChild>
@@ -72,7 +98,7 @@
                 <MenuItems class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none">
                   <div class="py-1">
                     <MenuItem v-for="option in sortOptions" :key="option.id" v-slot="{ active }">
-                      <a @click="sortProducts(option.id)" :href="option.href" :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100 outline-none' : '', 'block px-4 py-2 text-sm']">{{ option.name }}</a>
+                      <a @click="handleSort(option.id)" :href="option.href" :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100 outline-none' : '', 'block px-4 py-2 text-sm']">{{ option.name }}</a>
                     </MenuItem>
                   </div>
                 </MenuItems>
@@ -90,8 +116,7 @@
           <h2 id="products-heading" class="sr-only">Products</h2>
 
           <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-            <!-- Filters -->
-            <form class="hidden lg:block">
+            <form @submit.prevent="" class="hidden lg:block">
               <h3 class="sr-only">Categories</h3>
               <ul role="list" class="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
                 <li v-for="category in subCategories" :key="category.id">
@@ -111,16 +136,43 @@
                 </h3>
                 <DisclosurePanel class="pt-6">
                   <div class="space-y-4">
-                    <div v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
+                    <div v-if="section.type == 'scope'" class="flex items-center space-x-2 w-full text-gray-900">
+                      <div class="relative flex-1">
+                        <input
+                          v-model="minValue"
+                          type="number"
+                          placeholder="od"
+                          class="w-full border rounded-lg px-3 pr-7 py-2 text-sm focus:outline-none focus:ring-2"
+                          :class="minClass"
+                        />
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                          zł
+                        </span>
+                      </div>
+                      <span class="text-gray-500 text-sm">-</span>
+                      <div class="relative flex-1">
+                        <input
+                          v-model="maxValue"
+                          type="number"
+                          placeholder="do"
+                          class="w-full border rounded-lg px-3 pr-7 py-2 text-sm focus:outline-none focus:ring-2"
+                          :class="maxClass"
+                        />
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                          zł
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else v-for="(option, optionIdx) in section.options" :key="option.value" class="flex items-center">
                       <input :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`" :value="option.value" type="checkbox" :checked="option.checked" class="size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                       <label :for="`filter-${section.id}-${optionIdx}`" class="ml-3 text-sm text-gray-600">{{ option.label }}</label>
                     </div>
                   </div>
                 </DisclosurePanel>
               </Disclosure>
+              <button @click="sortProducts" class="flex mr-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-6 mt-4 rounded">Filtruj</button>
             </form>
 
-            <!-- Product grid -->
             <div class="lg:col-span-3">
               <ProductList></ProductList>
             </div>
@@ -133,7 +185,7 @@
 
 <script setup>
 import ProductList from '@/components/product/ProductList.vue';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { useProductsStore } from '@/stores/products';
@@ -157,6 +209,45 @@ const API_URL = import.meta.env.VITE_API_URL;
 const productsStore = useProductsStore();
 const router = useRoute();
 
+const rawMinValue = ref(null);
+const rawMaxValue = ref(null);
+const minValue = computed({
+  get() {
+    if (rawMinValue.value > 10000000) {
+      return 10000000
+    }
+    return rawMinValue.value < 0 ? 0 : rawMinValue.value;
+  },
+  set(value) {
+    rawMinValue.value = value;
+  }
+});
+const maxValue = computed({
+  get() {
+    if (rawMaxValue.value > 10000000) {
+      return 10000000
+    }
+    return rawMaxValue.value < 0 ? 0 : rawMaxValue.value;
+  },
+  set(value) {
+    rawMaxValue.value = value;
+  }
+});
+const minClass = computed(() => {
+  if (minValue.value === null || minValue.value === '') return 'border-gray-300 focus:border-indigo-500';
+  if (minValue.value < 0 || (maxValue.value !== null && minValue.value > maxValue.value)) {
+    return 'border-2 border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500';
+  }
+  return 'border-gray-300 focus:border-indigo-500';
+});
+const maxClass = computed(() => {
+  if (maxValue.value === null || maxValue.value === '') return 'border-gray-300 focus:border-indigo-500';
+  if (maxValue.value < 0 || (minValue.value !== null && maxValue.value < minValue.value)) {
+    return 'border-2 border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500';
+  }
+  return 'border-gray-300 focus:border-indigo-500';
+});
+
 const currentCategory = ref();
 const sortOptions = [
   { id: 'relevance', name: 'Od najtrafniejszych', href: '#', current: false },
@@ -168,46 +259,25 @@ const sortOptions = [
 const subCategories = ref();
 const filters = [
   {
-    id: 'color',
-    name: 'Color',
-    options: [
-      { value: 'white', label: 'White', checked: false },
-      { value: 'beige', label: 'Beige', checked: false },
-      { value: 'blue', label: 'Blue', checked: true },
-      { value: 'brown', label: 'Brown', checked: false },
-      { value: 'green', label: 'Green', checked: false },
-      { value: 'purple', label: 'Purple', checked: false },
-    ],
-  },
-  {
-    id: 'category',
-    name: 'Category',
-    options: [
-      { value: 'new-arrivals', label: 'New Arrivals', checked: false },
-      { value: 'sale', label: 'Sale', checked: false },
-      { value: 'travel', label: 'Travel', checked: true },
-      { value: 'organization', label: 'Organization', checked: false },
-      { value: 'accessories', label: 'Accessories', checked: false },
-    ],
-  },
-  {
-    id: 'size',
-    name: 'Size',
-    options: [
-      { value: '2l', label: '2L', checked: false },
-      { value: '6l', label: '6L', checked: false },
-      { value: '12l', label: '12L', checked: false },
-      { value: '18l', label: '18L', checked: false },
-      { value: '20l', label: '20L', checked: false },
-      { value: '40l', label: '40L', checked: true },
-    ],
-  },
+    id: 'price',
+    name: 'Cena',
+    type: 'scope'
+  }
 ]
 
 const mobileFiltersOpen = ref(false)
 
-const sortProducts = (optionId) => {
-  switch (optionId) {
+const sortOption = ref('relevance');
+const handleSort = (sortOptionId) => {
+  sortOption.value = sortOptionId
+  sortProducts()
+}
+const sortProducts = () => {
+  if (minValue.value < maxValue.value) {
+    productsStore.products = productsStore.products.filter(product => product.price >= minValue.value && product.price <= maxValue.value)
+  }
+
+  switch (sortOption.value) {
     case 'relevance':
       productsStore.products.sort((a, b) => a.id - b.id);
       break;
@@ -229,7 +299,7 @@ const sortProducts = (optionId) => {
       break;
 
     default:
-      console.warn('Unsupported sort option:', optionId);
+      console.warn('Unsupported sort option:', sortOption.value);
       break;
   }
 }
@@ -256,3 +326,14 @@ watch(
   { immediate: true }
 );
 </script>
+
+<style scoped>
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

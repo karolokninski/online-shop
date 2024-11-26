@@ -53,37 +53,38 @@
       <div class="flex flex-col w-full">
         <div class="bg-white shadow-md rounded-md p-6">
           <h2 class="text-xl font-semibold text-gray-900">Dane do wysyłki</h2>
-          <form @submit.prevent class="mt-4 space-y-4">
+          <form @submit.prevent="validateForm" class="mt-4 space-y-4 text-gray-900">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
-              <input type="text" id="name" name="name" required
+              <input type="text" id="name" v-model="newAddress.name" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
-              <input type="tel" id="phone" name="phone" required
+              <input type="tel" id="phone" v-model="newAddress.phone" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
-              <label for="city" class="block text-sm font-medium text-gray-700">Kraj</label>
-              <input type="text" id="country" name="city" required
+              <label for="country" class="block text-sm font-medium text-gray-700">Kraj</label>
+              <input type="text" id="country" v-model="newAddress.country" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
-              <label for="city" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
-              <input type="text" id="postalCode" name="city" required
+              <label for="postalCode" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
+              <input type="text" id="postalCode" v-model="newAddress.postalCode" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="city" class="block text-sm font-medium text-gray-700">Miasto</label>
-              <input type="text" id="city" name="city" required
+              <input type="text" id="city" v-model="newAddress.city" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
-              <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
-              <input type="text" id="addressLine" name="address" required
+              <label for="addressLine" class="block text-sm font-medium text-gray-700">Adres</label>
+              <input type="text" id="addressLine" v-model="newAddress.addressLine" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
+            <!-- Add any other necessary form fields here -->
           </form>
           <div v-if="errors.address" class="text-red-500 text-sm mt-2">
             {{ errors.address }}
@@ -91,7 +92,8 @@
           <div v-if="Address.city && Address.postalCode && Address.addressLine && Address.country">
             <div class="bg-white shadow-lg rounded-md p-6">
               <div class="flex items-center space-x-3">
-                <input type="checkbox" id="use-address" v-model="useAddress" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+                <input type="checkbox" id="use-address" v-model="useAddress"
+                  class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                 <label for="use-address" class="text-sm font-medium text-gray-700">
                   <span>Użyj twojego adresu:</span>
                   <span class="font-semibold">
@@ -149,9 +151,12 @@
             <button
               class="flex w-32 h-12 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
               @click="handlePayment">
-              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white"
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
               </svg>
               <span v-else class="font-semibold text-white">Zapłać</span>
             </button>
@@ -164,7 +169,6 @@
       </div>
     </div>
 
-    
   </div>
   <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -283,29 +287,42 @@ const closeModal = () => {
   //instrukcje
 };
 const validateForm = () => {
-  newAddress.phone = document.getElementById('phone').value
-  newAddress.city = document.getElementById('city').value
-  newAddress.postalCode = document.getElementById('postalCode').value
-  newAddress.addressLine = document.getElementById('addressLine').value
-  newAddress.country = document.getElementById('country').value
-  newAddress.name = document.getElementById('name').value
-  if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
-    if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
-      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
-      return false;
-    }
-    if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
-      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
-      return false;
-    }
-    if (!selectedProvider.value || !selectedMethod.value) {
-      errors.methods = "Wybierz dostawę i sposób płatności";
-      return false;
-    }
-    else {
-      errors.address = '';
-      return true;
-    }
+  // newAddress.phone = document.getElementById('phone').value
+  // newAddress.city = document.getElementById('city').value
+  // newAddress.postalCode = document.getElementById('postalCode').value
+  // newAddress.addressLine = document.getElementById('addressLine').value
+  // newAddress.country = document.getElementById('country').value
+  // newAddress.name = document.getElementById('name').value
+  // if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
+  //   if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+  //     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+  //     return false;
+  //   }
+  //   if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+  //     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+  //     return false;
+  //   }
+  //   if (!selectedProvider.value || !selectedMethod.value) {
+  //     errors.methods = "Wybierz dostawę i sposób płatności";
+  //     return false;
+  //   }
+  //   else {
+  //     errors.address = '';
+  //     return true;
+  //   }
+  // }
+
+  if (!useAddress.value && (!newAddress.phone || !newAddress.city || !newAddress.addressLine || !newAddress.postalCode || !newAddress.country || !newAddress.name)) {
+    errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+    return false;
+  }
+  if (!selectedProvider.value || !selectedMethod.value) {
+    errors.methods = "Wybierz dostawę i sposób płatności";
+    return false;
+  }
+  else {
+    errors.address = '';
+    return true;
   }
 };
 const fetchPaymentMethods = async () => {

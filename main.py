@@ -443,6 +443,7 @@ class TransactionRequest(BaseModel):
     description: str
     payer_email: str
     payer_name: str
+    success_url: Optional[str] = None
 
 class TransactionResponse(BaseModel):
     transaction_url: str
@@ -471,7 +472,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(days=2)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -1401,7 +1402,7 @@ async def create_transaction(request: TransactionRequest):
     Create a TPay transaction and return the transaction URL.
     """
     access_token = await get_tpay_token()
-    print(access_token)
+    print(request.success_url)
 
     if not access_token:
         raise HTTPException(status_code=500, detail="Access token generation failed.")
@@ -1418,6 +1419,11 @@ async def create_transaction(request: TransactionRequest):
                 "email": request.payer_email,
                 "name": request.payer_name,
             },
+            "callbacks": {
+                "payerUrls": {
+                    "success": request.success_url if request.success_url else "https://tpay.com",
+                },
+            }
         }
         response = await client.post(TPAY_TRANSACTION_URL, headers=headers, json=payload)
         response = response.json()

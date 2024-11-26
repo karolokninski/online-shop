@@ -726,7 +726,7 @@ async def get_products(
     db: AsyncSession = Depends(get_db)
 ):
     if name is not None:
-        query = select(Product).where(Product.product_name.ilike(f"{name}%")).offset(skip).limit(limit)
+        query = select(Product).where(Product.product_name.ilike(f"%{name}%")).offset(skip).limit(limit)
     elif id is not None:
         query = select(Product).where(Product.id == id)
     else:
@@ -954,6 +954,7 @@ async def get_product_parameter_value(product_id: int, db: AsyncSession = Depend
 
     response = [
         ProductParameterValueResponse(
+            product_id=ppv.product_id,
             parameter_id=ppv.parameter_value.parameter_id,
             value=ppv.parameter_value.value
         )

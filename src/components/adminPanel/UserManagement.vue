@@ -367,6 +367,8 @@ const fetchUsers = async () => {
       role: user.role,
       note: user.note,
     }));
+    console.log(users)
+    console.log("Użytkownicy:", users.value); 
   } catch (error) {
     console.error('Błąd podczas pobierania użytkowników:', error);
   }

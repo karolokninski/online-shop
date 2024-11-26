@@ -265,7 +265,8 @@ const handlePayment = async () => {
           amount: total.value,
           description: "zamówienie w sklepie Geeked.tech",
           payer_email: "Tutaj_dane_z@formularza.pl",
-          payer_name: "Tutaj dane z formularza"
+          payer_name: "Tutaj dane z formularza",
+          success_url: "https://www.google.com/search?q=miko+bs"
         });
         console.log(response.data)
         if (response.data.transaction_url) {

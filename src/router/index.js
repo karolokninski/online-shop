@@ -37,6 +37,16 @@ const routes = [
     component: () => import('../views/ProductView.vue')
   },
   {
+    path: '/zamowienie',
+    name: 'order',
+    component: () => import('../views/OrderView.vue')
+  },
+  {
+    path: '/zamowienie/podsumowanie',
+    name: 'orderSuccess',
+    component: () => import('../views/OrderSuccessView.vue')
+  },
+  {
     path: '/logowanie',
     name: 'signIn',
     component: () => import('../views/signIn/SignInView.vue')

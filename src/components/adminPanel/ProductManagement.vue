@@ -585,7 +585,7 @@ const handleAddButton = async () => {
 
 const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage, additionalImages) => {
   try {
-    // additionalImages = [mainImage, mainImage]
+    additionalImages = [mainImage, mainImage]
 
     const mainImageBase64 = mainImage ? await toBase64(mainImage) : null
     const additionalImagesBase64 = additionalImages 

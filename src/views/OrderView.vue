@@ -35,8 +35,7 @@
                     <option>4</option>
                     <option value="5">5+</option>
                   </select>
-                  <input v-else type="number" v-model.lazy="product.quantity"
-                    @change="handleQuantityChange(product.id)"
+                  <input v-else type="number" v-model.lazy="product.quantity" @change="handleQuantityChange(product.id)"
                     class="ml-2 rounded-md border-gray-300 bg-transparent py-1 w-16 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
                 </div>
                 <button type="button" @click="shoppingCartStore.removeProduct(product.id)"
@@ -57,56 +56,62 @@
           <form @submit.prevent class="mt-4 space-y-4">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
-              <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="text" id="name" name="name" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
-              <input type="tel" id="phone" name="phone" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="tel" id="phone" name="phone" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="city" class="block text-sm font-medium text-gray-700">Kraj</label>
-              <input type="text" id="country" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="text" id="country" name="city" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="city" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
-              <input type="text" id="postalCode" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="text" id="postalCode" name="city" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="city" class="block text-sm font-medium text-gray-700">Miasto</label>
-              <input type="text" id="city" name="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="text" id="city" name="city" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
             <div>
               <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
-              <input type="text" id="addressLine" name="address" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              <input type="text" id="addressLine" name="address" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
           </form>
           <div v-if="errors.address" class="text-red-500 text-sm mt-2">
-          {{ errors.address }}
-        </div>
+            {{ errors.address }}
+          </div>
           <div v-if="Address.city && Address.postalCode && Address.addressLine && Address.country">
-      <div class="bg-white shadow-lg rounded-md p-6">
-        <div class="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id="use-address"
-            class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label for="use-address" class="text-sm font-medium text-gray-700">
-            <span>Użyj twojego adresu:</span>
-            <span class="font-semibold">
-              <br />{{ Address.addressLine }}
-              <br />{{ Address.city }}
-              <br />{{ Address.country }}
-            </span>
-          </label>
-        </div>
-      </div>
-    </div>
+            <div class="bg-white shadow-lg rounded-md p-6">
+              <div class="flex items-center space-x-3">
+                <input type="checkbox" id="use-address" v-model="useAddress" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+                <label for="use-address" class="text-sm font-medium text-gray-700">
+                  <span>Użyj twojego adresu:</span>
+                  <span class="font-semibold">
+                    <br />{{ Address.addressLine }}
+                    <br />{{ Address.city }}
+                    <br />{{ User.phone }}
+                    <br />{{ Address.country }}
+                    <br />{{ Address.postalCode }}
+                    <br />{{ Address.city }}
+                    <br />{{ Address.addressLine }}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-col w-full ">
-        <div class="bg-white shadow-md rounded-md p-6">
+      <div class="flex flex-col w-full">
+        <div class="mt-6 bg-white shadow-md rounded-md p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Opcje dostawy</h2>
           <div class="space-y-4">
             <div v-for="provider in providers" :key="provider.id" class="flex items-center">
@@ -131,7 +136,6 @@
             </div>
           </div>
         </div>
-
         <div v-if="errors.methods" class="text-red-500 text-sm mt-2">
           {{ errors.methods }}
         </div>
@@ -143,9 +147,13 @@
           </div>
           <div class="mt-6">
             <button
-              class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+              class="flex w-32 h-12 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
               @click="handlePayment">
-              <b>Płatność</b>
+              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-else class="font-semibold text-white">Zapłać</span>
             </button>
           </div>
           <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
@@ -155,12 +163,28 @@
         </div>
       </div>
     </div>
+
+    
+  </div>
+  <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Zapisać ten adres?</h2>
+      <p class="text-sm text-gray-600 mb-6">Czy chcesz zapisać ten adres jako domyślny dla przyszłych zamówień?</p>
+      <div class="flex justify-end space-x-4">
+        <button @click="saveAddress" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          Zapisz
+        </button>
+        <button @click="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+          Anuluj
+        </button>
+      </div>
+    </div>
   </div>
 </template>
-  
+
 <script setup>
 import LogoButton from '@/components/LogoButton.vue';
-import { onMounted, watch, ref, reactive, computed} from 'vue'
+import { onMounted, watch, ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart'
 import { useUserStore } from '@/stores/user';
@@ -187,6 +211,9 @@ const total = computed(() => {
   return (productsCost + deliveryCost + paymentFee).toFixed(2);
 });
 
+const isLoading = ref(false)
+const useAddress = ref(false);
+
 const User = reactive({
   firstName: "",
   lastName: "",
@@ -207,6 +234,7 @@ const Address = reactive({
   }
 });
 const newAddress = reactive({
+  name: "",
   city: "",
   postalCode: "",
   addressLine: "",
@@ -222,43 +250,63 @@ const errors = reactive({
   methods: '',
 });
 const router = useRouter()
-
 const handlePayment = async () => {
   if (validateForm) {
-    const response = await axios.post(`${API_URL}/transactions`, {
-      amount: total.value,
-      description: "zamówienie w sklepie Geeked.tech",
-      payer_email: "Tutaj_dane_z@formularza.pl",
-      payer_name: "Tutaj dane z formularza"
-    });
-    console.log(response.data)
-    if (response.data.transaction_url) {
-      window.location.href = response.data.transaction_url;
+    if (!useAddress.value && userId) {
+      openModal();
     } else {
-      console.error("Błąd podczas tworzenia płatności tpay.");
+      isLoading.value = true;
+      try {
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "Tutaj_dane_z@formularza.pl",
+          payer_name: "Tutaj dane z formularza"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 };
+const openModal = () => {
+  showModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+  //instrukcje
+};
 const validateForm = () => {
-  newAddress.phone=document.getElementById('phone').value
-  newAddress.city=document.getElementById('city').value
-  newAddress.postalCode=document.getElementById('postalCode').value
-  newAddress.addressLine=document.getElementById('addressLine').value
-  newAddress.country=document.getElementById('country').value
-  newAddress.name=document.getElementById('name').value
-  if (!document.querySelector("#use-address").checked&&(newAddress.phone==""||newAddress.city==""|| newAddress.addressLine==""|| newAddress.postalCode==""||newAddress.country==""||newAddress.name=="")) {
-    errors.address = "Upewnij się, że wypełniłeś formularz adresu";
-    return false;
+  newAddress.phone = document.getElementById('phone').value
+  newAddress.city = document.getElementById('city').value
+  newAddress.postalCode = document.getElementById('postalCode').value
+  newAddress.addressLine = document.getElementById('addressLine').value
+  newAddress.country = document.getElementById('country').value
+  newAddress.name = document.getElementById('name').value
+  if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
+    if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+      return false;
+    }
+    if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+      return false;
+    }
+    if (!selectedProvider.value || !selectedMethod.value) {
+      errors.methods = "Wybierz dostawę i sposób płatności";
+      return false;
+    }
+    else {
+      errors.address = '';
+      return true;
+    }
   }
-  if (!selectedProvider.value || !selectedMethod.value) {
-    errors.methods = "Wybierz dostawę i sposób płatności";
-    return false;
-  }
-  else {
-    errors.address = '';
-    return true;
-  }
-
 };
 const fetchPaymentMethods = async () => {
   try {
@@ -271,32 +319,28 @@ const fetchPaymentMethods = async () => {
 
 const saveAddress = async () => {
   try {
-   await axios.put(`${API_URL}/users/${userId}`, {
-    phone: newAddress.phone,
-  });
-  if (User.addressid == null) {
-
- await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
-  city: newAddress.city,
-  address_line: newAddress.addressLine,
-  postal_code: newAddress.postalCode,
-  country: newAddress.country,
-});
-
-await fetchUserById(userId);
-if (User.addressid) {
-  await fetchAddressById(User.addressid);
-}
-} else {
-
-await axios.put(`${API_URL}/addresses/${User.addressid}`, {
-  city: newAddress.city,
-  address_line: newAddress.addressLine,
-  postal_code: newAddress.postalCode,
-  country: newAddress.country,
-});
-}
-
+    await axios.put(`${API_URL}/users/${userId}`, {
+      phone: newAddress.phone,
+    });
+    if (User.addressid == null) {
+      await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
+        city: newAddress.city,
+        address_line: newAddress.addressLine,
+        postal_code: newAddress.postalCode,
+        country: newAddress.country,
+      });
+      await fetchUserById(userId);
+      if (User.addressid) {
+        await fetchAddressById(User.addressid);
+      }
+    } else {
+      await axios.put(`${API_URL}/addresses/${User.addressid}`, {
+        city: newAddress.city,
+        address_line: newAddress.addressLine,
+        postal_code: newAddress.postalCode,
+        country: newAddress.country,
+      });
+    }
     alert('Adres został zapisany!');
   } catch (error) {
     console.error('Błąd podczas zapisywania adresu:', error);
@@ -328,10 +372,7 @@ const handleQuantityChange = (id) => {
     console.log("Brak w magazynie.")
 
   }
-
   shoppingCartStore.updateQuantity()
-  total = shoppingCartStore.productsSum();
-
 }
 const checkCartAndRedirect = () => {
   if (shoppingCartStore.products.length === 0) {
@@ -342,15 +383,11 @@ async function fetchUserById(id) {
   try {
     const response = await axios.get(`${API_URL}/users/${id}`);
     const userData = response.data;
-
-
     User.firstName = userData.first_name;
     User.lastName = userData.last_name;
     User.email = userData.email;
     User.phone = userData.phone;
     User.addressid = userData.address_id;
-
-
   } catch (error) {
     console.error("Błąd podczas pobierania danych użytkownika:", error);
     User.errors.general = "Nie udało się pobrać danych użytkownika.";
@@ -360,24 +397,20 @@ async function fetchAddressById(id) {
   try {
     const response = await axios.get(`${API_URL}/addresses/${id}`);
     const addressData = response.data;
-
     Address.city = addressData.city;
     Address.postalCode = addressData.postal_code;
     Address.addressLine = addressData.address_line;
     Address.country = addressData.country;
-
   } catch (error) {
     console.error("Błąd podczas pobierania adresu:", error);
   }
 }
-
 onMounted(async () => {
   checkCartAndRedirect();
   fetchProviders();
   fetchPaymentMethods();
   if (userId) {
     await fetchUserById(userId);
-
     if (User.addressid) {
       fetchAddressById(User.addressid);
     } else {
@@ -388,7 +421,6 @@ onMounted(async () => {
     User.errors.general = "ID użytkownika jest wymagane do pobrania danych.";
   }
 })
-
 watch(() => shoppingCartStore.products, () => {
   checkCartAndRedirect();
 })

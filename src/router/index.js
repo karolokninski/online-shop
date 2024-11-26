@@ -10,9 +10,19 @@ const routes = [
     component: () => import('../views/HomepageView.vue')
   },
   {
+    path: '/zamowieniezrealizowane',
+    name: 'orderFinished',
+    component: () => import('../views/OrderFinishedView.vue')
+  },
+  {
     path: '/sklepy',
     name: 'ourShops',
     component: () => import('../views/OurShopsView.vue')
+  },
+  {
+    path: '/zamowienie',
+    name: 'order',
+    component: () => import('../views/OrderView.vue')
   },
   {
     path: '/produkty',

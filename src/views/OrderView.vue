@@ -1,369 +1,466 @@
 <template>
-  <TopBar></TopBar>
-  <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-    <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-      <ol class="items-center flex w-full max-w-2xl text-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:text-base">
-        <li
-          class="after:border-1 flex items-center text-primary-700 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-          <span
-            class="flex items-center after:mx-2 after:text-gray-200 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
-            <svg class="me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-              height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            Cart
-          </span>
-        </li>
-        <li
-          class="after:border-1 flex items-center text-primary-700 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-          <span
-            class="flex items-center after:mx-2 after:text-gray-200 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
-            <svg class="me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-              height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            Checkout
-          </span>
-        </li>
-        <li class="flex shrink-0 items-center">
-          <svg class="me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-            height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          Order summary
-        </li>
-      </ol>
-      <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
-        <div class="min-w-0 flex-1 space-y-8">
-          <div class="space-y-4">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Delivery Details</h2>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div class="flex flex-col gap-8 w-full max-w-7xl mx-auto mb-2 px-4 py-6 sm:px-6 lg:px-8">
+    <LogoButton></LogoButton>
+    <h1 class="text-4xl font-bold text-gray-900 text-center">Zamówienie</h1>
+    <div class="w-full flex flex-col">
+      <div class="mt-6 overflow-hidden border border-gray-200 rounded-lg bg-white shadow-md">
+        <ul role="list" class="divide-y divide-gray-200">
+          <li v-for="product in shoppingCartStore.products" :key="product.id" class="flex py-6 px-4">
+            <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+              <img v-if="product.imageSrc" :src="product.imageSrc" :alt="product.imageAlt"
+                class="h-full w-full object-cover object-center" />
+              <PhotoIcon v-else class="p-6 rounded-md object-cover text-gray-300" aria-hidden="true" />
+            </div>
+            <div class="ml-4 flex flex-1 flex-col">
               <div>
-                <label for="your_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your name
-                </label>
-                <input type="text" id="your_name"
-                  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                  placeholder="Bonnie Green" required />
-              </div>
-              <div>
-                <label for="your_email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your
-                  email* </label>
-                <input type="email" id="your_email"
-                  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                  placeholder="name@flowbite.com" required />
-              </div>
-              <div>
-                <div class="mb-2 flex items-center gap-2">
-                  <label for="select-country-input-3" class="block text-sm font-medium text-gray-900 dark:text-white">
-                    Country* </label>
+                <div class="flex justify-between text-base font-medium text-gray-900">
+                  <h3>
+                    <RouterLink :to="`/produkt/${product.id}`">{{ product.name }}</RouterLink>
+                  </h3>
+                  <p class="ml-4">{{ product.totalPrice }} PLN</p>
                 </div>
-                <select id="select-country-input-3"
-                  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                  <option selected>United States</option>
-                  <option value="AS">Australia</option>
-                </select>
+                <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
+                <p v-if="product.quantity > 1" class="text-xs text-gray-500">
+                  za szt. {{ product.price }} PLN
+                </p>
               </div>
-              <div>
-                <div class="mb-2 flex items-center gap-2">
-                  <label for="select-city-input-3" class="block text-sm font-medium text-gray-900 dark:text-white">
-                    City* </label>
+              <div class="flex flex-1 items-end justify-between text-sm">
+                <div class="flex">
+                  <select v-if="product.quantity < 5 && product.quantity >= 1" v-model="product.quantity"
+                    @change="handleQuantityChange(product.id)"
+                    class="rounded-md border-gray-300 bg-transparent py-1 pr-7 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option value="5">5+</option>
+                  </select>
+                  <input v-else type="number" v-model.lazy="product.quantity" @change="handleQuantityChange(product.id)"
+                    class="ml-2 rounded-md border-gray-300 bg-transparent py-1 w-16 text-gray-500 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
                 </div>
-                <select id="select-city-input-3"
-                  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                  <option selected>San Francisco</option>
-                  <option value="NY">New York</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="phone-input-3" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Phone
-                  Number* </label>
-                <div class="flex items-center">
-                  <button id="dropdown-phone-button-3" data-dropdown-toggle="dropdown-phone-3"
-                    class="z-10 inline-flex shrink-0 items-center rounded-s-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-                    type="button">
-                    <svg fill="none" aria-hidden="true" class="me-2 h-4 w-4" viewBox="0 0 20 15">
-                      <rect width="19.6" height="14" y=".5" fill="#fff" rx="2" />
-                      <mask id="a" style="mask-type:luminance" width="20" height="15" x="0" y="0"
-                        maskUnits="userSpaceOnUse">
-                        <rect width="19.6" height="14" y=".5" fill="#fff" rx="2" />
-                      </mask>
-                      <g mask="url(#a)">
-                        <path fill="#D02F44" fill-rule="evenodd"
-                          d="M19.6.5H0v.933h19.6V.5zm0 1.867H0V3.3h19.6v-.933zM0 4.233h19.6v.934H0v-.934zM19.6 6.1H0v.933h19.6V6.1zM0 7.967h19.6V8.9H0v-.933zm19.6 1.866H0v.934h19.6v-.934zM0 11.7h19.6v.933H0V11.7zm19.6 1.867H0v.933h19.6v-.933z"
-                          clip-rule="evenodd" />
-                        <path fill="#46467F" d="M0 .5h8.4v6.533H0z" />
-                        <g filter="url(#filter0_d_343_121520)">
-                          <path fill="url(#paint0_linear_343_121520)" fill-rule="evenodd"
-                            d="M1.867 1.9a.467.467 0 11-.934 0 .467.467 0 01.934 0zm1.866 0a.467.467 0 11-.933 0 .467.467 0 01.933 0zm1.4.467a.467.467 0 100-.934.467.467 0 000 .934zM7.467 1.9a.467.467 0 11-.934 0 .467.467 0 01.934 0zM2.333 3.3a.467.467 0 100-.933.467.467 0 000 .933zm2.334-.467a.467.467 0 11-.934 0 .467.467 0 01.934 0zm1.4.467a.467.467 0 100-.933.467.467 0 000 .933zm1.4.467a.467.467 0 11-.934 0 .467.467 0 01.934 0zm-2.334.466a.467.467 0 100-.933.467.467 0 000 .933zm-1.4-.466a.467.467 0 11-.933 0 .467.467 0 01.933 0zM1.4 4.233a.467.467 0 100-.933.467.467 0 000 .933zm1.4.467a.467.467 0 11-.933 0 .467.467 0 01.933 0zm1.4.467a.467.467 0 100-.934.467.467 0 000 .934zM6.533 4.7a.467.467 0 11-.933 0 .467.467 0 01.933 0zM7 6.1a.467.467 0 100-.933.467.467 0 000 .933zm-1.4-.467a.467.467 0 11-.933 0 .467.467 0 01.933 0zM3.267 6.1a.467.467 0 100-.933.467.467 0 000 .933zm-1.4-.467a.467.467 0 11-.934 0 .467.467 0 01.934 0z"
-                            clip-rule="evenodd" />
-                        </g>
-                      </g>
-                      <defs>
-                        <linearGradient id="paint0_linear_343_121520" x1=".933" x2=".933" y1="1.433" y2="6.1"
-                          gradientUnits="userSpaceOnUse">
-                          <stop stop-color="#fff" />
-                          <stop offset="1" stop-color="#F0F0F0" />
-                        </linearGradient>
-                        <filter id="filter0_d_343_121520" width="6.533" height="5.667" x=".933" y="1.433"
-                          color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
-                          <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                          <feColorMatrix in="SourceAlpha" result="hardAlpha"
-                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
-                          <feOffset dy="1" />
-                          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
-                          <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_343_121520" />
-                          <feBlend in="SourceGraphic" in2="effect1_dropShadow_343_121520" result="shape" />
-                        </filter>
-                      </defs>
-                    </svg>
-                    +1
-                    <svg class="-me-0.5 ms-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                      height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m19 9-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div id="dropdown-phone-3"
-                    class="z-10 hidden w-56 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
-                    <ul class="p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-                      aria-labelledby="dropdown-phone-button-2">
-                      <li>
-                        <button type="button"
-                          class="inline-flex w-full rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                          role="menuitem">
-                          <span class="inline-flex items-center">
-                            
-                            United States (+1)
-                          </span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="relative w-full">
-                    <input type="text" id="phone-input"
-                      class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700  dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500"
-                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" required />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Email </label>
-                <input type="email" id="email"
-                  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                  placeholder="name@flowbite.com" required />
-              </div>
-
-              <div class="sm:col-span-2">
-                <button type="submit"
-                  class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                  <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M5 12h14m-7 7V5" />
-                  </svg>
-                  Add new address
+                <button type="button" @click="shoppingCartStore.removeProduct(product.id)"
+                  class="font-medium text-indigo-600 hover:text-indigo-500">
+                  Usuń
                 </button>
               </div>
             </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex flex-col w-full">
+        <div class="bg-white shadow-md rounded-md p-6">
+          <h2 class="text-xl font-semibold text-gray-900">Dane do wysyłki</h2>
+          <form @submit.prevent="validateForm" class="mt-4 space-y-4 text-gray-900">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Imię i nazwisko</label>
+              <input type="text" id="name" v-model="newAddress.name" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700">Numer telefonu</label>
+              <input type="tel" id="phone" v-model="newAddress.phone" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div>
+              <label for="country" class="block text-sm font-medium text-gray-700">Kraj</label>
+              <input type="text" id="country" v-model="newAddress.country" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div>
+              <label for="postalCode" class="block text-sm font-medium text-gray-700">Kod pocztowy</label>
+              <input type="text" id="postalCode" v-model="newAddress.postalCode" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div>
+              <label for="city" class="block text-sm font-medium text-gray-700">Miasto</label>
+              <input type="text" id="city" v-model="newAddress.city" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <div>
+              <label for="addressLine" class="block text-sm font-medium text-gray-700">Adres</label>
+              <input type="text" id="addressLine" v-model="newAddress.addressLine" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            </div>
+            <!-- Add any other necessary form fields here -->
+          </form>
+          <div v-if="errors.address" class="text-red-500 text-sm mt-2">
+            {{ errors.address }}
           </div>
-
-          <div class="space-y-4">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Payment</h3>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="credit-card" aria-describedby="credit-card-text" type="radio" name="payment-method"
-                      value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                      checked />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="credit-card" class="font-medium leading-none text-gray-900 dark:text-white"> Credit Card
-                    </label>
-                    <p id="credit-card-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Pay with
-                      your credit card</p>
-                  </div>
-                </div>
-
-                <div class="mt-4 flex items-center gap-2">
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Delete</button>
-
-                  <div class="h-3 w-px shrink-0 bg-gray-200 dark:bg-gray-700"></div>
-
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Edit</button>
-                </div>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="pay-on-delivery" aria-describedby="pay-on-delivery-text" type="radio"
-                      name="payment-method" value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="pay-on-delivery" class="font-medium leading-none text-gray-900 dark:text-white"> Payment
-                      on delivery </label>
-                    <p id="pay-on-delivery-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">+$15
-                      payment processing fee</p>
-                  </div>
-                </div>
-
-                <div class="mt-4 flex items-center gap-2">
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Delete</button>
-
-                  <div class="h-3 w-px shrink-0 bg-gray-200 dark:bg-gray-700"></div>
-
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Edit</button>
-                </div>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="paypal-2" aria-describedby="paypal-text" type="radio" name="payment-method" value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="paypal-2" class="font-medium leading-none text-gray-900 dark:text-white"> Paypal account
-                    </label>
-                    <p id="paypal-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Connect to
-                      your account</p>
-                  </div>
-                </div>
-
-                <div class="mt-4 flex items-center gap-2">
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Delete</button>
-
-                  <div class="h-3 w-px shrink-0 bg-gray-200 dark:bg-gray-700"></div>
-
-                  <button type="button"
-                    class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Edit</button>
-                </div>
+          <div v-if="Address.city && Address.postalCode && Address.addressLine && Address.country">
+            <div class="bg-white shadow-lg rounded-md p-6">
+              <div class="flex items-center space-x-3">
+                <input type="checkbox" id="use-address" v-model="useAddress"
+                  class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+                <label for="use-address" class="text-sm font-medium text-gray-700">
+                  <span>Użyj twojego adresu:</span>
+                  <span class="font-semibold">
+                    <br />{{ Address.addressLine }}
+                    <br />{{ Address.city }}
+                    <br />{{ User.phone }}
+                    <br />{{ Address.country }}
+                    <br />{{ Address.postalCode }}
+                    <br />{{ Address.city }}
+                    <br />{{ Address.addressLine }}
+                  </span>
+                </label>
               </div>
             </div>
-          </div>
-
-          <div class="space-y-4">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Delivery Methods</h3>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="dhl" aria-describedby="dhl-text" type="radio" name="delivery-method" value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                      checked />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="dhl" class="font-medium leading-none text-gray-900 dark:text-white"> $15 - DHL Fast
-                      Delivery </label>
-                    <p id="dhl-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Get it by
-                      Tommorow</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="fedex" aria-describedby="fedex-text" type="radio" name="delivery-method" value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="fedex" class="font-medium leading-none text-gray-900 dark:text-white"> Free Delivery -
-                      FedEx </label>
-                    <p id="fedex-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Get it by
-                      Friday, 13 Dec 2023</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                <div class="flex items-start">
-                  <div class="flex h-5 items-center">
-                    <input id="express" aria-describedby="express-text" type="radio" name="delivery-method" value=""
-                      class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                  </div>
-
-                  <div class="ms-4 text-sm">
-                    <label for="express" class="font-medium leading-none text-gray-900 dark:text-white"> $49 - Express
-                      Delivery </label>
-                    <p id="express-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Get it today
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-6 w-full space-y-6 sm:mt-8 lg:mt-0 lg:max-w-xs xl:max-w-md">
-          <div class="flow-root">
-            <div class="-my-3 divide-y divide-gray-200 dark:divide-gray-800">
-              <dl class="flex items-center justify-between gap-4 py-3">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-                <dd class="text-base font-medium text-gray-900 dark:text-white">$8,094.00</dd>
-              </dl>
-
-              <dl class="flex items-center justify-between gap-4 py-3">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Savings</dt>
-                <dd class="text-base font-medium text-green-500">0</dd>
-              </dl>
-
-              <dl class="flex items-center justify-between gap-4 py-3">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Store Pickup</dt>
-                <dd class="text-base font-medium text-gray-900 dark:text-white">$99</dd>
-              </dl>
-
-              <dl class="flex items-center justify-between gap-4 py-3">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Tax</dt>
-                <dd class="text-base font-medium text-gray-900 dark:text-white">$199</dd>
-              </dl>
-
-              <dl class="flex items-center justify-between gap-4 py-3">
-                <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-                <dd class="text-base font-bold text-gray-900 dark:text-white">$8,392.00</dd>
-              </dl>
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <RouterLink to="/zamowienie/podsumowanie">
-            <button type="submit"
-              class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-              Zapłać
-            </button>
-            </RouterLink>
-
-            <p class="text-sm font-normal text-gray-500 dark:text-gray-400">One or more items in your cart require an
-              account. <a href="#" title=""
-                class="font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">Sign in or
-                create an account now.</a>.</p>
           </div>
         </div>
       </div>
-    </form>
-  </section>
+
+      <div class="flex flex-col w-full">
+        <div class="mt-6 bg-white shadow-md rounded-md p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Opcje dostawy</h2>
+          <div class="space-y-4">
+            <div v-for="provider in providers" :key="provider.id" class="flex items-center">
+              <input type="radio" :id="'provider-' + provider.id" name="delivery-provider" :value="provider"
+                v-model="selectedProvider" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" />
+              <label :for="'provider-' + provider.id" class="ml-3 text-sm text-gray-700">
+                {{ provider.name }} ({{ provider.cost }} PLN, {{ provider.estimated_delivery_days }} dni)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 bg-white shadow-md rounded-md p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Sposób płatności</h2>
+          <div class="space-y-4">
+            <div v-for="method in paymentMethods" :key="method.method_name" class="flex items-center">
+              <input type="radio" :id="'method-' + method.method_name" name="payment-method" :value="method"
+                v-model="selectedMethod" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" />
+              <label :for="'provider-' + method.id" class="ml-3 text-sm text-gray-700">
+                {{ method.method_name }} ({{ method.fee }} PLN)
+              </label>
+            </div>
+          </div>
+        </div>
+        <div v-if="errors.methods" class="text-red-500 text-sm mt-2">
+          {{ errors.methods }}
+        </div>
+
+        <div class="mt-6 bg-white shadow-md rounded-md p-6">
+          <div class="flex justify-between text-base font-medium text-gray-900">
+            <p>Do zapłaty</p>
+            <p>{{ total }} PLN</p>
+          </div>
+          <div class="mt-6">
+            <button
+              class="flex w-32 h-12 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+              @click="handlePayment">
+              <svg v-if="isLoading" class="animate-spin my-auto h-5 w-5 text-sm leading-6 text-white"
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              <span v-else class="font-semibold text-white">Zapłać</span>
+            </button>
+          </div>
+          <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
+            <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500"
+              @click="shoppingCartStore.open = false">Kontynuuj zakupy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Zapisać ten adres?</h2>
+      <p class="text-sm text-gray-600 mb-6">Czy chcesz zapisać ten adres jako domyślny dla przyszłych zamówień?</p>
+      <div class="flex justify-end space-x-4">
+        <button @click="saveAddress" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          Zapisz
+        </button>
+        <button @click="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+          Anuluj
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-  import TopBar from '@/components/TopBar.vue'
+import LogoButton from '@/components/LogoButton.vue';
+import { onMounted, watch, ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useShoppingCartStore } from '@/stores/shoppingCart'
+import { useUserStore } from '@/stores/user';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
+const showModal = ref(false);
+const userStore = useUserStore();
+const userId = userStore.id;
+const shoppingCartStore = useShoppingCartStore();
+const paymentMethods = ref([]);
+const selectedProvider = ref(null);
+const selectedMethod = ref(null);
+console.log('User ID:', userId);
+console.log(paymentMethods);
+
+const total = computed(() => {
+  const productsCost = shoppingCartStore.products.reduce((total, product) => {
+    return total + product.quantity * product.price;
+  }, 0);
+
+  const deliveryCost = selectedProvider.value?.cost || 0;
+  const paymentFee = selectedMethod.value?.fee || 0;
+
+  return (productsCost + deliveryCost + paymentFee).toFixed(2);
+});
+
+const isLoading = ref(false)
+const useAddress = ref(false);
+
+const User = reactive({
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  addressid: "",
+  errors: {
+    general: '',
+  }
+});
+const Address = reactive({
+  city: "",
+  postalCode: "",
+  addressLine: "",
+  country: "",
+  errors: {
+    general: '',
+  }
+});
+const newAddress = reactive({
+  name: "",
+  city: "",
+  postalCode: "",
+  addressLine: "",
+  country: "",
+  phone: "",
+  errors: {
+    general: '',
+  }
+});
+const providers = ref([]);
+const errors = reactive({
+  address: '',
+  methods: '',
+});
+const router = useRouter()
+const handlePayment = async () => {
+  if (validateForm()==true) {
+    if (!useAddress.value && userId) {
+      openModal();
+    } else {
+      isLoading.value = true;
+      try {
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "Tutaj_dane_z@formularza.pl",
+          payer_name: "Tutaj dane z formularza",
+          success_url: "https://www.google.com/search?q=miko+bs"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
+    }
+  }
+};
+const openModal = () => {
+  showModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+  //instrukcje
+};
+const validateForm = () => {
+  newAddress.phone = document.getElementById('phone').value
+  newAddress.city = document.getElementById('city').value
+  newAddress.postalCode = document.getElementById('postalCode').value
+  newAddress.addressLine = document.getElementById('addressLine').value
+  newAddress.country = document.getElementById('country').value
+  newAddress.name = document.getElementById('name').value
+  const phonePattern = /^[0-9]{9,15}$/;
+  const postalCodePattern = /^[0-9]{3}-[0-9]{2}$/;
+  if (userId&&!document.querySelector("#use-address").checked && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
+    errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+    return false;
+  }else
+  if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+      return false;
+    }else
+  if (!selectedProvider.value || !selectedMethod.value) {
+    errors.methods = "Wybierz dostawę i sposób płatności";
+    return false;
+  }else
+  if (userId&&!document.querySelector("#use-address").checked &&!postalCodePattern.test(newAddress.postalCode)) {
+    errors.address = "Podaj poprawny kod pocztowy, np. 00-000";
+    return false;
+  }else
+  if (userId&&!document.querySelector("#use-address").checked &&!phonePattern.test(newAddress.phone)) {
+    errors.address = "Podaj poprawny nr telefonu";
+    return false;
+  }else
+  if (!userId&&!phonePattern.test(newAddress.phone)) {
+    errors.address = "Podaj poprawny nr telefonu";
+    return false;
+  }
+  else 
+  if (!userId&&!postalCodePattern.test(newAddress.postalCode)) {
+    errors.address = "Podaj poprawny kod pocztowy, np. 000-00";
+    return false;
+  }
+  else{
+    errors.address = '';
+    
+    return true;
+  }
+};
+const fetchPaymentMethods = async () => {
+  try {
+    const response = await axios.get(API_URL + "/payment-methods/");
+    paymentMethods.value = response.data;
+  } catch (error) {
+    console.error("Error fetching payment methods:", error);
+  }
+};
+
+const saveAddress = async () => {
+  try {
+    await axios.put(`${API_URL}/users/${userId}`, {
+      phone: newAddress.phone,
+    });
+    if (User.addressid == null) {
+      await axios.post(`${API_URL}/addresses/?user_id=${userId}`, {
+        city: newAddress.city,
+        address_line: newAddress.addressLine,
+        postal_code: newAddress.postalCode,
+        country: newAddress.country,
+      });
+      await fetchUserById(userId);
+      if (User.addressid) {
+        await fetchAddressById(User.addressid);
+      }
+    } else {
+      await axios.put(`${API_URL}/addresses/${User.addressid}`, {
+        city: newAddress.city,
+        address_line: newAddress.addressLine,
+        postal_code: newAddress.postalCode,
+        country: newAddress.country,
+      });
+    }
+    alert('Adres został zapisany!');
+    try {
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "Tutaj_dane_z@formularza.pl",
+          payer_name: "Tutaj dane z formularza"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
+  } catch (error) {
+    console.error('Błąd podczas zapisywania adresu:', error);
+    alert('Nie udało się zapisać adresu.');
+  } finally {
+    closeModal();
+  }
+  //instrukcje
+};
+const fetchProviders = async () => {
+  try {
+    const response = await axios.get(API_URL + "/delivery-methods/");
+    providers.value = response.data.map(provider => ({
+      id: provider.id,
+      name: provider.method_name,
+      cost: provider.cost,
+      estimated_delivery_days: provider.estimated_delivery_days,
+    }));
+  } catch (error) {
+    console.error("Błąd podczas pobierania dostawców:", error);
+  }
+};
+const handleQuantityChange = (id) => {
+  const product = shoppingCartStore.products.find(product => product.id == id)
+
+  if (product.quantity < 1) {
+    product.quantity = 1
+  } else if (product.quantity > 99) {
+    console.log("Brak w magazynie.")
+
+  }
+  shoppingCartStore.updateQuantity()
+}
+const checkCartAndRedirect = () => {
+  if (shoppingCartStore.products.length === 0) {
+    router.back()
+  }
+}
+async function fetchUserById(id) {
+  try {
+    const response = await axios.get(`${API_URL}/users/${id}`);
+    const userData = response.data;
+    User.firstName = userData.first_name;
+    User.lastName = userData.last_name;
+    User.email = userData.email;
+    User.phone = userData.phone;
+    User.addressid = userData.address_id;
+  } catch (error) {
+    console.error("Błąd podczas pobierania danych użytkownika:", error);
+    User.errors.general = "Nie udało się pobrać danych użytkownika.";
+  }
+}
+async function fetchAddressById(id) {
+  try {
+    const response = await axios.get(`${API_URL}/addresses/${id}`);
+    const addressData = response.data;
+    Address.city = addressData.city;
+    Address.postalCode = addressData.postal_code;
+    Address.addressLine = addressData.address_line;
+    Address.country = addressData.country;
+  } catch (error) {
+    console.error("Błąd podczas pobierania adresu:", error);
+  }
+}
+onMounted(async () => {
+  checkCartAndRedirect();
+  fetchProviders();
+  fetchPaymentMethods();
+  if (userId) {
+    await fetchUserById(userId);
+    if (User.addressid) {
+      fetchAddressById(User.addressid);
+    } else {
+      console.error("Brak adresu dla użytkownika.");
+    }
+  } else {
+    console.error("Brak ID użytkownika.");
+    User.errors.general = "ID użytkownika jest wymagane do pobrania danych.";
+  }
+})
+watch(() => shoppingCartStore.products, () => {
+  checkCartAndRedirect();
+})
 </script>

@@ -42,11 +42,44 @@
       </div>
 
       <div class="mt-4 lg:row-span-3 lg:mt-0">
-
+        <h2 class="sr-only">Product information</h2>
         <p class="text-3xl tracking-tight text-gray-900">{{ product.price }} PLN</p>
 
+        <div class="mt-6">
+          <h3 class="text-sm font-medium text-gray-900">Color</h3>
+          <fieldset aria-label="Choose a color" class="mt-4">
+            <RadioGroup v-model="selectedColor" class="flex items-center space-x-3">
+              <RadioGroupOption as="template" v-for="color in product.colors" :key="color.name" :value="color" :aria-label="color.name" v-slot="{ active, checked }">
+                <div :class="[color.selectedClass, active && checked ? 'ring ring-offset-1' : '', !active && checked ? 'ring-2' : '', 'relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none']">
+                  <span aria-hidden="true" :class="[color.class, 'h-8 w-8 rounded-full border border-black border-opacity-10']" />
+                </div>
+              </RadioGroupOption>
+            </RadioGroup>
+          </fieldset>
+        </div>
 
-      
+        <div class="mt-10">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-gray-900">Size</h3>
+            <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Size guide</a>
+          </div>
+
+          <fieldset aria-label="Choose a size" class="mt-4">
+            <RadioGroup v-model="selectedSize" class="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
+              <RadioGroupOption as="template" v-for="size in product.sizes" :key="size.name" :value="size" :disabled="!size.inStock" v-slot="{ active, checked }">
+                <div :class="[size.inStock ? 'cursor-pointer bg-white text-gray-900 shadow-sm' : 'cursor-not-allowed bg-gray-50 text-gray-200', active ? 'ring-2 ring-indigo-500' : '', 'group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6']">
+                  <span>{{ size.name }}</span>
+                  <span v-if="size.inStock" :class="[active ? 'border' : 'border-2', checked ? 'border-indigo-500' : 'border-transparent', 'pointer-events-none absolute -inset-px rounded-md']" aria-hidden="true" />
+                  <span v-else aria-hidden="true" class="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200">
+                    <svg class="absolute inset-0 h-full w-full stroke-2 text-gray-200" viewBox="0 0 100 100" preserveAspectRatio="none" stroke="currentColor">
+                      <line x1="0" y1="100" x2="100" y2="0" vector-effect="non-scaling-stroke" />
+                    </svg>
+                  </span>
+                </div>
+              </RadioGroupOption>
+            </RadioGroup>
+          </fieldset>
+        </div>
 
         <button @click="addToCart" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Dodaj do koszyka</button>
       </div>
@@ -60,16 +93,22 @@
         </div>
 
         <div class="mt-10">
-          <h3 class="text-sm font-medium text-gray-900">Parametry</h3>
+          <h3 class="text-sm font-medium text-gray-900">Highlights</h3>
           <div class="mt-4">
             <ul role="list" class="list-disc space-y-2 pl-4 text-sm">
-              <li v-for="(parameter, index) in parameters" :key="index" class="text-gray-600">
-        <strong>{{ parameter.name }}:</strong> {{ parameter.value }}
-          </li>
+              <li v-for="highlight in product.highlights" :key="highlight" class="text-gray-400">
+                <span class="text-gray-600">{{ highlight }}</span>
+              </li>
             </ul>
           </div>
         </div>
 
+        <div class="mt-10">
+          <h2 class="text-sm font-medium text-gray-900">Details</h2>
+          <div class="mt-4 space-y-6">
+            <p class="text-sm text-gray-600">{{ product.details }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -92,7 +131,8 @@
   const id = ref()
   const product = ref()
   const category = ref()
-  const parameters=ref();
+  const selectedColor = ref()
+  const selectedSize = ref()
 
   const addToCart = () => {
     shoppingCartStore.addProduct(id.value)
@@ -108,25 +148,31 @@
     breadcrumbs: [
       { id: 1, name: 'Produkty', href: '/produkty' },
     ],
-    
+    colors: [
+      { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
+      { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
+      { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
+    ],
+    sizes: [
+      { name: 'XXS', inStock: false },
+      { name: 'XS', inStock: true },
+      { name: 'S', inStock: true },
+      { name: 'M', inStock: true },
+      { name: 'L', inStock: true },
+      { name: 'XL', inStock: true },
+      { name: '2XL', inStock: true },
+      { name: '3XL', inStock: true },
+    ],
+    highlights: [
+      'Hand cut and sewn locally',
+      'Dyed with our proprietary colors',
+      'Pre-washed & pre-shrunk',
+      'Ultra-soft 100% cotton',
+    ],
+    details:
+      'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
   };
-  const fetchParameters = async (id) => {
-    try {
-      const response = await axios.get(`${API_URL}/product-parameters/${id}`);
-      const parameterDetails = await Promise.all(
-        response.data.map(async (param) => {
-          const paramResponse = await axios.get(`${API_URL}/parameters/${param.parameter_id}`);
-          return {
-            name: paramResponse.data.parameter_name,
-            value: param.value,
-          };
-        })
-      );
-      parameters.value = parameterDetails;
-    } catch (error) {
-      console.error('Błąd podczas pobierania parametrów:', error);
-    }
-  };
+
   const fetchCategory = async (id) => {
     try {
       const response = await axios.get(`${API_URL}/categories/${id}`);
@@ -149,7 +195,6 @@
       ...product.value,
       ...additionalData,
     };
-    await fetchParameters(id.value);
     await fetchCategory(product.value.category_id);
     product.value.breadcrumbs.push({id: 2, name: category.value.category_name, href: '/produkty/' + category.value.category_name });
   })

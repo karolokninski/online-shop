@@ -255,7 +255,7 @@ const errors = reactive({
 });
 const router = useRouter()
 const handlePayment = async () => {
-  if (validateForm) {
+  if (validateForm()==true) {
     if (!useAddress.value && userId) {
       openModal();
     } else {
@@ -287,41 +287,46 @@ const closeModal = () => {
   //instrukcje
 };
 const validateForm = () => {
-  // newAddress.phone = document.getElementById('phone').value
-  // newAddress.city = document.getElementById('city').value
-  // newAddress.postalCode = document.getElementById('postalCode').value
-  // newAddress.addressLine = document.getElementById('addressLine').value
-  // newAddress.country = document.getElementById('country').value
-  // newAddress.name = document.getElementById('name').value
-  // if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
-  //   if (!document.querySelector("#use-address").checked && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
-  //     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
-  //     return false;
-  //   }
-  //   if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
-  //     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
-  //     return false;
-  //   }
-  //   if (!selectedProvider.value || !selectedMethod.value) {
-  //     errors.methods = "Wybierz dostawę i sposób płatności";
-  //     return false;
-  //   }
-  //   else {
-  //     errors.address = '';
-  //     return true;
-  //   }
-  // }
-
-  if (!useAddress.value && (!newAddress.phone || !newAddress.city || !newAddress.addressLine || !newAddress.postalCode || !newAddress.country || !newAddress.name)) {
+  newAddress.phone = document.getElementById('phone').value
+  newAddress.city = document.getElementById('city').value
+  newAddress.postalCode = document.getElementById('postalCode').value
+  newAddress.addressLine = document.getElementById('addressLine').value
+  newAddress.country = document.getElementById('country').value
+  newAddress.name = document.getElementById('name').value
+  const phonePattern = /^[0-9]{9,15}$/;
+  const postalCodePattern = /^[0-9]{3}-[0-9]{2}$/;
+  if (userId&&!document.querySelector("#use-address").checked && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
-  }
+  }else
+  if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+      errors.address = "Upewnij się, że wypełniłeś formularz adresu";
+      return false;
+    }else
   if (!selectedProvider.value || !selectedMethod.value) {
     errors.methods = "Wybierz dostawę i sposób płatności";
     return false;
+  }else
+  if (userId&&!document.querySelector("#use-address").checked &&!postalCodePattern.test(newAddress.postalCode)) {
+    errors.address = "Podaj poprawny kod pocztowy, np. 00-000";
+    return false;
+  }else
+  if (userId&&!document.querySelector("#use-address").checked &&!phonePattern.test(newAddress.phone)) {
+    errors.address = "Podaj poprawny nr telefonu";
+    return false;
+  }else
+  if (!userId&&!phonePattern.test(newAddress.phone)) {
+    errors.address = "Podaj poprawny nr telefonu";
+    return false;
   }
-  else {
+  else 
+  if (!userId&&!postalCodePattern.test(newAddress.postalCode)) {
+    errors.address = "Podaj poprawny kod pocztowy, np. 000-00";
+    return false;
+  }
+  else{
     errors.address = '';
+    
     return true;
   }
 };
@@ -359,6 +364,22 @@ const saveAddress = async () => {
       });
     }
     alert('Adres został zapisany!');
+    try {
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "Tutaj_dane_z@formularza.pl",
+          payer_name: "Tutaj dane z formularza"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
   } catch (error) {
     console.error('Błąd podczas zapisywania adresu:', error);
     alert('Nie udało się zapisać adresu.');

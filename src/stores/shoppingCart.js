@@ -4,7 +4,8 @@ import { useProductsStore } from '@/stores/products';
 export const useShoppingCartStore = defineStore('shoppingCart', {
   state: () => ({
     open: false,
-    products: []
+    products: [],
+    isOrderFinished: false
   }),
   actions: {
     addProduct(id) {

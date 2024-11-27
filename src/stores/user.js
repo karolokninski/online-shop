@@ -28,6 +28,7 @@ export const useUserStore = defineStore('user', {
         this.token = response.data.access_token
         const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
+        console.log(decodedToken.exp)
         this.name = decodedToken.name
         this.role = response.data.role
         this.id = response.data.id;
@@ -118,14 +119,23 @@ export const useUserStore = defineStore('user', {
         return error
       }
     },
-    logout() {
+    logout(router) {
       try {
         this.token = null
         this.name = null
         this.isAuthenticated = false
         localStorage.removeItem('user')
+        router.push('/')
       } catch (error) {
         console.error('Logout failed:', error.message)
+      }
+    },
+    checkTokenExpiration(router) {
+      if (this.token) {
+        const decodedToken = jose.decodeJwt(this.token)
+        if (this.isTokenExpired(decodedToken)) {
+          this.logout(router)
+        }
       }
     }
   },

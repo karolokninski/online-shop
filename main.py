@@ -448,6 +448,13 @@ class TransactionRequest(BaseModel):
 class TransactionResponse(BaseModel):
     transaction_url: str
 
+class ProductListItemCreate(BaseModel):
+    user_id: int
+    product_id: int
+
+class UserId(BaseModel):
+    user_id: int
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = "mysecretkey"
@@ -1440,3 +1447,72 @@ async def create_transaction(request: TransactionRequest):
             raise HTTPException(status_code=500, detail="Transaction URL not provided by TPay.")
         
         return TransactionResponse(transaction_url=transaction_url)
+    
+async def get_or_create_user_list(user_id: int, db: AsyncSession):
+    result = await db.execute(
+        text("SELECT id FROM product_lists WHERE user_id = :user_id AND list_name = 'Favorites'"),
+        {"user_id": user_id}
+    )
+    user_list = result.fetchone()
+    
+    if not user_list:
+        result = await db.execute(
+            text("""
+                INSERT INTO product_lists (user_id, list_name, description) 
+                VALUES (:user_id, 'Favorites', 'User favorites list') RETURNING id
+            """),
+            {"user_id": user_id}
+        )
+        user_list = result.fetchone()
+        await db.commit()
+
+    return user_list[0]
+
+@app.post("/favorites/")
+async def add_product_to_favorites(item: ProductListItemCreate, db: AsyncSession = Depends(get_db)):
+    product_list_id = await get_or_create_user_list(item.user_id, db)
+
+    try:
+        await db.execute(
+            text("""
+                INSERT INTO product_list_items (product_list_id, product_id) 
+                VALUES (:product_list_id, :product_id)
+            """),
+            {"product_list_id": product_list_id, "product_id": item.product_id}
+        )
+        await db.commit()
+        return {"message": "Pomyślnie dodano produkt do listy ulubionych."}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Produkt już znajduje się w liście ulubionych.")
+
+@app.delete("/favorites/{product_id}")
+async def remove_product_from_favorites(product_id: int, user: UserId, db: AsyncSession = Depends(get_db)):
+    product_list_id = await get_or_create_user_list(user.user_id, db)
+
+    result = await db.execute(
+        text("DELETE FROM product_list_items WHERE product_list_id = :product_list_id AND product_id = :product_id"),
+        {"product_list_id": product_list_id, "product_id": product_id}
+    )
+
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu w liście ulubionych..")
+
+    await db.commit()
+    return {"message": "Pomyślnie usunięto produkt do listy ulubionych."}
+
+@app.get("/favorites/")
+async def get_favorite_products(user: UserId, db: AsyncSession = Depends(get_db)):
+    product_list_id = await get_or_create_user_list(user.user_id, db)
+
+    result = await db.execute(
+        text("""
+            SELECT p.id, p.product_name, p.price, p.description 
+            FROM products p
+            JOIN product_list_items pli ON pli.product_id = p.id
+            WHERE pli.product_list_id = :product_list_id
+        """),
+        {"product_list_id": product_list_id}
+    )
+
+    products = result.mappings().all()
+    return products

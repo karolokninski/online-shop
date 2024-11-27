@@ -40,21 +40,7 @@ export const useProductsStore = defineStore('products', {
         }));
         this.errorMessage = '';
 
-        for (let i = 1000; i < 1150; i++) {
-          this.products.push({
-            id: i,
-            product_name: 'sigma',
-            category_id: 1,
-            price: i,
-            stock_quantity: 1,
-            description: 'sigma',
-            main_image: null,
-            additional_images: [],
-            created_at: null,
-            name: 'sigma',
-            stock: 1,
-          });
-        }
+
       } catch (error) {
         console.error('Błąd podczas pobierania produktów:', error);
       } finally {

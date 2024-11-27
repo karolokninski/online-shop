@@ -266,7 +266,7 @@ const handlePayment = async () => {
           description: "zamówienie w sklepie Geeked.tech",
           payer_email: User.email,
           payer_name: User.firstName+" "+User.lastName,
-          success_url: "geeked.tech/zamowieniezrealizowane"
+          success_url: "geeked.tech/zamowienie/zrealizowane"
         });
         console.log(response.data)
         if (response.data.transaction_url) {
@@ -373,7 +373,7 @@ const saveAddress = async () => {
         });
         console.log(response.data)
         if (response.data.transaction_url) {
-          document.cookie = "order_finished=true; path=/; max-age=86400";
+          shoppingCartStore.isOrderFinished = true;
           window.location.href = response.data.transaction_url;
         } else {
           console.error("Błąd podczas tworzenia płatności tpay.");

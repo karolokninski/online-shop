@@ -16,9 +16,12 @@
 		<div class="flex flex-col gap-1">
 			<p class="text-md font-medium text-gray-900 text-right">{{ product.price }} PLN</p>
 			<div class="flex flex-row gap-1 z-0 ml-auto opacity-0 group-hover:opacity-100">
-				<div class="add-to-btn" @click="handleAddToFavorite(product.id)">
+				<div v-if="userStore.isAuthenticated" class="add-to-btn" @click="handleAddToFavorite(product.id)">
 					<HeartIcon class="h-6 w-6 text-black"></HeartIcon>
 				</div>
+				<RouterLink v-else to="/logowanie" class="add-to-btn">
+					<HeartIcon class="h-6 w-6 text-black"></HeartIcon>
+				</RouterLink>
 				<div class="add-to-btn" @click="handleAddToCart(product.id)">
 					<ShoppingCartIcon class="h-6 w-6 text-black"></ShoppingCartIcon>
 				</div>
@@ -30,14 +33,17 @@
 <script setup>
 	import { PhotoIcon, HeartIcon, ShoppingCartIcon } from "@heroicons/vue/24/outline"
   import { useShoppingCartStore } from '@/stores/shoppingCart'
+  import { useUserStore } from '@/stores/user'
 
   const shoppingCartStore = useShoppingCartStore()
+  const userStore = useUserStore()
 
 	defineProps({
 		product: Object
 	})
 
 	const handleAddToFavorite = (id) => {
+		console.log("dodano do ulu:", id)
 	}
 
 	const handleAddToCart = (id) => {
@@ -50,7 +56,7 @@
 	}
 
 	const truncateDescription = (description) => {
-		return description?.length > 24 ? description.substring(0, 24) + '...' : description
+		return description?.length > 18 ? description.substring(0, 18) + '...' : description
 	}
 </script>
 

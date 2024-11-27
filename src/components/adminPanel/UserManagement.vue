@@ -346,6 +346,7 @@ const handleUserAction = async () => {
     }
     await fetchUsers();
     userModalOpen.value = false;
+    location.reload();
   } catch (error) {
     console.error('Błąd podczas dodawania/edytowania użytkownika:', error);
   }

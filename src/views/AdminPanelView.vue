@@ -10,7 +10,6 @@
       </nav>
     </header>
     <main class="flex flex-row mt-16 divide-x">
-      <!-- max-sm:hidden -->
       <div v-show="$route.name==='adminPanel' || width > 480" class="flex-none p-4">
         <div class="flex flex-col p-4 text-left">
           <span class="text-xs font-light leading-none text-black">Cześć,</span>

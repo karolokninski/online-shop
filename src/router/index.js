@@ -78,8 +78,8 @@ const routes = [
       },
       {
         path: 'ulubione',
-        name: 'favouriteProducts',
-        component: () => import('../components/account/FavouriteProducts.vue'),
+        name: 'favoriteProducts',
+        component: () => import('../components/account/FavoriteProducts.vue'),
       }
     ]
   },

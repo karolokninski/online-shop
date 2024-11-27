@@ -132,7 +132,7 @@ import ProductListItem from '@/components/product/ProductListItem.vue';
 import ProductListItemSkeleton from '@/components/product/ProductListItemSkeleton.vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/products';
-  import { useFavoriteProductsStore } from '@/stores/favoriteProducts';
+import { useFavoriteProductsStore } from '@/stores/favoriteProducts';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
 
 const productsStore = useProductsStore();

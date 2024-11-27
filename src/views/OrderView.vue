@@ -264,9 +264,9 @@ const handlePayment = async () => {
         const response = await axios.post(`${API_URL}/transactions`, {
           amount: total.value,
           description: "zamówienie w sklepie Geeked.tech",
-          payer_email: "Tutaj_dane_z@formularza.pl",
-          payer_name: "Tutaj dane z formularza",
-          success_url: "https://www.google.com/search?q=miko+bs"
+          payer_email: User.email,
+          payer_name: User.firstName+" "+User.lastName,
+          success_url: "geeked.tech/zamowieniezrealizowane"
         });
         console.log(response.data)
         if (response.data.transaction_url) {
@@ -285,7 +285,6 @@ const openModal = () => {
 };
 const closeModal = () => {
   showModal.value = false;
-  //instrukcje
 };
 const validateForm = () => {
   newAddress.phone = document.getElementById('phone').value
@@ -295,7 +294,7 @@ const validateForm = () => {
   newAddress.country = document.getElementById('country').value
   newAddress.name = document.getElementById('name').value
   const phonePattern = /^[0-9]{9,15}$/;
-  const postalCodePattern = /^[0-9]{3}-[0-9]{2}$/;
+  const postalCodePattern = /^[0-9]{2}-[0-9]{3}$/;
   if (userId&&!document.querySelector("#use-address").checked && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
@@ -327,7 +326,7 @@ const validateForm = () => {
   }
   else{
     errors.address = '';
-    
+    errors.methods = '';
     return true;
   }
 };
@@ -374,6 +373,7 @@ const saveAddress = async () => {
         });
         console.log(response.data)
         if (response.data.transaction_url) {
+          document.cookie = "order_finished=true; path=/; max-age=86400";
           window.location.href = response.data.transaction_url;
         } else {
           console.error("Błąd podczas tworzenia płatności tpay.");

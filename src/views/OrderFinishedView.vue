@@ -9,4 +9,19 @@
 <script setup>
   import TopBar from '@/components/TopBar.vue';
   import logo from '@/assets/dzieki.png';
+  import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+onMounted(() => {
+  const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+  const orderFinished = cookies.find(cookie => cookie.startsWith('order_finished='));
+
+  if (!orderFinished || orderFinished.split('=')[1] !== 'true') {
+    router.push('/');
+  } else {
+    document.cookie = "order_finished=; path=/; max-age=0";
+  }
+});
 </script>

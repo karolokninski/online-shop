@@ -1500,9 +1500,9 @@ async def remove_product_from_favorites(product_id: int, user: UserId, db: Async
     await db.commit()
     return {"message": "Pomyślnie usunięto produkt do listy ulubionych."}
 
-@app.get("/favorites/")
-async def get_favorite_products(user: UserId, db: AsyncSession = Depends(get_db)):
-    product_list_id = await get_or_create_user_list(user.user_id, db)
+@app.get("/favorites/{user_id}")
+async def get_favorite_products(user_id: int, db: AsyncSession = Depends(get_db)):
+    product_list_id = await get_or_create_user_list(user_id, db)
 
     result = await db.execute(
         text("""

@@ -38,7 +38,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ truncateDescription(product.description) }}</div>
+              <div class="text-sm text-gray-900">{{ product.description ? truncateDescription(product.description) : '' }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button @click="handleEditButton(product.id)" class="text-indigo-600 hover:text-indigo-900 mr-3">

@@ -1486,8 +1486,8 @@ async def add_product_to_favorites(item: ProductListItemCreate, db: AsyncSession
         raise HTTPException(status_code=400, detail="Produkt już znajduje się w liście ulubionych.")
 
 @app.delete("/favorites/{product_id}")
-async def remove_product_from_favorites(product_id: int, user: UserId, db: AsyncSession = Depends(get_db)):
-    product_list_id = await get_or_create_user_list(user.user_id, db)
+async def remove_product_from_favorites(product_id: int, user_id: int, db: AsyncSession = Depends(get_db)):
+    product_list_id = await get_or_create_user_list(user_id, db)
 
     result = await db.execute(
         text("DELETE FROM product_list_items WHERE product_list_id = :product_list_id AND product_id = :product_id"),

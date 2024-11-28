@@ -324,7 +324,7 @@ const handlePayment = async () => {
           description: "zamówienie w sklepie Geeked.tech",
           payer_email: User.email,
           payer_name: User.firstName+" "+User.lastName,
-          success_url: "geeked.tech/zamowienie/zrealizowane"
+          success_url: "https://geeked.tech/zamowienie/zrealizowane"
         });
         console.log(response.data)
         if (response.data.transaction_url) {

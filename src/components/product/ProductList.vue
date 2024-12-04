@@ -127,14 +127,16 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import ProductListItem from '@/components/product/ProductListItem.vue';
 import ProductListItemSkeleton from '@/components/product/ProductListItemSkeleton.vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/products';
+import { useFavoriteProductsStore } from '@/stores/favoriteProducts';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
 
 const productsStore = useProductsStore();
+const favoriteProductsStore = useFavoriteProductsStore();
 const router = useRoute();
 const query = computed(() => router.query.q);
 
@@ -226,6 +228,10 @@ const paginatedPages = computed(() => {
   }
 
   return pages;
+});
+
+onMounted(async () => {
+  favoriteProductsStore.fetchProducts();
 });
 </script>
 

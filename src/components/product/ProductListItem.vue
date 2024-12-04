@@ -16,9 +16,13 @@
 		<div class="flex flex-col gap-1">
 			<p class="text-md font-medium text-gray-900 text-right">{{ product.price }} PLN</p>
 			<div class="flex flex-row gap-1 z-0 ml-auto opacity-0 group-hover:opacity-100">
-				<div class="add-to-btn" @click="handleAddToFavorite(product.id)">
-					<HeartIcon class="h-6 w-6 text-black"></HeartIcon>
+				<div v-if="userStore.isAuthenticated" class="add-to-btn" @click="handleAddToFavorite(product.id)">
+					<HeartIconSolid v-if="favoriteProductsStore.products.some(p => p.id === product.id)" class="h-6 w-6 text-gray-700"></HeartIconSolid>
+					<HeartIcon v-else class="h-6 w-6 text-gray-700"></HeartIcon>
 				</div>
+				<RouterLink v-else to="/logowanie" class="add-to-btn">
+					<HeartIcon class="h-6 w-6 text-gray-700"></HeartIcon>
+				</RouterLink>
 				<div class="add-to-btn" @click="handleAddToCart(product.id)">
 					<ShoppingCartIcon class="h-6 w-6 text-black"></ShoppingCartIcon>
 				</div>
@@ -29,19 +33,29 @@
 
 <script setup>
 	import { PhotoIcon, HeartIcon, ShoppingCartIcon } from "@heroicons/vue/24/outline"
+	import { HeartIcon as HeartIconSolid } from "@heroicons/vue/24/solid"
   import { useShoppingCartStore } from '@/stores/shoppingCart'
+  import { useUserStore } from '@/stores/user'
+  import { useFavoriteProductsStore } from '@/stores/favoriteProducts'
 
   const shoppingCartStore = useShoppingCartStore()
+  const userStore = useUserStore()
+  const favoriteProductsStore = useFavoriteProductsStore()
 
 	defineProps({
 		product: Object
 	})
 
-	const handleAddToFavorite = (id) => {
+	const handleAddToFavorite = (productId) => {
+		if (favoriteProductsStore.products.some(p => p.id === productId)) {
+			favoriteProductsStore.removeProduct(productId)
+		} else {
+			favoriteProductsStore.addProduct(productId)
+		}
 	}
 
-	const handleAddToCart = (id) => {
-    shoppingCartStore.addProduct(id)
+	const handleAddToCart = (productId) => {
+    shoppingCartStore.addProduct(productId)
     shoppingCartStore.open = true
 	}
 
@@ -50,7 +64,7 @@
 	}
 
 	const truncateDescription = (description) => {
-		return description?.length > 24 ? description.substring(0, 24) + '...' : description
+		return description?.length > 18 ? description.substring(0, 18) + '...' : description
 	}
 </script>
 

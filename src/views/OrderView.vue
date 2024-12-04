@@ -300,6 +300,11 @@ if(userId){
           order_items: productsToAdd.value ,
         });
 }else{
+  console.log(selectedProvider.value.id)
+  console.log(selectedMethod.value.id)
+  console.log(total.value)
+  console.log(addressArray)
+  console.log(productsToAdd.value)
   await axios.post(`${API_URL}/orders`, {
           user_id: 71,
           delivery_method_id: selectedProvider.value.id,
@@ -314,9 +319,32 @@ const handlePayment = async () => {
   if (validateForm()==true) {
     if (!useAddress.value && userId) {
     openModal();
-    } else {
+    } else if(userId!=null){
       isLoading.value = true;
       try {
+        console.log("transakcja")
+        orderAdd();
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "gość@gmail.com",
+          payer_name: document.getElementById('name').value,
+          success_url: "https://geeked.tech/zamowienie/zrealizowane"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          shoppingCartStore.isOrderFinished = true;
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
+    }else{
+      isLoading.value = true;
+      try {
+        console.log("transakcja")
         orderAdd();
         const response = await axios.post(`${API_URL}/transactions`, {
           amount: total.value,

@@ -249,6 +249,7 @@ const maxClass = computed(() => {
 });
 
 const currentCategory = ref();
+const currentCategoryId = ref();
 const sortOptions = [
   { id: 'relevance', name: 'Od najtrafniejszych', href: '#', current: false },
   { id: 'newest', name: 'Czas: od najnowszych', href: '#', current: false },
@@ -307,21 +308,37 @@ const sortProducts = () => {
 const fetchCategories = async () => {
   try {
     const response = await axios.get(`${API_URL}/categories`);
+    const category = response.data.find(item => item.category_name === currentCategory.value);
+    currentCategoryId.value = category ? category.id : null;
     subCategories.value = response.data.map(category => ({
       ...category,
       name: category.category_name,
       href: "/produkty/" + category.category_name,
     }));
+
     subCategories.value = subCategories.value.filter(cat => cat.name !== currentCategory.value);
+
+    if (currentCategory.value) {
+      subCategories.value.push({
+        name: "Wszystkie produkty",
+        href: "/produkty",
+      })
+    }
   } catch (error) {
     console.error('Błąd podczas pobierania kategorii:', error);
   }
 };
 
 watch(
-  () => router.params.category, (newCategory) => {
+  () => router.params.category, async (newCategory) => {
     currentCategory.value = newCategory;
-    fetchCategories();
+    await fetchCategories();
+    await productsStore.fetchProducts();
+    sortProducts();
+    
+    if (currentCategory.value) {
+      productsStore.products = productsStore.products.filter(product => product.category_id === currentCategoryId.value);
+    }
   },
   { immediate: true }
 );

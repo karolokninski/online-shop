@@ -1,11 +1,12 @@
 <template>
-  <div class="pb-6">
+  <div class="pb-6 text-gray-900">
     <div v-if="productsStore.loading">
-      <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-8">
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-900">Ulubione produkty</h2>
+      <!-- <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-8">
         <div v-for="n in 8" :key="n" class="animate-pulse group relative">
           <ProductListItemSkeleton/>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div v-else-if="productsStore.products.length">
@@ -21,6 +22,7 @@
               mainImage: product.main_image,
               imageAlt: product.name
             }"
+            :noCart="true"
           />
         </div>
       </div>

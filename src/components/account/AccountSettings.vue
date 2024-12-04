@@ -1,11 +1,8 @@
 <template>
-  <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+  <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg text-gray-900">
     <h2 class="text-2xl font-bold mb-6 text-center">Ustawienia konta</h2>
 
-
     <div class="flex flex-col md:flex-row gap-8">
-
-
       <div class="flex-1">
         <h3 class="text-xl font-semibold mb-4 text-center">Dane użytkownika</h3>
         <div>

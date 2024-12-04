@@ -7,7 +7,7 @@
         <ul role="list" class="divide-y divide-gray-200">
           <li v-for="product in shoppingCartStore.products" :key="product.id" class="flex py-6 px-4">
             <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-              <img v-if="product.imageSrc" :src="product.imageSrc" :alt="product.imageAlt"
+              <img v-if="product.main_image" :src="formatImage(product.main_image)" :alt="product.product_name"
                 class="h-full w-full object-cover object-center" />
             </div>
             <div class="ml-4 flex flex-1 flex-col">
@@ -83,7 +83,6 @@
               <input type="text" id="addressLine" v-model="newAddress.addressLine" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
-            <!-- Add any other necessary form fields here -->
           </form>
           <div v-if="errors.address" class="text-red-500 text-sm mt-2">
             {{ errors.address }}
@@ -94,7 +93,7 @@
                 <input type="checkbox" id="use-address" v-model="useAddress"
                   class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                 <label for="use-address" class="text-sm font-medium text-gray-700">
-                  <span>Użyj twojego adresu:</span>
+                  <span>Użyj zapisanego adresu:</span>
                   <span class="font-semibold">
                     <br />{{ Address.addressLine }}
                     <br />{{ Address.city }}
@@ -247,13 +246,13 @@ const newAddress = reactive({
     general: '',
   }
 });
-const addressArray=reactive({
-     address_line: "",
-     postal_code: "",
-     city: "",
-     country: "",
-    });
-    const providers = ref([]);
+const addressArray = reactive({
+  address_line: "",
+  postal_code: "",
+  city: "",
+  country: "",
+});
+const providers = ref([]);
 const errors = reactive({
   address: '',
   methods: '',
@@ -263,77 +262,78 @@ const router = useRouter()
 
 
 
-const productAdd=reactive({
+const productAdd = reactive({
   product_id: 0,
   quantity: 0,
   price: 0.0,
 })
 const productsToAdd = ref([]);
 
-const orderAdd= async () => {
+const orderAdd = async () => {
   shoppingCartStore.products.forEach(product => {
-  productAdd.product_id = product.id;
-  productAdd.quantity = product.quantity;
-  productAdd.price = product.price;
-  productsToAdd.value.push({ ...productAdd });
-});
+    productAdd.product_id = product.id;
+    productAdd.quantity = product.quantity;
+    productAdd.price = product.price;
+    productsToAdd.value.push({ ...productAdd });
+  });
 
 
-  if(userId&&useAddress.value==true){
-      addressArray.address_line= Address.addressLine;
-      addressArray.postal_code= Address.postalCode;
-      addressArray.city = Address.city;
-      addressArray.country= Address.country;
-  }else{
-      addressArray.address_line= newAddress.addressLine;
-      addressArray.postal_code= newAddress.postalCode;
-      addressArray.city = newAddress.city;
-      addressArray.country= Address.country;
+  if (userId && useAddress.value == true) {
+    addressArray.address_line = Address.addressLine;
+    addressArray.postal_code = Address.postalCode;
+    addressArray.city = Address.city;
+    addressArray.country = Address.country;
+  } else {
+    addressArray.address_line = newAddress.addressLine;
+    addressArray.postal_code = newAddress.postalCode;
+    addressArray.city = newAddress.city;
+    addressArray.country = Address.country;
   }
-if(userId){
-  await axios.post(`${API_URL}/orders`, {
-          user_id: userId,
-          delivery_method_id: selectedProvider.value.id,
-          payment_method_id: selectedMethod.value.id,
-          total_amount: total.value,
-          address: addressArray,
-          order_items: productsToAdd.value ,
-        });
-}else{
-  console.log(selectedProvider.value.id)
-  console.log(selectedMethod.value.id)
-  console.log(total.value)
-  console.log(addressArray)
-  console.log(productsToAdd.value)
-  await axios.post(`${API_URL}/orders`, {
-          user_id: 71,
-          delivery_method_id: selectedProvider.value.id,
-          payment_method_id: selectedMethod.value.id,
-          total_amount: total.value,
-          address: addressArray,
-          order_items: productsToAdd.value,
-        });
-}
+  if (userId) {
+    await axios.post(`${API_URL}/orders`, {
+      user_id: userId,
+      delivery_method_id: selectedProvider.value.id,
+      payment_method_id: selectedMethod.value.id,
+      total_amount: total.value,
+      address: addressArray,
+      order_items: productsToAdd.value,
+    });
+  } else {
+    console.log(selectedProvider.value.id)
+    console.log(selectedMethod.value.id)
+    console.log(total.value)
+    console.log(addressArray)
+    console.log(productsToAdd.value)
+    await axios.post(`${API_URL}/orders`, {
+      user_id: 71,
+      delivery_method_id: selectedProvider.value.id,
+      payment_method_id: selectedMethod.value.id,
+      total_amount: total.value,
+      address: addressArray,
+      order_items: productsToAdd.value,
+    });
+  }
 }
 const handlePayment = async () => {
-  if (validateForm()==true) {
+  if (validateForm() == true) {
     if (!useAddress.value && userId) {
-    openModal();
+      openModal();
     } else {
       isLoading.value = true;
       try {
-        console.log("transakcja")
+        let mail = User.email ? User.email : "gosc@gmail.com";
+        let name = User.lastName ? User.firstName + " " + User.lastName : User.firstName;
+        shoppingCartStore.isOrderFinished = true;
         orderAdd();
         const response = await axios.post(`${API_URL}/transactions`, {
           amount: total.value,
           description: "zamówienie w sklepie Geeked.tech",
-          payer_email: "gość@gmail.com",
-          payer_name: document.getElementById('name').value,
+          payer_email: mail,
+          payer_name: name,
           success_url: "https://geeked.tech/zamowienie/zrealizowane"
         });
         console.log(response.data)
         if (response.data.transaction_url) {
-          shoppingCartStore.isOrderFinished = true;
           window.location.href = response.data.transaction_url;
         } else {
           console.error("Błąd podczas tworzenia płatności tpay.");
@@ -347,26 +347,29 @@ const handlePayment = async () => {
 const openModal = () => {
   showModal.value = true;
 };
-const closeModal = async () =>  {
+const closeModal = async () => {
   showModal.value = false;
   try {
     orderAdd();
-        const response = await axios.post(`${API_URL}/transactions`, {
-          amount: total.value,
-          description: "zamówienie w sklepie Geeked.tech",
-          payer_email: User.email,
-          payer_name: User.firstName+" "+User.lastName,
-          success_url: "https://geeked.tech/zamowienie/zrealizowane"
-        });
-        console.log(response.data)
-        if (response.data.transaction_url) {
-          window.location.href = response.data.transaction_url;
-        } else {
-          console.error("Błąd podczas tworzenia płatności tpay.");
-        }
-      } finally {
-        isLoading.value = false;
-      }
+    let mail = User.email ? User.email : "gosc@gmail.com";
+    let name = User.lastName ? User.firstName + " " + User.lastName : User.firstName;
+    shoppingCartStore.isOrderFinished = true;
+    const response = await axios.post(`${API_URL}/transactions`, {
+      amount: total.value,
+      description: "zamówienie w sklepie Geeked.tech",
+      payer_email: mail,
+      payer_name: name,
+      success_url: "https://geeked.tech/zamowienie/zrealizowane"
+    });
+    console.log(response.data)
+    if (response.data.transaction_url) {
+      window.location.href = response.data.transaction_url;
+    } else {
+      console.error("Błąd podczas tworzenia płatności tpay.");
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 const validateForm = () => {
   newAddress.phone = document.getElementById('phone').value
@@ -377,40 +380,40 @@ const validateForm = () => {
   newAddress.name = document.getElementById('name').value
   const phonePattern = /^[0-9]{9,15}$/;
   const postalCodePattern = /^[0-9]{2}-[0-9]{3}$/;
-  if (userId&&useAddress.value==false && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
+  if (userId && useAddress.value == false && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "" || newAddress.name == "")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
-  }else
-  if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
+  } else
+    if (!userId && (newAddress.phone == "" || newAddress.city == "" || newAddress.addressLine == "" || newAddress.postalCode == "" || newAddress.country == "")) {
       errors.address = "Upewnij się, że wypełniłeś formularz adresu";
       return false;
-    }else
-  if (!selectedProvider.value || !selectedMethod.value) {
-    errors.methods = "Wybierz dostawę i sposób płatności";
-    return false;
-  }else
-  if (userId&&useAddress.value==false &&!postalCodePattern.test(newAddress.postalCode)) {
-    errors.address = "Podaj poprawny kod pocztowy, np. 00-000";
-    return false;
-  }else
-  if (userId&&useAddress.value==false &&!phonePattern.test(newAddress.phone)) {
-    errors.address = "Podaj poprawny nr telefonu";
-    return false;
-  }else
-  if (!userId&&!phonePattern.test(newAddress.phone)) {
-    errors.address = "Podaj poprawny nr telefonu";
-    return false;
-  }
-  else 
-  if (!userId&&!postalCodePattern.test(newAddress.postalCode)) {
-    errors.address = "Podaj poprawny kod pocztowy, np. 000-00";
-    return false;
-  }
-  else{
-    errors.address = '';
-    errors.methods = '';
-    return true;
-  }
+    } else
+      if (!selectedProvider.value || !selectedMethod.value) {
+        errors.methods = "Wybierz dostawę i sposób płatności";
+        return false;
+      } else
+        if (userId && useAddress.value == false && !postalCodePattern.test(newAddress.postalCode)) {
+          errors.address = "Podaj poprawny kod pocztowy, np. 00-000";
+          return false;
+        } else
+          if (userId && useAddress.value == false && !phonePattern.test(newAddress.phone)) {
+            errors.address = "Podaj poprawny nr telefonu";
+            return false;
+          } else
+            if (!userId && !phonePattern.test(newAddress.phone)) {
+              errors.address = "Podaj poprawny nr telefonu";
+              return false;
+            }
+            else
+              if (!userId && !postalCodePattern.test(newAddress.postalCode)) {
+                errors.address = "Podaj poprawny kod pocztowy, np. 000-00";
+                return false;
+              }
+              else {
+                errors.address = '';
+                errors.methods = '';
+                return true;
+              }
 };
 const fetchPaymentMethods = async () => {
   try {
@@ -446,7 +449,7 @@ const saveAddress = async () => {
       });
     }
     alert('Adres został zapisany!');
-    
+
   } catch (error) {
     console.error('Błąd podczas zapisywania adresu:', error);
     alert('Nie udało się zapisać adresu.');
@@ -510,6 +513,11 @@ async function fetchAddressById(id) {
     console.error("Błąd podczas pobierania adresu:", error);
   }
 }
+
+const formatImage = (image) => {
+  return `data:image/jpeg;base64,${image}`
+}
+
 onMounted(async () => {
   console.log(shoppingCartStore.products);
   checkCartAndRedirect();

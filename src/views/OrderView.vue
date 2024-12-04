@@ -7,7 +7,7 @@
         <ul role="list" class="divide-y divide-gray-200">
           <li v-for="product in shoppingCartStore.products" :key="product.id" class="flex py-6 px-4">
             <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-              <img v-if="product.imageSrc" :src="product.imageSrc" :alt="product.imageAlt"
+              <img v-if="product.main_image" :src="formatImage(product.main_image)" :alt="product.product_name"
                 class="h-full w-full object-cover object-center" />
             </div>
             <div class="ml-4 flex flex-1 flex-col">
@@ -83,7 +83,6 @@
               <input type="text" id="addressLine" v-model="newAddress.addressLine" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
             </div>
-            <!-- Add any other necessary form fields here -->
           </form>
           <div v-if="errors.address" class="text-red-500 text-sm mt-2">
             {{ errors.address }}
@@ -510,6 +509,11 @@ async function fetchAddressById(id) {
     console.error("Błąd podczas pobierania adresu:", error);
   }
 }
+
+const formatImage = (image) => {
+  return `data:image/jpeg;base64,${image}`
+}
+
 onMounted(async () => {
   console.log(shoppingCartStore.products);
   checkCartAndRedirect();

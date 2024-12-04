@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-6">
+  <div class="pb-6 text-gray-900">
     <div v-if="productsStore.loading">
       <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-8">
         <div v-for="n in 8" :key="n" class="animate-pulse group relative">

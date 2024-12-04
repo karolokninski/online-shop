@@ -186,9 +186,9 @@
                                 <p v-if="form.add.errors.image" class="text-red-500 text-xs mt-1">{{ form.add.errors.image }}</p>
                               </div>
                               <div class="mt-4 grid grid-cols-3 gap-4">
-                                <div v-for="image in previewImages" :key="image" class="w-full">
+                                <!-- <div v-for="image in previewImages" :key="image" class="w-full">
                                   <img :src="image" class="w-full h-auto rounded-md object-cover" alt="Preview" />
-                                </div>
+                                </div> -->
                               </div>
                             </div>
                           </div>
@@ -555,6 +555,9 @@ const toBase64 = (input) => {
 
 const handleAddButton = async () => {
   form.value.add.image = mainImage.value;
+  while(previewImages.value.length > 0) {
+    previewImages.value.pop();
+  }
 
   validateImage('add');
   validateName('add');
@@ -585,15 +588,12 @@ const handleAddButton = async () => {
 
 const addProduct = async (productName, categoryId, price, stockQuantity, description, mainImage, additionalImages) => {
   try {
-    additionalImages = [mainImage, mainImage]
+    // additionalImages = [mainImage]
 
     const mainImageBase64 = mainImage ? await toBase64(mainImage) : null
-    const additionalImagesBase64 = additionalImages 
-      ? await Promise.all(additionalImages.map(image => toBase64(image)))
-      : null
-
-    // console.log(productName, categoryId, price, stockQuantity, description, typeof mainImageBase64, additionalImagesBase64)
-    // console.log(productName, categoryId, price, stockQuantity, description, mainImageBase64, additionalImagesBase64)
+    // const additionalImagesBase64 = additionalImages 
+    //   ? await Promise.all(additionalImages.map(image => toBase64(image)))
+    //   : null
 
     await axios.post(API_URL + '/products', {
       product_name: productName,
@@ -601,8 +601,8 @@ const addProduct = async (productName, categoryId, price, stockQuantity, descrip
       price: price,
       stock_quantity: stockQuantity || 0,
       description: description,
-      main_image: mainImageBase64,
-      additional_images: additionalImagesBase64
+      main_image: mainImageBase64
+      // additional_images: additionalImagesBase64
     });
   } catch (error) {
     console.error('Error adding product:', error);
@@ -632,6 +632,9 @@ const handleDeleteButton = (id) => {
 
 const handleEditButton = (id) => {
   const product = products.value.find(p => p.id === id)
+  while(previewImages.value.length > 0) {
+    previewImages.value.pop();
+  }
   form.value.edit.name = product.name
   form.value.edit.price = product.price
   form.value.edit.stock = product.stock
@@ -682,21 +685,16 @@ const editProduct = async (id, productName, categoryId, price, stockQuantity, de
   const product = products.value.find(p => p.id === id);
   if (product) {
     try {
+      const mainImageBase64 = mainImage ? await toBase64(mainImage) : null
+
       await axios.put(API_URL + `/products/${id}`, {
         product_name: productName,
         category_id: categoryId,
         price: price,
         stock_quantity: stockQuantity,
         description: description,
-        main_image: mainImage.value ? null : null
+        main_image: mainImageBase64
       });
-
-      product.title = productName;
-      product.category_id = categoryId;
-      product.price = price;
-      product.stock_quantity = stockQuantity;
-      product.description = description;
-      product.main_image = mainImage;
     } catch (error) {
       console.error('Error updating product:', error);
     }

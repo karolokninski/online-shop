@@ -372,7 +372,7 @@ const fetchUsers = async () => {
   try {
     const response = await axios.get(`${API_URL}/users/`);
     users.value = response.data;
-    console.log("Fetched users:", users.value);  // Check if users data is being fetched
+    console.log("Fetched users:", users.value);
   } catch (error) {
     console.error("Error fetching users:", error);
   }

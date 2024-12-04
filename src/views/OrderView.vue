@@ -9,7 +9,6 @@
             <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
               <img v-if="product.imageSrc" :src="product.imageSrc" :alt="product.imageAlt"
                 class="h-full w-full object-cover object-center" />
-              <PhotoIcon v-else class="p-6 rounded-md object-cover text-gray-300" aria-hidden="true" />
             </div>
             <div class="ml-4 flex flex-1 flex-col">
               <div>
@@ -301,6 +300,11 @@ if(userId){
           order_items: productsToAdd.value ,
         });
 }else{
+  console.log(selectedProvider.value.id)
+  console.log(selectedMethod.value.id)
+  console.log(total.value)
+  console.log(addressArray)
+  console.log(productsToAdd.value)
   await axios.post(`${API_URL}/orders`, {
           user_id: 71,
           delivery_method_id: selectedProvider.value.id,
@@ -315,9 +319,32 @@ const handlePayment = async () => {
   if (validateForm()==true) {
     if (!useAddress.value && userId) {
     openModal();
-    } else {
+    } else if(userId!=null){
       isLoading.value = true;
       try {
+        console.log("transakcja")
+        orderAdd();
+        const response = await axios.post(`${API_URL}/transactions`, {
+          amount: total.value,
+          description: "zamówienie w sklepie Geeked.tech",
+          payer_email: "gość@gmail.com",
+          payer_name: document.getElementById('name').value,
+          success_url: "https://geeked.tech/zamowienie/zrealizowane"
+        });
+        console.log(response.data)
+        if (response.data.transaction_url) {
+          shoppingCartStore.isOrderFinished = true;
+          window.location.href = response.data.transaction_url;
+        } else {
+          console.error("Błąd podczas tworzenia płatności tpay.");
+        }
+      } finally {
+        isLoading.value = false;
+      }
+    }else{
+      isLoading.value = true;
+      try {
+        console.log("transakcja")
         orderAdd();
         const response = await axios.post(`${API_URL}/transactions`, {
           amount: total.value,
@@ -372,7 +399,7 @@ const validateForm = () => {
   newAddress.name = document.getElementById('name').value
   const phonePattern = /^[0-9]{9,15}$/;
   const postalCodePattern = /^[0-9]{2}-[0-9]{3}$/;
-  if (userId&&!document.querySelector("#use-address").checked && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
+  if (userId&&useAddress.value==false && (newAddress.phone=="" || newAddress.city=="" || newAddress.addressLine=="" || newAddress.postalCode=="" || newAddress.country=="" || newAddress.name=="")) {
     errors.address = "Upewnij się, że wypełniłeś formularz adresu";
     return false;
   }else
@@ -384,11 +411,11 @@ const validateForm = () => {
     errors.methods = "Wybierz dostawę i sposób płatności";
     return false;
   }else
-  if (userId&&!document.querySelector("#use-address").checked &&!postalCodePattern.test(newAddress.postalCode)) {
+  if (userId&&useAddress.value==false &&!postalCodePattern.test(newAddress.postalCode)) {
     errors.address = "Podaj poprawny kod pocztowy, np. 00-000";
     return false;
   }else
-  if (userId&&!document.querySelector("#use-address").checked &&!phonePattern.test(newAddress.phone)) {
+  if (userId&&useAddress.value==false &&!phonePattern.test(newAddress.phone)) {
     errors.address = "Podaj poprawny nr telefonu";
     return false;
   }else

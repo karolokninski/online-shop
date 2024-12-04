@@ -13,36 +13,40 @@ CREATE TABLE users (
   email VARCHAR(100) NOT NULL UNIQUE,
   phone VARCHAR(20),
   hashed_password VARCHAR(100) NOT NULL,
-  address_id INT DEFAULT NULL REFERENCES addresses(id) ON DELETE SET NULL,
+  address_id INT DEFAULT NULL,
   role VARCHAR(20) NOT NULL DEFAULT 'user',
   note TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_users_address FOREIGN KEY (address_id) REFERENCES addresses(id)
 );
 
 CREATE TABLE password_reset_tokens (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id INT NOT NULL,
   reset_token VARCHAR(6) NOT NULL,
-  token_expiration TIMESTAMP NOT NULL
+  token_expiration TIMESTAMP NOT NULL,
+  CONSTRAINT fk_password_reset_tokens_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE product_categories (
   id SERIAL PRIMARY KEY,
   category_name VARCHAR(100) NOT NULL,
-  parent_category_id INT REFERENCES product_categories(id) ON DELETE SET NULL,
-  description TEXT
+  parent_category_id INT,
+  description TEXT,
+  CONSTRAINT fk_product_categories_parent FOREIGN KEY (parent_category_id) REFERENCES product_categories(id)
 );
 
 CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   product_name VARCHAR(150) NOT NULL,
-  category_id INT REFERENCES product_categories(id) ON DELETE SET NULL,
+  category_id INT,
   price DECIMAL(10, 2) NOT NULL,
   stock_quantity INT DEFAULT 0,
   description TEXT,
   main_image BYTEA,
   additional_images BYTEA[],
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES product_categories(id)
 );
 
 CREATE TABLE product_parameters (
@@ -52,16 +56,19 @@ CREATE TABLE product_parameters (
 
 CREATE TABLE parameter_values (
   id SERIAL PRIMARY KEY,
-  parameter_id INT REFERENCES product_parameters(id) ON DELETE CASCADE,
+  parameter_id INT,
   value TEXT NOT NULL,
-  UNIQUE (parameter_id, value)
+  UNIQUE (parameter_id, value),
+  CONSTRAINT fk_parameter_values_parameter FOREIGN KEY (parameter_id) REFERENCES product_parameters(id)
 );
 
 CREATE TABLE product_parameter_values (
   id SERIAL PRIMARY KEY,
-  product_id INT REFERENCES products(id) ON DELETE CASCADE,
-  parameter_value_id INT REFERENCES parameter_values(id) ON DELETE CASCADE,
-  UNIQUE (product_id, parameter_value_id)
+  product_id INT,
+  parameter_value_id INT,
+  UNIQUE (product_id, parameter_value_id),
+  CONSTRAINT fk_product_parameter_values_product FOREIGN KEY (product_id) REFERENCES products(id),
+  CONSTRAINT fk_product_parameter_values_value FOREIGN KEY (parameter_value_id) REFERENCES parameter_values(id)
 );
 
 CREATE TABLE delivery_methods (
@@ -81,22 +88,28 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id INT NOT NULL,
   order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  delivery_method_id INT REFERENCES delivery_methods(id) ON DELETE SET NULL,
-  payment_method_id INT REFERENCES payment_methods(id) ON DELETE SET NULL,
-  address_id INT REFERENCES addresses(id) ON DELETE SET NULL,
+  delivery_method_id INT,
+  payment_method_id INT,
+  address_id INT,
   total_amount DECIMAL(10, 2) NOT NULL,
-  order_status VARCHAR(50) DEFAULT 'Pending'
+  order_status VARCHAR(50) DEFAULT 'Pending',
+  CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_orders_delivery FOREIGN KEY (delivery_method_id) REFERENCES delivery_methods(id),
+  CONSTRAINT fk_orders_payment FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
+  CONSTRAINT fk_orders_address FOREIGN KEY (address_id) REFERENCES addresses(id)
 );
 
 CREATE TABLE order_items (
   id SERIAL PRIMARY KEY,
-  order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-  product_id INT REFERENCES products(id) ON DELETE SET NULL,
+  order_id INT,
+  product_id INT,
   quantity INT NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
-  UNIQUE(order_id, product_id)
+  UNIQUE(order_id, product_id),
+  CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id),
+  CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 CREATE TABLE subpages (
@@ -110,15 +123,18 @@ CREATE TABLE subpages (
 
 CREATE TABLE product_lists (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id INT NOT NULL,
   list_name VARCHAR(100) NOT NULL,
   description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_product_lists_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE product_list_items (
   id SERIAL PRIMARY KEY,
-  product_list_id INT NOT NULL REFERENCES product_lists(id) ON DELETE CASCADE,
-  product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  UNIQUE (product_list_id, product_id)
+  product_list_id INT NOT NULL,
+  product_id INT NOT NULL,
+  UNIQUE (product_list_id, product_id),
+  CONSTRAINT fk_product_list_items_list FOREIGN KEY (product_list_id) REFERENCES product_lists(id),
+  CONSTRAINT fk_product_list_items_product FOREIGN KEY (product_id) REFERENCES products(id)
 );

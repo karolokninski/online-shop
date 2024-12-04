@@ -1,0 +1,124 @@
+CREATE TABLE addresses (
+  id SERIAL PRIMARY KEY,
+  address_line VARCHAR(255) NOT NULL,
+  postal_code VARCHAR(20) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  country VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50),
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone VARCHAR(20),
+  hashed_password VARCHAR(100) NOT NULL,
+  address_id INT DEFAULT NULL REFERENCES addresses(id) ON DELETE SET NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  note TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reset_token VARCHAR(6) NOT NULL,
+  token_expiration TIMESTAMP NOT NULL
+);
+
+CREATE TABLE product_categories (
+  id SERIAL PRIMARY KEY,
+  category_name VARCHAR(100) NOT NULL,
+  parent_category_id INT REFERENCES product_categories(id) ON DELETE SET NULL,
+  description TEXT
+);
+
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  product_name VARCHAR(150) NOT NULL,
+  category_id INT REFERENCES product_categories(id) ON DELETE SET NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  stock_quantity INT DEFAULT 0,
+  description TEXT,
+  main_image BYTEA,
+  additional_images BYTEA[],
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE product_parameters (
+  id SERIAL PRIMARY KEY,
+  parameter_name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE parameter_values (
+  id SERIAL PRIMARY KEY,
+  parameter_id INT REFERENCES product_parameters(id) ON DELETE CASCADE,
+  value TEXT NOT NULL,
+  UNIQUE (parameter_id, value)
+);
+
+CREATE TABLE product_parameter_values (
+  id SERIAL PRIMARY KEY,
+  product_id INT REFERENCES products(id) ON DELETE CASCADE,
+  parameter_value_id INT REFERENCES parameter_values(id) ON DELETE CASCADE,
+  UNIQUE (product_id, parameter_value_id)
+);
+
+CREATE TABLE delivery_methods (
+  id SERIAL PRIMARY KEY,
+  method_name VARCHAR(100) NOT NULL,
+  description TEXT,
+  estimated_delivery_days INT,
+  cost DECIMAL(10, 2) NOT NULL DEFAULT 0.00
+);
+
+CREATE TABLE payment_methods (
+  id SERIAL PRIMARY KEY,
+  method_name VARCHAR(100) NOT NULL,
+  description TEXT,
+  fee DECIMAL(10, 2) DEFAULT 0.00
+);
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  delivery_method_id INT REFERENCES delivery_methods(id) ON DELETE SET NULL,
+  payment_method_id INT REFERENCES payment_methods(id) ON DELETE SET NULL,
+  address_id INT REFERENCES addresses(id) ON DELETE SET NULL,
+  total_amount DECIMAL(10, 2) NOT NULL,
+  order_status VARCHAR(50) DEFAULT 'Pending'
+);
+
+CREATE TABLE order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+  product_id INT REFERENCES products(id) ON DELETE SET NULL,
+  quantity INT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  UNIQUE(order_id, product_id)
+);
+
+CREATE TABLE subpages (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  path VARCHAR(255) NOT NULL UNIQUE,
+  content TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE product_lists (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  list_name VARCHAR(100) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE product_list_items (
+  id SERIAL PRIMARY KEY,
+  product_list_id INT NOT NULL REFERENCES product_lists(id) ON DELETE CASCADE,
+  product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  UNIQUE (product_list_id, product_id)
+);

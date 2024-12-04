@@ -53,7 +53,6 @@ export const useUserStore = defineStore('user', {
         })
 
         this.token = response.data.access_token
-        //const decodedToken = jose.decodeJwt(this.token)
         this.isAuthenticated = true
         this.name = name
         this.id = response.data.id; 
@@ -123,6 +122,8 @@ export const useUserStore = defineStore('user', {
       try {
         this.token = null
         this.name = null
+        this.id = null
+        this.role = null
         this.isAuthenticated = false
         localStorage.removeItem('user')
         router.push('/')

@@ -368,13 +368,13 @@ class OrderItemCreate(BaseModel):
 
 class OrderItemResponse(BaseModel):
     id: int
-    product_id: int
+    product_id: Optional[int]
     quantity: int
     price: float
 
 class OrderResponse(BaseModel):
     id: int
-    user_id: int
+    user_id: Optional[int]
     order_date: str
     delivery_method_id: Optional[int]
     payment_method_id: Optional[int]

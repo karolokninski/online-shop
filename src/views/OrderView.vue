@@ -359,6 +359,7 @@ const closeModal = async () =>  {
         });
         console.log(response.data)
         if (response.data.transaction_url) {
+          shoppingCartStore.isOrderFinished = true;
           window.location.href = response.data.transaction_url;
         } else {
           console.error("Błąd podczas tworzenia płatności tpay.");

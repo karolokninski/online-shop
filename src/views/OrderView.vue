@@ -93,7 +93,7 @@
                 <input type="checkbox" id="use-address" v-model="useAddress"
                   class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                 <label for="use-address" class="text-sm font-medium text-gray-700">
-                  <span>Użyj twojego adresu:</span>
+                  <span>Użyj zapisanego adresu:</span>
                   <span class="font-semibold">
                     <br />{{ Address.addressLine }}
                     <br />{{ Address.city }}
@@ -321,18 +321,19 @@ const handlePayment = async () => {
     } else {
       isLoading.value = true;
       try {
-        console.log("transakcja")
+        let mail = User.email ? User.email : "gosc@gmail.com";
+        let name = User.lastName ? User.firstName + " " + User.lastName : User.firstName;
+        shoppingCartStore.isOrderFinished = true;
         orderAdd();
         const response = await axios.post(`${API_URL}/transactions`, {
           amount: total.value,
           description: "zamówienie w sklepie Geeked.tech",
-          payer_email: "gość@gmail.com",
-          payer_name: document.getElementById('name').value,
+          payer_email: mail,
+          payer_name: name,
           success_url: "https://geeked.tech/zamowienie/zrealizowane"
         });
         console.log(response.data)
         if (response.data.transaction_url) {
-          shoppingCartStore.isOrderFinished = true;
           window.location.href = response.data.transaction_url;
         } else {
           console.error("Błąd podczas tworzenia płatności tpay.");
@@ -350,16 +351,18 @@ const closeModal = async () => {
   showModal.value = false;
   try {
     orderAdd();
+    let mail = User.email ? User.email : "gosc@gmail.com";
+    let name = User.lastName ? User.firstName + " " + User.lastName : User.firstName;
+    shoppingCartStore.isOrderFinished = true;
     const response = await axios.post(`${API_URL}/transactions`, {
       amount: total.value,
       description: "zamówienie w sklepie Geeked.tech",
-      payer_email: User.email,
-      payer_name: User.firstName + " " + User.lastName,
+      payer_email: mail,
+      payer_name: name,
       success_url: "https://geeked.tech/zamowienie/zrealizowane"
     });
     console.log(response.data)
     if (response.data.transaction_url) {
-      shoppingCartStore.isOrderFinished = true;
       window.location.href = response.data.transaction_url;
     } else {
       console.error("Błąd podczas tworzenia płatności tpay.");

@@ -319,7 +319,7 @@ const handlePayment = async () => {
   if (validateForm()==true) {
     if (!useAddress.value && userId) {
     openModal();
-    } else if(userId!=null){
+    } else {
       isLoading.value = true;
       try {
         console.log("transakcja")
@@ -329,28 +329,6 @@ const handlePayment = async () => {
           description: "zamówienie w sklepie Geeked.tech",
           payer_email: "gość@gmail.com",
           payer_name: document.getElementById('name').value,
-          success_url: "https://geeked.tech/zamowienie/zrealizowane"
-        });
-        console.log(response.data)
-        if (response.data.transaction_url) {
-          shoppingCartStore.isOrderFinished = true;
-          window.location.href = response.data.transaction_url;
-        } else {
-          console.error("Błąd podczas tworzenia płatności tpay.");
-        }
-      } finally {
-        isLoading.value = false;
-      }
-    }else{
-      isLoading.value = true;
-      try {
-        console.log("transakcja")
-        orderAdd();
-        const response = await axios.post(`${API_URL}/transactions`, {
-          amount: total.value,
-          description: "zamówienie w sklepie Geeked.tech",
-          payer_email: User.email,
-          payer_name: User.firstName+" "+User.lastName,
           success_url: "https://geeked.tech/zamowienie/zrealizowane"
         });
         console.log(response.data)

@@ -23,7 +23,7 @@
 				<RouterLink v-else to="/logowanie" class="add-to-btn">
 					<HeartIcon class="h-6 w-6 text-gray-700"></HeartIcon>
 				</RouterLink>
-				<div class="add-to-btn" @click="handleAddToCart(product.id)">
+				<div v-if="!noCart" class="add-to-btn" @click="handleAddToCart(product.id)">
 					<ShoppingCartIcon class="h-6 w-6 text-black"></ShoppingCartIcon>
 				</div>
 			</div>
@@ -43,7 +43,8 @@
   const favoriteProductsStore = useFavoriteProductsStore()
 
 	defineProps({
-		product: Object
+		product: Object,
+		noCart: Boolean
 	})
 
 	const handleAddToFavorite = (productId) => {

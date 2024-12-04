@@ -21,6 +21,7 @@
               mainImage: product.main_image,
               imageAlt: product.name
             }"
+            :noCart="true"
           />
         </div>
       </div>

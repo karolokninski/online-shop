@@ -550,7 +550,7 @@ async def register(user: UserRegisterCreate, db: AsyncSession = Depends(get_db))
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return {"name": db_user.first_name, "email": db_user.email, "role": db_user.role, "id": user.id} 
+    return {"name": db_user.first_name, "email": db_user.email, "role": db_user.role, "id": db_user.id} 
 
 @app.post("/login")
 async def login(form_data: OAuth2EmailPasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):

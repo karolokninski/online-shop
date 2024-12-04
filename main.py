@@ -757,6 +757,9 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
 
 @app.put("/products/{product_id}")
 async def update_product(product_id: int, product: ProductCreate, db: AsyncSession = Depends(get_db)):
+    main_image = base64.b64decode(product.main_image) if product.main_image else None
+    additional_images = [base64.b64decode(img) for img in product.additional_images] if product.additional_images else None
+
     result = await db.execute(select(Product).where(Product.id == product_id))
     db_product = result.scalar_one_or_none()
     
@@ -768,8 +771,8 @@ async def update_product(product_id: int, product: ProductCreate, db: AsyncSessi
     db_product.price = product.price
     db_product.stock_quantity = product.stock_quantity
     db_product.description = product.description
-    db_product.main_image = product.main_image
-    db_product.additional_images = product.additional_images
+    db_product.main_image = main_image
+    db_product.additional_images = additional_images
 
     try:
         await db.commit()

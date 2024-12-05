@@ -19,7 +19,7 @@
             <td class="px-6 py-4 text-left">{{ provider.estimated_delivery_days }}</td>
             <td class="px-6 py-4 text-left">{{ provider.cost }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button @click="openEditProviderModal(provider)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <!-- <button @click="openEditProviderModal(provider)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button> -->
               <button @click="openDeleteProviderModal(provider.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
@@ -50,7 +50,7 @@
             <td class="px-6 py-4 text-left">{{ truncateDescription(paymentMethod.description) }}</td>
             <td class="px-6 py-4 text-left">{{ paymentMethod.fee }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button @click="openEditPaymentMethodModal(paymentMethod)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
+              <!-- <button @click="openEditPaymentMethodModal(paymentMethod)" class="text-indigo-600 mr-2"><PencilSquareIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button> -->
               <button @click="openDeletePaymentMethodModal(paymentMethod.id)" class="text-red-600"><TrashIcon class="h-5 w-5 inline-block" aria-hidden="true" /></button>
             </td>
           </tr>
